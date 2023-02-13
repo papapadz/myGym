@@ -1,0 +1,7 @@
+{
+  "name": "myGym",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

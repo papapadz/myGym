@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "myGym",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}
