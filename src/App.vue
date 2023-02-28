@@ -1,9 +1,67 @@
 <template>
-  <ion-app>
-    <ion-router-outlet />
-  </ion-app>
+  <ion-menu side="start" content-id="main-content">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item :router-link="{ path: '/home' }" routerDirection="root" ion-menu-toggle>
+          <ion-icon slot="start" :icon="menuIcon" />
+          Dashboard
+        </ion-item>
+        <ion-item :router-link="{ path: '/members' }" routerDirection="root" ion-menu-toggle>
+          <ion-icon slot="start" :icon="peopleIcon" />
+          Users
+        </ion-item>
+        <ion-item :router-link="{ path: '/attendance' }" routerDirection="root" ion-menu-toggle>
+          <ion-icon slot="start" :icon="peopleIcon" />
+          Attendance
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button />
+      </ion-buttons>
+      <ion-title>Admin</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+
 </template>
 
-<script setup>
-import { IonApp, IonRouterOutlet } from '@ionic/vue';
+<script>
+import { IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet } from '@ionic/vue';
+import { menu as menuIcon, people as peopleIcon, cart as cartIcon } from 'ionicons/icons';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    IonMenu,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonMenuButton,
+    IonRouterOutlet,
+    IonButtons
+  },
+  data() {
+    return {
+      menuIcon,
+      peopleIcon,
+      cartIcon,
+    };
+  },
+});
 </script>
