@@ -8,7 +8,7 @@
                     </ion-card-header>
                     <ion-card-content>
                         <p>Bio information goes here.</p>
-                        <ion-input type="text" placeholder="Enter your name" @ion-input="captureCard" @ion-blur="notifyFocus" ref="inputRef"></ion-input>
+                        <ion-input type="text" placeholder="Enter your name" v-model="cardNum" @ion-input="captureCard" @ion-blur="notifyFocus" v-bind:autofocus="isFocused" ref="child"></ion-input>
                     </ion-card-content>
                 </ion-card>
         </div>
@@ -24,14 +24,15 @@
         components: {
             IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard
         },
+        mounted() {
+            console.log(this.$refs.child.autofocus)
+        },
         data() {
             return {
+                isFocused: true,
+                cardNum: '',
                 isClicked: false
             }
-        },
-        mounted() {
-            
-            this.$refs.inputRef.value("asdsad")
         },
         methods: {
             captureCard(event) {
@@ -40,12 +41,13 @@
                     setTimeout(() => {
                         const input = event.target.value;
                         this.isClicked = false
+                        this.cardNum = ""
                         this.findMember(input)
                     }, 500)
                 }
             },
             notifyFocus() {
-                this.inputRef.focus()
+                console.log(this.$refs.child.focus())
             },
             setFocus() {
             },
