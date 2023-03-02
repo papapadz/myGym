@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <div class="card-container">
-                <ion-card @click="setFocus">
+            <ion-card @click="setFocus" v-if="isShown">
                     <ion-card-header>
                         <ion-card-subtitle>Press Tab</ion-card-subtitle>
                         <ion-card-title>Username</ion-card-title>
@@ -11,28 +11,41 @@
                     </ion-card-content>
                 </ion-card>
         </div>
+        <ion-content>
+            <CardList />
+                    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
+                        <ion-fab-button @click="showModal">
+                            <ion-icon :icon="peopleIcon" />
+                        </ion-fab-button>
+                    </ion-fab>
+                </ion-content>
     </ion-page>
   </template>
   
 <script>
-    import {IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard } from '@ionic/vue'
+    import {IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard, IonFab, IonFabButton, IonIcon, IonContent } from '@ionic/vue'
     import { defineComponent } from 'vue';
+    import { people as peopleIcon } from 'ionicons/icons';
+    import CardList from '../components/CardList.vue';
 
     export default defineComponent({
         name: 'AttendancePage',
         components: {
-            IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard
-        },
-        mounted() {
-            this.setFocus();
+            IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard, IonFab, IonFabButton, IonIcon, IonContent, CardList
         },
         data() {
             return {
+                peopleIcon,
+                isShown: false,
                 cardNum: '',
                 isClicked: false
             }
         },
         methods: {
+            showModal() {
+                this.isShown=true
+                this.setFocus();
+            },
             captureCard(event) {
                 if(!this.isClicked) {
                     this.isClicked = true
