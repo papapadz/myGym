@@ -3,12 +3,11 @@
         <div class="card-container">
                 <ion-card @click="setFocus">
                     <ion-card-header>
-                        <ion-card-subtitle>Full Name</ion-card-subtitle>
+                        <ion-card-subtitle>Press Tab</ion-card-subtitle>
                         <ion-card-title>Username</ion-card-title>
                     </ion-card-header>
                     <ion-card-content>
-                        <p>Bio information goes here.</p>
-                        <ion-input type="text" placeholder="Enter your name" v-model="cardNum" @ion-input="captureCard" @ion-blur="notifyFocus" v-bind:autofocus="isFocused" ref="child"></ion-input>
+                        <ion-input type="text" placeholder="Click Here" v-model="cardNum" @ion-input="captureCard" @ion-blur="setFocus" ref="child"></ion-input>
                     </ion-card-content>
                 </ion-card>
         </div>
@@ -25,11 +24,10 @@
             IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard
         },
         mounted() {
-            console.log(this.$refs.child.autofocus)
+            this.setFocus();
         },
         data() {
             return {
-                isFocused: true,
                 cardNum: '',
                 isClicked: false
             }
@@ -46,10 +44,8 @@
                     }, 500)
                 }
             },
-            notifyFocus() {
-                console.log(this.$refs.child.focus())
-            },
             setFocus() {
+                this.$refs.child.$el.focus();
             },
             findMember(cardNum) {
                 console.log(cardNum)

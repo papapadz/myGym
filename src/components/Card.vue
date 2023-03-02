@@ -2,7 +2,7 @@
   <ion-card>
     <img src="https://d3nn873nee648n.cloudfront.net/HomeImages/Concept-and-Ideas.jpg" alt="Profile Image">
     <ion-card-header>
-      <ion-card-subtitle>Full Name</ion-card-subtitle>
+      <ion-card-subtitle>{{ data.title }}</ion-card-subtitle>
       <ion-card-title>Username</ion-card-title>
     </ion-card-header>
     <ion-card-content>
@@ -17,6 +17,7 @@
   
   export default defineComponent({
     name: 'CardItem',
+    props: ['data'],
     components: {
       IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent
     }
