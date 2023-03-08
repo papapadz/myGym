@@ -1,50 +1,94 @@
 <template>
     <ion-page>
+      <ion-header :translucent="true">
+        <ion-toolbar>
+          <ion-title></ion-title>
+        </ion-toolbar>
+      </ion-header>
+  
+      <ion-content :fullscreen="true">
+        <ion-header :translucent="true">
+            <ion-toolbar>
+                <ion-title style="text-align: right;">{{ timestamp }}</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <CardList :dataProp="attendance.getAttendance" v-if="!isShown"/>
         <div class="card-container">
             <ion-card @click="setFocus" v-if="isShown">
                     <ion-card-header>
-                        <ion-card-subtitle>Press Tab</ion-card-subtitle>
-                        <ion-card-title>Username</ion-card-title>
+                        <ion-card-subtitle>Scan RFID Card</ion-card-subtitle>
                     </ion-card-header>
                     <ion-card-content>
                         <ion-input type="text" placeholder="Click Here" v-model="cardNum" @ion-input="captureCard" @ion-blur="setFocus" ref="child"></ion-input>
                     </ion-card-content>
                 </ion-card>
-        </div>
-        <ion-content>
-            <CardList />
-                    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
-                        <ion-fab-button @click="showModal">
-                            <ion-icon :icon="peopleIcon" />
+            <ion-header collapse="condense">
+            <ion-toolbar>
+                <ion-title size="large">Blank</ion-title>
+            </ion-toolbar>
+            </ion-header>
+            <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
+                        <ion-fab-button @click="showModal" :color="fabColor">
+                            <ion-icon :icon="fabIcon" />
                         </ion-fab-button>
                     </ion-fab>
-                </ion-content>
+        </div>
+      </ion-content>
     </ion-page>
   </template>
   
 <script>
-    import {IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard, IonFab, IonFabButton, IonIcon, IonContent } from '@ionic/vue'
+    import { IonPage, IonFab, IonFabButton, IonIcon, IonContent } from '@ionic/vue'
     import { defineComponent } from 'vue';
-    import { people as peopleIcon } from 'ionicons/icons';
-    import CardList from '../components/CardList.vue';
+    import { people as peopleIcon, close as closeIcon } from 'ionicons/icons';
+    import CardList from '../components/CardList.vue'
+    import { attendanceStore } from '../stores/attendance';
 
     export default defineComponent({
         name: 'AttendancePage',
         components: {
-            IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonPage, IonInput, IonCard, IonFab, IonFabButton, IonIcon, IonContent, CardList
+            IonPage, IonFab, IonFabButton, IonIcon, IonContent, CardList
         },
         data() {
             return {
+                timestamp: "",
                 peopleIcon,
+                closeIcon,
                 isShown: false,
                 cardNum: '',
-                isClicked: false
+                isClicked: false,
+                fabColor: 'primary',
+                fabIcon: peopleIcon
             }
+        },
+        created() {
+                setInterval(this.getNow, 1000);
+            },
+        setup() {
+            const attendance = attendanceStore()
+            return {
+                attendance
+            }
+        },
+        mounted() {
+            this.attendance.getAttendanceToday()
         },
         methods: {
             showModal() {
-                this.isShown=true
+                if(this.isShown) {
+                    this.closeModal()
+                } else {
+                    this.isShown=true
+                    this.fabColor='danger',
+                    this.fabIcon=closeIcon
+                }
+                
                 this.setFocus();
+            },
+            closeModal() {
+                this.isShown=false
+                this.fabColor='primary',
+                this.fabIcon=peopleIcon
             },
             captureCard(event) {
                 if(!this.isClicked) {
@@ -54,15 +98,25 @@
                         this.isClicked = false
                         this.cardNum = ""
                         this.findMember(input)
+                        this.attendance.getAttendanceToday()
+                        this.closeModal()
                     }, 500)
                 }
             },
             setFocus() {
-                this.$refs.child.$el.focus();
+                //this.$refs.child.$el.focus();
             },
             findMember(cardNum) {
                 console.log(cardNum)
-            }
+                this.attendance.add(cardNum)
+            },
+            getNow: function() {
+                    const today = new Date();
+                    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                    const dateTime = date +' '+ time;
+                    this.timestamp = dateTime;
+                }
         }
     });
 </script>
@@ -72,7 +126,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
     }
   
     ion-card {

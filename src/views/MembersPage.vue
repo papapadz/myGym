@@ -12,7 +12,7 @@
           <ion-title size="large">Blank</ion-title>
         </ion-toolbar>
       </ion-header>
-      <CardList/>
+      <CardList :dataProp="members.getMembers"/>
     </ion-content>
   </ion-page>
 </template>
@@ -21,9 +21,10 @@
 import {IonHeader, IonToolbar, IonContent, IonTitle, IonPage} from '@ionic/vue'
 import { defineComponent } from 'vue';
 import CardList from '../components/CardList.vue';
+import { membersStore } from '../stores/members';
 
 export default defineComponent({
-  name: 'MenuPage',
+  name: 'MembersPage',
   components: {
     CardList,
     IonHeader,
@@ -31,6 +32,16 @@ export default defineComponent({
     IonContent,
     IonTitle,
     IonPage
-  }
+  },
+  setup() {
+      const members = membersStore()
+      return {
+        members
+      }
+    },
+    mounted() {
+      this.members.getAllMembers();
+    }
+    
 });
 </script>

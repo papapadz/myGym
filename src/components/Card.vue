@@ -2,8 +2,8 @@
   <ion-card>
     <img src="https://d3nn873nee648n.cloudfront.net/HomeImages/Concept-and-Ideas.jpg" alt="Profile Image">
     <ion-card-header>
-      <ion-card-subtitle>{{ data.title }}</ion-card-subtitle>
-      <ion-card-title>Username</ion-card-title>
+      <ion-card-subtitle>{{ cardData.card_number }}</ion-card-subtitle>
+      <ion-card-title>{{ cardData.lastname }}, {{ cardData.firstname }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p>Bio information goes here.</p>
@@ -14,12 +14,35 @@
 <script>
   import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent } from '@ionic/vue'
   import { defineComponent } from 'vue';
-  
+  import { navigationStore } from '../stores/navigation';
+
   export default defineComponent({
     name: 'CardItem',
     props: ['data'],
     components: {
       IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent
+    },
+    setup() {
+      const navigation = navigationStore()
+      return {
+        navigation
+      }
+    },
+    data() {
+      return {
+        cardData: {}
+      }
+    },
+    beforeMount() {
+      console.log(this.navigation.getPage)
+      switch(this.navigation.getPage) {
+        case "members":
+          this.cardData = this.data
+          break
+        case "attendance":
+          this.cardData = this.data.person
+          break
+      }
     }
   });
   </script>
