@@ -12,9 +12,13 @@
 <script>
 import { defineComponent } from 'vue';
 import { workoutStore } from '../stores/workout';
+import { IonItemGroup, IonItemDivider, IonLabel, IonItem } from '@ionic/vue';
 
 export default defineComponent({
   name: 'WorkoutList',
+  component: {
+    IonItemGroup, IonItemDivider, IonLabel, IonItem
+  },
   props: ['propList'],
   setup() {
     const workout = workoutStore()
