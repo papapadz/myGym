@@ -43,6 +43,8 @@
     import { people as peopleIcon, close as closeIcon } from 'ionicons/icons';
     import CardList from '../components/CardList.vue'
     import { attendanceStore } from '../stores/attendance';
+    import { navigationStore } from '../stores/navigation';
+    import moment from 'moment'
 
     export default defineComponent({
         name: 'AttendancePage',
@@ -65,10 +67,17 @@
                 setInterval(this.getNow, 1000);
             },
         setup() {
+            const navigation = navigationStore()
             const attendance = attendanceStore()
             return {
+                navigation,
                 attendance
             }
+        },
+        beforeMount() {
+            this.navigation.$patch({
+                page: "attendance"
+            })
         },
         mounted() {
             this.attendance.getAttendanceToday()
@@ -111,11 +120,8 @@
                 this.attendance.add(cardNum)
             },
             getNow: function() {
-                    const today = new Date();
-                    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                    const dateTime = date +' '+ time;
-                    this.timestamp = dateTime;
+                    
+                    this.timestamp = moment().format('ddd, MMMM D, YYYY h:mm:ss a');
                 }
         }
     });

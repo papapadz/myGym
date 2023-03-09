@@ -22,6 +22,7 @@ import {IonHeader, IonToolbar, IonContent, IonTitle, IonPage} from '@ionic/vue'
 import { defineComponent } from 'vue';
 import CardList from '../components/CardList.vue';
 import { membersStore } from '../stores/members';
+import { navigationStore } from '../stores/navigation';
 
 export default defineComponent({
   name: 'MembersPage',
@@ -34,10 +35,17 @@ export default defineComponent({
     IonPage
   },
   setup() {
+      const navigation = navigationStore()
       const members = membersStore()
       return {
+        navigation,
         members
       }
+    },
+    beforeMount() {
+      this.navigation.$patch({
+        page: "members"
+      })
     },
     mounted() {
       this.members.getAllMembers();

@@ -1,7 +1,7 @@
 <template>
     <ion-grid>
       <ion-row>
-        <ion-col v-for="card in dataProp" :key="card.id" :size="3">
+        <ion-col v-for="card in dataProp" :key="card.id">
           <Card :data="card" @click="viewCard(card.id)"/>
         </ion-col>
       </ion-row>
@@ -16,7 +16,10 @@
             </ion-toolbar>
           </ion-header>
           <ion-content class="ion-padding">
-            <Card :data="cardSelected"/>
+            <div class="container">
+              <Card :data="cardSelected"/>
+                <WorkoutList />
+            </div>
           </ion-content>
         </ion-modal>
       </ion-content>
@@ -26,38 +29,55 @@
   <script>
   import { IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton } from '@ionic/vue';
   import Card from './Card.vue';
-  import { defineComponent } from 'vue';
-  import { attendanceStore } from '../stores/attendance';
+  import { defineComponent } from 'vue';  
+  import WorkoutList from './WorkoutList.vue';
+  import { navigationStore } from '../stores/navigation';
+  import { workoutStore } from '../stores/workout';
+
 
   export default defineComponent({
     name: 'CardList',
     components: {
-      Card, IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton 
+      Card, IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, WorkoutList
     },
-    setup() {
-      const attendance = attendanceStore()
-      return {
-        attendance
-      }
-    },
+    // setup() {
+    //   const attendance = attendanceStore()
+    //   return {
+    //     attendance
+    //   }
+    // },
     props: [
       'dataProp'
     ],
+    setup() {
+      const navigation = navigationStore()
+      const workout = workoutStore()
+      return {
+        navigation,
+        workout
+      }
+    },
     data() {
       return {
+        dataList: [],
         isOpen: false,
-        cardSelected: null,
-        attendanceSelected: {}
+        cardSelected: null
       };
     },
     methods: {
       viewCard(x) {
-        //console.log(this.cardList.find(e => e.id == 1))
-        //this.cardList.splice(this.cardList.findIndex(e => e.id == x),this.cardList.length)
-        this.setOpen(true)
-        this.cardSelected = this.dataProp.find(e => e.id == x)
-        this.attendanceSelected = this.attendance.getAttendanceWorkOutToday(x)
         console.log(x)
+        this.cardSelected = this.dataProp.find(e => e.id == x)
+        
+        switch(this.navigation.getPage) {
+          case 'members': 
+          break
+          case 'attendance':
+            this.workout.getAttendanceWorkOutToday(x)
+            this.dataList = this.workout.getAttendanceWorkOuts
+          break
+        }
+        this.setOpen(true)
       },
       setOpen(val) {
         this.isOpen = val
@@ -65,3 +85,12 @@
     }
   });
   </script>
+
+<style>
+.card-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+</style>
