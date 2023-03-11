@@ -2,9 +2,13 @@ import { defineStore } from 'pinia'
 
 export const navigationStore = defineStore('navigation', {
     state: () => ({ 
-      page: ""
+      page: "",
+      members: {
+        isNewFormShown: false
+      }
     }),
     getters: {
-      getPage: (state) => state.page
+      getPage: (state) => state.page,
+      getMemberPageSettings: (state) => state.members
     }
 })

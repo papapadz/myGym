@@ -1,72 +1,63 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Blank</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
+      <ion-header :translucent="true">
         <ion-toolbar>
-          <ion-title size="large"></ion-title>
+          <ion-title>Blank</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-searchbar @ionChange="searchMember($event)"></ion-searchbar>
-      <CardList :dataProp="results"/>
-      <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
-          <ion-fab-button id="open-modal" expand="block">
+
+      <ion-content :fullscreen="true">
+        <ion-header collapse="condense">
+          <ion-toolbar>
+            <ion-title size="large"></ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
+        <div v-else>
+          <ion-searchbar @ionChange="searchMember($event)"></ion-searchbar>
+          <CardList :dataProp="results"/>
+        </div>
+        <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
+          <ion-fab-button expand="block" @click="showAddForm">
               <ion-icon :icon="peopleIcon" />
           </ion-fab-button>
       </ion-fab>
-      <ion-modal ref="modal" trigger="open-modal" @willDismiss="onWillDismiss">
-        <ion-header>
-          <ion-toolbar>
-            <ion-buttons slot="start">
-              <ion-button @click="cancel()">Cancel</ion-button>
-            </ion-buttons>
-            <ion-title>Welcome</ion-title>
-            <ion-buttons slot="end">
-              <ion-button :strong="true" @click="confirm()">Confirm</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <ion-item>
-            <ion-label position="stacked">Enter your Last Name</ion-label>
-            <ion-input type="text" placeholder="Last Name"></ion-input>
-            <ion-label position="stacked">Enter your First Name</ion-label>
-            <ion-input type="text" placeholder="First Name"></ion-input>
-            <ion-label position="stacked">Enter your Middlename</ion-label>
-            <ion-input type="text" placeholder="Middlename (optional)"></ion-input>
-            <ion-label position="stacked">Enter Birthday</ion-label>
-            <ion-input type="date" placeholder="Birthday"></ion-input>
-            <ion-label position="stacked">Select Gender</ion-label>
-            <ion-select interface="popover" placeholder="Select fruit">
-              <IonSelectOption value="apples">Apples</IonSelectOption>
-              <IonSelectOption value="oranges">Oranges</IonSelectOption>
-              <IonSelectOption value="bananas">Bananas</IonSelectOption>
-            </ion-select>
-          </ion-item>
-        </ion-content>
-      </ion-modal>
-    </ion-content>
+      <ion-fab>
+        <ion-fab-button size="small">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list side="end">
+          <ion-fab-button>
+            <ion-icon name="document"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button>
+            <ion-icon name="color-palette"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button>
+            <ion-icon name="globe"></ion-icon>
+          </ion-fab-button>
+        </ion-fab-list>
+      </ion-fab>
+      </ion-content>
+    
   </ion-page>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonModal, IonButtons, IonButton, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonFabList  } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
 import CardList from '../components/CardList.vue';
+import NewMember from '../components/NewMember.vue'
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon } from 'ionicons/icons';
+
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      CardList, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonModal, IonButtons, IonButton, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption 
+      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonFabList
     },
     setup() {
       const navigation = navigationStore()
@@ -96,12 +87,24 @@ export default defineComponent({
         this.results = this.memberList.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query));
       },
       cancel() {
-        this.$refs.modal.$el.dismiss(null, 'cancel');
+        //this.$refs.modal.$el.dismiss(null, 'cancel');
+        this.navigation.$patch({
+          members: {
+            isNewFormShown: false
+          }
+        })
       },
       confirm() {
         const name = this.$refs.input.$el.value;
         this.$refs.modal.$el.dismiss(name, 'confirm');
       },
+      showAddForm() {
+        this.navigation.$patch({
+          members: {
+            isNewFormShown: true
+          }
+        })
+      }
     }
 });
 </script>
