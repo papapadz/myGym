@@ -1,6 +1,6 @@
 <template>
   <ion-card>
-    <img src="https://d3nn873nee648n.cloudfront.net/HomeImages/Concept-and-Ideas.jpg" alt="Profile Image">
+    <img :src="cardData.img.url" alt="Profile Image" >
     <ion-card-header>
       <ion-card-subtitle>{{ cardData.card_number }}</ion-card-subtitle>
       <ion-card-title>{{ cardData.lastname }}, {{ cardData.firstname }}</ion-card-title>
@@ -37,6 +37,8 @@
           </ion-item>
         </ion-item-group>
       </ion-list>
+      
+      <MembershipsVue :member="cardData" />
     </ion-card-content>
   </ion-card>
 </template>
@@ -46,12 +48,13 @@
   import { defineComponent } from 'vue';
   import { navigationStore } from '../stores/navigation';
   import moment from 'moment'
+  import MembershipsVue from './Memberships.vue';
 
   export default defineComponent({
     name: 'CardItem',
     props: ['data'],
     components: {
-      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip
+      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip, MembershipsVue
     },
     setup() {
       const navigation = navigationStore()

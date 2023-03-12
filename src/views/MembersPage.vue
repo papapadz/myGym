@@ -18,46 +18,29 @@
           <CardList :dataProp="results"/>
         </div>
         <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
-          <ion-fab-button expand="block" @click="showAddForm">
-              <ion-icon :icon="peopleIcon" />
+          <ion-fab-button expand="block" @click="showAddForm" :color="btnColor">
+              <ion-icon :icon="btnIcon" />
           </ion-fab-button>
-      </ion-fab>
-      <ion-fab>
-        <ion-fab-button size="small">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-list side="end">
-          <ion-fab-button>
-            <ion-icon name="document"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button>
-            <ion-icon name="color-palette"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button>
-            <ion-icon name="globe"></ion-icon>
-          </ion-fab-button>
-        </ion-fab-list>
       </ion-fab>
       </ion-content>
-    
   </ion-page>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonFabList  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
 import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
-import { people as peopleIcon, close as closeIcon } from 'ionicons/icons';
+import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
 
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, IonFabList
+      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon
     },
     setup() {
       const navigation = navigationStore()
@@ -70,16 +53,25 @@ export default defineComponent({
         memberList,
         results,
         peopleIcon,
-        closeIcon
+        closeIcon,
+        plusIcon,
+        checkIcon
+      }
+    },
+    data() {
+      return {
+        btnIcon: this.plusIcon,
+        btnColor: 'success'
       }
     },
     beforeMount() {
       this.navigation.$patch({
         page: "members"
       })
+      this.members.getAllMembers();
     },
     mounted() {
-      this.members.getAllMembers();
+      this.results = this.members.getMembers
     },
     methods: {
       searchMember(event) {
@@ -99,9 +91,18 @@ export default defineComponent({
         this.$refs.modal.$el.dismiss(name, 'confirm');
       },
       showAddForm() {
+        if(this.navigation.getMemberPageSettings.isNewFormShown) {
+          this.btnIcon = this.plusIcon
+          this.btnColor = 'success'
+        }
+        else {
+          this.btnIcon = this.closeIcon
+          this.btnColor = 'danger'
+        }
+        
         this.navigation.$patch({
           members: {
-            isNewFormShown: true
+            isNewFormShown: !this.navigation.getMemberPageSettings.isNewFormShown
           }
         })
       }
