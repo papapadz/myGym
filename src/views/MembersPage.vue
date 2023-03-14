@@ -47,6 +47,7 @@ export default defineComponent({
       const members = membersStore()
       const memberList = members.getMembers
       const results = ref(memberList)
+      
       return {
         navigation,
         members,
@@ -70,7 +71,7 @@ export default defineComponent({
       })
       this.members.getAllMembers();
     },
-    mounted() {
+    created() {
       this.results = this.members.getMembers
     },
     methods: {

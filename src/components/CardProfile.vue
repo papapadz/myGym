@@ -7,7 +7,7 @@
                         {{ cardData.card_number }}
                       </div>
                   <div class="points center">
-                    <ion-chip :color="membership.color">{{ membership.text }}</ion-chip>
+                    <ion-chip @click="presentActionSheet" :color="membership.color">{{ membership.text }}</ion-chip>
                   </div>
                   <img :src="cardData.img.url" alt="Profile Image" >
                 </div>
@@ -26,14 +26,14 @@
                   </div>
                   <div class="stats">
                     <div>
-                      <div class="title">Awards</div>
-                      <i class="fa fa-trophy"></i>
-                      <div class="value">2</div>
-                    </div>
-                    <div>
-                      <div class="title">Matches</div>
+                      <div class="title">Days Left</div>
                       <i class="fa fa-gamepad"></i>
                       <div class="value">27</div>
+                    </div>
+                    <div>
+                      <div class="title">Visits</div>
+                      <i class="fa fa-trophy"></i>
+                      <div class="value">{{ cardData.attendance.length }}</div>
                     </div>
                     <div>
                       <div class="title">Pals</div>
@@ -56,12 +56,12 @@
                 <span class="more">Mouse over the card for more info</span>
               </div>
             </div>
-          </ion-card>
-
+            <code>{{ result }}</code>
+        </ion-card>
 </template>
 <script>
-  import { IonCard, IonChip } from '@ionic/vue';
-  import { defineComponent } from 'vue';
+  import { IonCard, IonChip, actionSheetController } from '@ionic/vue';
+  import { defineComponent, ref } from 'vue';
   import { navigationStore } from '../stores/navigation';
   import moment from 'moment'
 
@@ -71,8 +71,50 @@
     components: { IonCard, IonChip },
     setup() {
       const navigation = navigationStore()
+      const result = ref('')
+      const appSheetButton = {
+          text: 'Enroll',
+          isEnrolled: false
+      }
+      const presentActionSheet = async () => {
+        const actionSheet = await actionSheetController.create({
+          header: 'Options',
+          buttons: [
+            {
+              text: appSheetButton.text,
+              role: 'appl',
+              data: {
+                action: 'delete',
+              },
+              handler:() => {
+
+              }
+            },
+            {
+              text: 'Share',
+              data: {
+                action: 'share',
+              },
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              data: {
+                action: 'cancel',
+              },
+            },
+          ],
+        });
+
+        await actionSheet.present();
+
+        const res = await actionSheet.onDidDismiss();
+        result.value = JSON.stringify(res, null, 2);
+      };
+
       return {
-        navigation
+        navigation,
+        presentActionSheet
       }
     },
     beforeMount() {
@@ -123,7 +165,7 @@
                 timein: '',
                 joinDate: '',
                 attendanceLastDate: ''
-            }
+            },
         }
     }
   })
