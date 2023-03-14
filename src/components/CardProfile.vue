@@ -1,13 +1,16 @@
 <template>
         <ion-card>
-            <div class="card">
+            <ion-card-header color="success">
+                <ion-button size="small" shape="round"><ion-icon :icon="schoolIcon"></ion-icon></ion-button>
+            </ion-card-header>
+            <div v-if="flip==1" class="card">
               <div class="additional">
                 <div class="user-card">
                     <div class="level center">
                         {{ cardData.card_number }}
                       </div>
                   <div class="points center">
-                    <ion-chip @click="presentActionSheet" :color="membership.color">{{ membership.text }}</ion-chip>
+                    <ion-chip @click="flipPage" :color="membership.color">{{ membership.text }}</ion-chip>
                   </div>
                   <img :src="cardData.img.url" alt="Profile Image" >
                 </div>
@@ -56,65 +59,29 @@
                 <span class="more">Mouse over the card for more info</span>
               </div>
             </div>
-            <code>{{ result }}</code>
+            <SelectMembershipModalVue v-if="flip==2" :data="cardData" :isEnrolled="membership.show"/>
         </ion-card>
 </template>
 <script>
-  import { IonCard, IonChip, actionSheetController } from '@ionic/vue';
-  import { defineComponent, ref } from 'vue';
+  import { IonCard, IonChip } from '@ionic/vue';
+  import { defineComponent } from 'vue';
   import { navigationStore } from '../stores/navigation';
+  import { membersStore } from '../stores/members';
   import moment from 'moment'
+  import { schoolOutline as schoolIcon } from 'ionicons/icons';
+    import SelectMembershipModalVue from './SelectMembershipModal.vue';
 
   export default defineComponent({
     name: 'CardProfile',
     props: ['data'],
-    components: { IonCard, IonChip },
+    components: { SelectMembershipModalVue, IonCard, IonChip },
     setup() {
       const navigation = navigationStore()
-      const result = ref('')
-      const appSheetButton = {
-          text: 'Enroll',
-          isEnrolled: false
-      }
-      const presentActionSheet = async () => {
-        const actionSheet = await actionSheetController.create({
-          header: 'Options',
-          buttons: [
-            {
-              text: appSheetButton.text,
-              role: 'appl',
-              data: {
-                action: 'delete',
-              },
-              handler:() => {
-
-              }
-            },
-            {
-              text: 'Share',
-              data: {
-                action: 'share',
-              },
-            },
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              data: {
-                action: 'cancel',
-              },
-            },
-          ],
-        });
-
-        await actionSheet.present();
-
-        const res = await actionSheet.onDidDismiss();
-        result.value = JSON.stringify(res, null, 2);
-      };
-
+    const members = membersStore()
       return {
+        schoolIcon,
         navigation,
-        presentActionSheet
+        members
       }
     },
     beforeMount() {
@@ -156,6 +123,7 @@
     },
     data() {
         return {
+            flip: 1,
             cardData: {},
             membership: {
                 text: '',
@@ -166,6 +134,19 @@
                 joinDate: '',
                 attendanceLastDate: ''
             },
+        }
+    },
+    methods: {
+        flipPage() {
+            if(this.flip==1) {
+                this.members.$patch({
+                    members: this.cardData
+                })
+            
+                this.flip=2
+            }
+            else
+                this.flip=1
         }
     }
   })

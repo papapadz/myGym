@@ -20,7 +20,7 @@
           <ion-content class="ion-padding">
             <div class="container">
               <CardProfile />
-              <Card :data="cardSelected" v-if="false"/>
+              <Card :data="cardSelected" v-if="false" />
                 <WorkoutList />
             </div>
           </ion-content>

@@ -7,6 +7,7 @@ const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 export const membersStore = defineStore('members', {
     state: () => ({ 
       members: [],
+      memberships: [],
       person: {
         lastname: '',
         firstname: '',
@@ -43,6 +44,12 @@ export const membersStore = defineStore('members', {
           return this.getInputErrors.lastname[0]
         else
           return ''
+      },
+      getMemberShipList() {
+        axios.get(BASE_URL+'/membership/categories/all')
+          .then(function(response) {
+            return response.data
+        })
       }
     },
     actions: {

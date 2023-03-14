@@ -5,10 +5,14 @@ export const navigationStore = defineStore('navigation', {
       page: "",
       members: {
         isNewFormShown: false
+      },
+      flip: {
+        page: 1
       }
     }),
     getters: {
       getPage: (state) => state.page,
-      getMemberPageSettings: (state) => state.members
+      getMemberPageSettings: (state) => state.members,
+      getFlipPage: (state) => state.flip
     }
 })

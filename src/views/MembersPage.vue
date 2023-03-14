@@ -21,7 +21,7 @@
           <ion-fab-button expand="block" @click="showAddForm" :color="btnColor">
               <ion-icon :icon="btnIcon" />
           </ion-fab-button>
-      </ion-fab>
+        </ion-fab>
       </ion-content>
   </ion-page>
 </template>
@@ -34,7 +34,7 @@ import NewMember from '../components/NewMember.vue'
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
-
+import axios from 'axios';
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
@@ -43,12 +43,14 @@ export default defineComponent({
       CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon
     },
     setup() {
+      const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
       const navigation = navigationStore()
       const members = membersStore()
       const memberList = members.getMembers
       const results = ref(memberList)
       
       return {
+        BASE_URL,
         navigation,
         members,
         memberList,
@@ -69,9 +71,13 @@ export default defineComponent({
       this.navigation.$patch({
         page: "members"
       })
-      this.members.getAllMembers();
-    },
-    created() {
+      const self = this
+        axios.get(this.BASE_URL+'/person/all')
+          .then(function(response) {
+            self.members.$patch({
+              members:  response.data
+            })
+        })
       this.results = this.members.getMembers
     },
     methods: {
