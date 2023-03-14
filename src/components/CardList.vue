@@ -2,7 +2,9 @@
     <ion-grid>
       <ion-row>
         <ion-col v-for="card in dataProp" :key="card.id">
-          <Card :data="card" @click="viewCard(card.id)"/>
+          
+          <CardProfile :data="card" />
+          <Card :data="card" @click="viewCard(card.id)" v-if="false"/>
         </ion-col>
       </ion-row>
       <ion-content>
@@ -17,7 +19,8 @@
           </ion-header>
           <ion-content class="ion-padding">
             <div class="container">
-              <Card :data="cardSelected"/>
+              <CardProfile />
+              <Card :data="cardSelected" v-if="false"/>
                 <WorkoutList />
             </div>
           </ion-content>
@@ -29,6 +32,7 @@
   <script>
   import { IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton } from '@ionic/vue';
   import Card from './Card.vue';
+  import CardProfile from '@/components/CardProfile'
   import { defineComponent } from 'vue';  
   import WorkoutList from './WorkoutList.vue';
   import { navigationStore } from '../stores/navigation';
@@ -38,7 +42,7 @@
   export default defineComponent({
     name: 'CardList',
     components: {
-      Card, IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, WorkoutList
+      CardProfile, Card, IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, WorkoutList
     },
     // setup() {
     //   const attendance = attendanceStore()

@@ -1,5 +1,4 @@
 <template>
-    <ion-content>
         <ion-content class="ion-padding">
               <ion-item ref="item">
                 <ion-label position="floating">Enter Last Name</ion-label>
@@ -82,8 +81,7 @@
                 <ion-note slot="error">{{ members.getInputErrors.lastname }}</ion-note>
               </ion-item>
               <ion-button color="success" expand="block" @click="confirm">Save</ion-button>
-            </ion-content>
-          </ion-content>
+        </ion-content>
 </template>
 
 <script>
