@@ -9,15 +9,15 @@
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item :router-link="{ path: '/home' }" routerDirection="root" ion-menu-toggle>
+        <ion-item :router-link="{ path: '/home' }" routerDirection="root" ion-menu-toggle @click="navigate('home')">
           <ion-icon slot="start" :icon="menuIcon" />
           Dashboard
         </ion-item>
-        <ion-item :router-link="{ path: '/members' }" routerDirection="root" ion-menu-toggle>
+        <ion-item :router-link="{ path: '/members' }" routerDirection="root" ion-menu-toggle @click="navigate('members')">
           <ion-icon slot="start" :icon="peopleIcon" />
           Members
         </ion-item>
-        <ion-item :router-link="{ path: '/attendance' }" routerDirection="root" ion-menu-toggle>
+        <ion-item :router-link="{ path: '/attendance' }" routerDirection="root" ion-menu-toggle @click="navigate('attendance')">
           <ion-icon slot="start" :icon="peopleIcon" />
           Attendance
         </ion-item>
@@ -43,6 +43,7 @@
 import { IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet, IonMenuToggle } from '@ionic/vue';
 import { menu as menuIcon, people as peopleIcon, cart as cartIcon } from 'ionicons/icons';
 import { defineComponent } from 'vue';
+import { navigationStore } from './stores/navigation';
 
 export default defineComponent({
   name: 'App',
@@ -60,12 +61,25 @@ export default defineComponent({
     IonButtons,
     IonMenuToggle
   },
+  setup() {
+      const navigation = navigationStore()
+      return {
+        navigation
+      }
+  },
   data() {
     return {
       menuIcon,
       peopleIcon,
       cartIcon,
     };
+  },
+  methods: {
+    navigate(page) {
+      this.navigation.$patch({
+        page: page
+      })
+    }
   }
 });
 </script>

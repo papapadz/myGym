@@ -7,6 +7,7 @@ const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 export const membersStore = defineStore('members', {
     state: () => ({ 
       members: [],
+      searchResults: [],
       memberships: [],
       person: {
         lastname: '',
@@ -36,6 +37,7 @@ export const membersStore = defineStore('members', {
     }),
     getters: {
       getMembers: (state) => state.members,
+      getSearchResult: (state) => state.searchResults,
       getNewMember: (state) => state.getNewMember,
       getMemberCategories: (state) => state.categories,
       getInputErrors: (state) => state.errors,
@@ -58,6 +60,7 @@ export const membersStore = defineStore('members', {
         axios.get(BASE_URL+'/person/all')
           .then(function(response) {
             self.members = response.data
+            self.searchResults = response.data
         })
       },
       validateInput(field) {
@@ -123,6 +126,10 @@ export const membersStore = defineStore('members', {
             self.errors.lastname = errorReponse.lastname
           }
         });
-      }
+      },
+      find(searchVal) {
+        const query = searchVal.toLowerCase();
+        this.searchResults = this.members.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query));
+      },
     }
 })

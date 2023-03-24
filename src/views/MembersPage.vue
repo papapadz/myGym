@@ -12,16 +12,21 @@
             <ion-title size="large"></ion-title>
           </ion-toolbar>
         </ion-header>
-        <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
-        <div v-else>
-          <ion-searchbar @ionChange="searchMember($event)"></ion-searchbar>
-          <CardList :dataProp="results"/>
-        </div>
-        <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
-          <ion-fab-button expand="block" @click="showAddForm" :color="btnColor">
-              <ion-icon :icon="btnIcon" />
-          </ion-fab-button>
-        </ion-fab>
+        
+        <ion-content>
+          <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
+          <ion-content v-else>
+            <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
+            <CardList :dataProp="members.getSearchResult"/>
+          </ion-content>
+          
+          <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
+            <ion-fab-button expand="block" @click="showAddForm" :color="btnColor">
+                <ion-icon :icon="btnIcon" />
+            </ion-fab-button>
+          </ion-fab>
+        </ion-content>
+          <SelectMembershipModal v-if="flipPage.page==3"/>
       </ion-content>
   </ion-page>
 </template>
@@ -34,22 +39,30 @@ import NewMember from '../components/NewMember.vue'
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
-import axios from 'axios';
+import SelectMembershipModal from '../components/SelectMembershipModal.vue';
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon
+      SelectMembershipModal, CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon
     },
     setup() {
       const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
       const navigation = navigationStore()
       const members = membersStore()
+      members.getAllMembers()
+
       const memberList = members.getMembers
       const results = ref(memberList)
+      const flipPage = ref(navigation.getFlipPage)
+      
+      const search = (val) => {
+        members.find(val)
+      }
       
       return {
+        search,
         BASE_URL,
         navigation,
         members,
@@ -58,7 +71,8 @@ export default defineComponent({
         peopleIcon,
         closeIcon,
         plusIcon,
-        checkIcon
+        checkIcon,
+        flipPage
       }
     },
     data() {
@@ -67,23 +81,9 @@ export default defineComponent({
         btnColor: 'success'
       }
     },
-    beforeMount() {
-      this.navigation.$patch({
-        page: "members"
-      })
-      const self = this
-        axios.get(this.BASE_URL+'/person/all')
-          .then(function(response) {
-            self.members.$patch({
-              members:  response.data
-            })
-        })
-      this.results = this.members.getMembers
-    },
     methods: {
       searchMember(event) {
-        const query = event.target.value.toLowerCase();
-        this.results = this.memberList.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query));
+        this.results = this.members.getSearchResult(event.target.value)
       },
       cancel() {
         //this.$refs.modal.$el.dismiss(null, 'cancel');

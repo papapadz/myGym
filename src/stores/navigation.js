@@ -7,6 +7,7 @@ export const navigationStore = defineStore('navigation', {
         isNewFormShown: false
       },
       flip: {
+        data: null,
         page: 1
       }
     }),

@@ -1,64 +1,38 @@
 <template>
     <ion-grid>
       <ion-row>
-        <ion-col v-for="card in dataProp" :key="card.id">
-          
+        <ion-col v-for="card in dataProp" :key="card.id" size="12" size-md="6" size-lg="4">
           <CardProfile :data="card" />
-          <Card :data="card" @click="viewCard(card.id)" v-if="false"/>
         </ion-col>
       </ion-row>
-      <ion-content>
-        <ion-modal :is-open="isOpen">
-          <ion-header>
-            <ion-toolbar>
-              <ion-title>Modal</ion-title>
-              <ion-buttons slot="end">
-                <ion-button @click="setOpen(false)">Close</ion-button>
-              </ion-buttons>
-            </ion-toolbar>
-          </ion-header>
-          <ion-content class="ion-padding">
-            <div class="container">
-              <CardProfile />
-              <Card :data="cardSelected" v-if="false" />
-                <WorkoutList />
-            </div>
-          </ion-content>
-        </ion-modal>
-      </ion-content>
     </ion-grid>
 </template>
   
   <script>
-  import { IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton } from '@ionic/vue';
-  import Card from './Card.vue';
+  import { IonGrid, IonRow, IonCol} from '@ionic/vue';
   import CardProfile from '@/components/CardProfile'
   import { defineComponent } from 'vue';  
-  import WorkoutList from './WorkoutList.vue';
   import { navigationStore } from '../stores/navigation';
   import { workoutStore } from '../stores/workout';
-
+  import { membersStore } from '../stores/members';
 
   export default defineComponent({
     name: 'CardList',
     components: {
-      CardProfile, Card, IonGrid, IonRow, IonCol, IonContent, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, WorkoutList
+      CardProfile, IonGrid, IonRow, IonCol
     },
-    // setup() {
-    //   const attendance = attendanceStore()
-    //   return {
-    //     attendance
-    //   }
-    // },
     props: [
       'dataProp'
     ],
     setup() {
       const navigation = navigationStore()
       const workout = workoutStore()
+      const members = membersStore()
+      const membersList = members.getMembers
       return {
         navigation,
-        workout
+        workout,
+        membersList
       }
     },
     data() {

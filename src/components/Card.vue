@@ -11,34 +11,6 @@
         <ion-chip v-if="membership.show" color="warning">{{ membership.expiry }}</ion-chip>
         <ion-chip v-if="navigation.getPage=='attendance'" :color="secondary">{{ membership.timein }}</ion-chip>
       </center>
-      <ion-list v-if="navigation.getPage=='members'">
-        <ion-item-group>
-          <ion-item-divider>
-            <ion-label>
-              MEMBER DETAILS
-            </ion-label>
-          </ion-item-divider>
-
-          <ion-item>
-            <ion-note slot="start">Name: </ion-note>
-            <ion-label>{{ cardData.lastname }}, {{ cardData.firstname }} {{ cardData.middlename }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-note slot="start">Birthday: </ion-note>
-            <ion-label>{{ cardData.birthdate }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-note slot="start">Gender: </ion-note>
-            <ion-label>{{ gender }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-note slot="start">Contact #: </ion-note>
-            <ion-label>{{ cardData.contact_num }}</ion-label>
-          </ion-item>
-        </ion-item-group>
-      </ion-list>
-      
-      <MembershipsVue :member="cardData" />
     </ion-card-content>
   </ion-card>
 </template>
@@ -48,13 +20,12 @@
   import { defineComponent } from 'vue';
   import { navigationStore } from '../stores/navigation';
   import moment from 'moment'
-  import MembershipsVue from './Memberships.vue';
 
   export default defineComponent({
     name: 'CardItem',
     props: ['data'],
     components: {
-      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip, MembershipsVue
+      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip
     },
     setup() {
       const navigation = navigationStore()
@@ -113,8 +84,6 @@ ion-card {
   max-width: 400px;
   margin: 0 auto;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-  border-radius: 5px;
 }
 
 ion-card img {

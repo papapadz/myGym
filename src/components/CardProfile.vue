@@ -1,333 +1,185 @@
 <template>
-        <ion-card>
-            <ion-card-header color="success">
-                <ion-button size="small" shape="round"><ion-icon :icon="schoolIcon"></ion-icon></ion-button>
-            </ion-card-header>
-            <div v-if="flip==1" class="card">
-              <div class="additional">
-                <div class="user-card">
-                    <div class="level center">
-                        {{ cardData.card_number }}
-                      </div>
-                  <div class="points center">
-                    <ion-chip @click="flipPage" :color="membership.color">{{ membership.text }}</ion-chip>
-                  </div>
-                  <img :src="cardData.img.url" alt="Profile Image" >
-                </div>
-                <div class="more-info">
-                  <h1>{{ cardData.lastname }} {{ cardData.firstname }}</h1>
-                  <div class="coords">
-                    <span>{{ cardData.birthdate }}</span>
-                    <span>{{ cardData.category.category }}</span>
-                  </div>
-                  <div class="coords">
-                    <span>{{ cardData.contact_num }}</span>
-                    <span>{{ cardData.gender }}</span>
-                  </div>
-                  <div class="coords">
-                    <span>{{ cardData.address.name }}, {{ cardData.address.city.name }}, {{ cardData.address.province.name }}</span>
-                  </div>
-                  <div class="stats">
-                    <div>
-                      <div class="title">Days Left</div>
-                      <i class="fa fa-gamepad"></i>
-                      <div class="value">27</div>
-                    </div>
-                    <div>
-                      <div class="title">Visits</div>
-                      <i class="fa fa-trophy"></i>
-                      <div class="value">{{ cardData.attendance.length }}</div>
-                    </div>
-                    <div>
-                      <div class="title">Pals</div>
-                      <i class="fa fa-group"></i>
-                      <div class="value">123</div>
-                    </div>
-                    <div>
-                      <div class="title">Coffee</div>
-                      <i class="fa fa-coffee"></i>
-                      <div class="value infinity">∞</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="general">
-                <h1>{{ cardData.firstname }}</h1>
-                <p>Member since {{ membership.joinDate }}</p>
-                <p v-if="this.membership.show">Membership will expire on {{ membership.expiry }}</p>
-                <p v-if="(this.cardData.attendance.length>0)">Last visit at {{ membership.attendanceLastDate }}</p>
-                <span class="more">Mouse over the card for more info</span>
-              </div>
-            </div>
-            <SelectMembershipModalVue v-if="flip==2" :data="cardData" :isEnrolled="membership.show"/>
-        </ion-card>
+  <ion-card>
+    <div v-if="!flipped">
+      <div class="card-image">
+        <img :src="cardData.img.url">
+      </div>
+      <ion-card-content>
+        <ion-card-title>
+          {{ cardData.card_number }}
+        </ion-card-title>
+        <ion-card-subtitle>
+          {{ cardData.lastname }}, {{ cardData.firstname }} {{ cardData.middlename }}
+        </ion-card-subtitle>
+        <ion-chip>
+          <ion-icon name="pin" color="primary"></ion-icon>
+          <ion-label>Members since {{ getMembership.joinDate }}</ion-label>
+          <ion-icon name="close"></ion-icon>
+        </ion-chip>
+        <div class="fb-like" data-href="https://example.com/my-page" data-layout="button" data-action="like" data-size="small" data-share="true"></div>
+      </ion-card-content>
+      <ion-button fill="clear" @click="flipPage">View More</ion-button>
+      <ion-button fill="clear">Action 2</ion-button>
+    </div>
+    <div v-else>
+      <ion-card-content>
+        <ion-card-title>
+          {{ cardData.card_number }}
+        </ion-card-title>
+        <ion-card-subtitle>
+          {{ cardData.lastname }}, {{ cardData.firstname }} {{ cardData.middlename }}
+        </ion-card-subtitle>
+        <ion-grid>
+          <ion-row>
+            <ion-col>{{ cardData.birthdate }}</ion-col>
+            <ion-col>{{ cardData.gender }}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>{{ cardData.contact_num }}</ion-col>
+            <ion-col>{{ cardData.category.category }}</ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+          <ion-fab-button>
+            <ion-icon name="chevron-up-circle"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-list side="top">
+            <ion-fab-button>
+              <ion-icon name="document"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button>
+              <ion-icon name="color-palette"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button>
+              <ion-icon name="globe"></ion-icon>
+            </ion-fab-button>
+          </ion-fab-list>
+        </ion-fab>
+    </div>
+  </ion-card>
 </template>
 <script>
-  import { IonCard, IonChip } from '@ionic/vue';
-  import { defineComponent } from 'vue';
-  import { navigationStore } from '../stores/navigation';
-  import { membersStore } from '../stores/members';
-  import moment from 'moment'
-  import { schoolOutline as schoolIcon } from 'ionicons/icons';
-    import SelectMembershipModalVue from './SelectMembershipModal.vue';
+import { defineComponent } from 'vue';
+import { navigationStore } from '../stores/navigation';
+import { membersStore } from '../stores/members';
+import moment from 'moment'
+import { schoolOutline as schoolIcon } from 'ionicons/icons';
 
-  export default defineComponent({
-    name: 'CardProfile',
-    props: ['data'],
-    components: { SelectMembershipModalVue, IonCard, IonChip },
-    setup() {
-      const navigation = navigationStore()
-    const members = membersStore()
-      return {
-        schoolIcon,
-        navigation,
-        members
+export default defineComponent({
+name: 'CardProfile',
+props: ['data'],
+components: {  },
+setup() {
+const navigation = navigationStore()
+const members = membersStore()
+const flipData = navigation.getFlipPage
+
+return {
+  schoolIcon,
+  navigation,
+  members,
+  flipData
+}
+},
+beforeMount() {
+console.log(this.navigation.getPage)
+switch(this.navigation.getPage) {
+  case "members":
+    this.cardData = this.data
+    break
+  case "attendance":
+    this.cardData = this.data.person
+    this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
+    break
+}
+if(this.cardData.gender=='M')
+  this.cardData.gender = 'Male'
+else
+  this.cardData.gender = 'Female'
+if(Object.is(this.cardData.active_membership,null)) {
+  if(this.navigation.getPage=="members") {
+    this.membership.text = 'Not enrolled'
+    this.membership.color = 'danger'
+  }
+  else
+    this.membership.text = 'Walk-In'
+} else {
+  this.membership.show = true
+  this.membership.color = 'success'
+  this.membership.text = this.cardData.active_membership.membership_category.membership_name
+  this.membership.expiry = moment(this.cardData.active_membership.expiry_date).format('LL')
+}
+this.membership.joinDate = moment(this.cardData.created_at).format('LL')
+if(this.cardData.attendance.length>0)
+  this.membership.attendanceLastDate = moment(this.cardData.attendance[0].attendance_date).format('LL')
+this.cardData.birthdate = moment(this.cardData.birthdate).format('LL')
+},
+data() {
+  return {
+      cardData: {},
+      flip: 1,
+      membership: {
+          text: '',
+          color: 'primary',
+          show: false,
+          expiry: '',
+          timein: '',
+          joinDate: '',
+          attendanceLastDate: ''
+      },
+  }
+},
+computed: {
+  getMembership() {
+    return this.membership
+  },
+  flipped() {
+    if(!Object.is(this.flipData.data,null))
+      if(this.flipData.data.card_number==this.cardData.card_number)
+        return true
+    return false
+  }
+},
+methods: {
+  flipPage() {
+    let d = this.cardData
+    let p = 2
+    
+    if(!Object.is(this.flipData.data,null)) {
+      if(this.flipData.data.card_number==this.cardData.card_number) {
+        d = null,
+        p = 1
       }
-    },
-    beforeMount() {
-      console.log(this.navigation.getPage)
-      switch(this.navigation.getPage) {
-        case "members":
-          this.cardData = this.data
-          break
-        case "attendance":
-          this.cardData = this.data.person
-          this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
-          break
-      }
-      if(this.cardData.gender=='M')
-        this.cardData.gender = 'Male'
-      else
-        this.cardData.gender = 'Female'
-
-      if(Object.is(this.cardData.active_membership,null)) {
-        if(this.navigation.getPage=="members") {
-          this.membership.text = 'Not enrolled'
-          this.membership.color = 'danger'
-        }
-        else
-          this.membership.text = 'Walk-In'
-      } else {
-        this.membership.show = true
-        this.membership.color = 'success'
-        this.membership.text = this.cardData.active_membership.membership_category.membership_name
-        this.membership.expiry = moment(this.cardData.active_membership.expiry_date).format('LL')
-      }
-      this.membership.joinDate = moment(this.cardData.created_at).format('LL')
-
-      if(this.cardData.attendance.length>0)
-        this.membership.attendanceLastDate = moment(this.cardData.attendance[0].attendance_date).format('LL')
-
-      this.cardData.birthdate = moment(this.cardData.birthdate).format('LL')
-
-    },
-    data() {
-        return {
-            flip: 1,
-            cardData: {},
-            membership: {
-                text: '',
-                color: 'primary',
-                show: false,
-                expiry: '',
-                timein: '',
-                joinDate: '',
-                attendanceLastDate: ''
-            },
-        }
-    },
-    methods: {
-        flipPage() {
-            if(this.flip==1) {
-                this.members.$patch({
-                    members: this.cardData
-                })
-            
-                this.flip=2
-            }
-            else
-                this.flip=1
-        }
     }
-  })
+      this.navigation.$patch({
+        flip: {
+          data: d,
+          page: p
+        }
+      })
+  }
+}
+})
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Abel');
 
 ion-card {
-    max-width: 500px;
-    margin: 0 auto;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    border-radius: 5px;
-  }
-
-.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
+  max-width: 500px;
+  max-height: 250px;
+  min-width: 300px;
+  min-height: 250px;
 }
 
-.card {
-  width: 450px;
-  height: 250px;
-  background-color: #fff;
-  background: linear-gradient(#f8f8f8, #fff);
-  box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-  margin: 1.5rem;
-}
-
-.card h1 {
-  text-align: center;
-}
-
-.card .additional {
-  position: absolute;
-  width: 150px;
-  height: 100%;
-  background: linear-gradient(#e1f10b, #eeea6e);
-  transition: width 0.4s;
-  overflow: hidden;
-  z-index: 2;
-}
-
-.card.green .additional {
-  background: linear-gradient(#92bCa6, #A2CCB6);
-}
-
-
-.card:hover .additional {
-  width: 100%;
-  border-radius: 0 5px 5px 0;
-}
-
-.card .additional .user-card {
-  width: 150px;
-  height: 100%;
-  position: relative;
+.card-image img {
   float: left;
-}
-
-.card .additional .user-card::after {
-  content: "";
+  border-radius: 50%;
   display: block;
-  position: absolute;
-  top: 10%;
-  right: -2px;
-  height: 80%;
-  border-left: 2px solid rgba(0,0,0,0.025);
-}
-
-.card .additional .user-card .level,
-.card .additional .user-card .points {
-  top: 15%;
-  text-transform: uppercase;
-  font-size: 0.75em;
-  font-weight: bold;
-  padding: 0.125rem 0.75rem;
-  white-space: nowrap;
-}
-
-.card .additional .user-card .points {
-  top: 85%;
-}
-
-.card .additional .user-card svg {
-  top: 50%;
-}
-
-.card .additional .more-info {
-  width: 300px;
-  float: left;
-  position: absolute;
-  left: 150px;
-  height: 100%;
-}
-
-.card .additional .more-info h1 {
-  color: #fff;
-  margin-bottom: 0;
-}
-
-.card.green .additional .more-info h1 {
-  color: #224C36;
-}
-
-.card .additional .coords {
-  margin: 0 1rem;
-  color: #fff;
-  font-size: 1rem;
-}
-
-.card.green .additional .coords {
-  color: #325C46;
-}
-
-.card .additional .coords span + span {
-  float: right;
-}
-
-.card .additional .stats {
-  font-size: 2rem;
-  display: flex;
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  right: 1rem;
-  top: auto;
-  color: #fff;
-}
-
-.card.green .additional .stats {
-  color: #325C46;
-}
-
-.card .additional .stats > div {
-  flex: 1;
-  text-align: center;
-}
-
-.card .additional .stats i {
-  display: block;
-}
-
-.card .additional .stats div.title {
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.card .additional .stats div.value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  line-height: 1.5rem;
-}
-
-.card .additional .stats div.value.infinity {
-  font-size: 2.5rem;
-}
-
-.card .general {
-  width: 300px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  box-sizing: border-box;
-  padding: 1rem;
-  padding-top: 0;
-}
-
-.card .general .more {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  font-size: 0.9em;
+  margin: 0 auto;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  padding: 10px;
 }
 </style>
