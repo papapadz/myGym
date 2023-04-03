@@ -42,17 +42,17 @@
       </ion-card-content>
       <ion-fab slot="fixed" vertical="bottom" horizontal="end">
           <ion-fab-button>
-            <ion-icon name="chevron-up-circle"></ion-icon>
+            <ion-icon :icon="gridOutline"></ion-icon>
           </ion-fab-button>
           <ion-fab-list side="top">
             <ion-fab-button>
-              <ion-icon name="document"></ion-icon>
+              <ion-icon :icon="pencil"></ion-icon>
             </ion-fab-button>
             <ion-fab-button>
-              <ion-icon name="color-palette"></ion-icon>
+              <ion-icon :icon="ribbonOutline"></ion-icon>
             </ion-fab-button>
             <ion-fab-button>
-              <ion-icon name="globe"></ion-icon>
+              <ion-icon :icon="barChart"></ion-icon>
             </ion-fab-button>
           </ion-fab-list>
         </ion-fab>
@@ -64,7 +64,7 @@ import { defineComponent } from 'vue';
 import { navigationStore } from '../stores/navigation';
 import { membersStore } from '../stores/members';
 import moment from 'moment'
-import { schoolOutline as schoolIcon } from 'ionicons/icons';
+import { schoolOutline as schoolIcon, gridOutline, pencil, ribbonOutline, barChart } from 'ionicons/icons';
 
 export default defineComponent({
 name: 'CardProfile',
@@ -78,6 +78,10 @@ const flipData = navigation.getFlipPage
 return {
   schoolIcon,
   navigation,
+  gridOutline,
+  ribbonOutline,
+  pencil,
+  barChart,
   members,
   flipData
 }

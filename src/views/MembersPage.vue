@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-      <ion-header :translucent="true">
+    <ion-content>
+      
+      <ProfilePage />
+    </ion-content>
+      <ion-content v-if="1==0">
+        <ion-header :translucent="true">
         <ion-toolbar>
           <ion-title>Blank</ion-title>
         </ion-toolbar>
@@ -28,6 +33,7 @@
         </ion-content>
           <SelectMembershipModal v-if="flipPage.page==3"/>
       </ion-content>
+      </ion-content>
   </ion-page>
 </template>
 
@@ -36,6 +42,7 @@ import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, Ion
 import { defineComponent, ref } from 'vue';
 import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
+import ProfilePage from './ProfilePage.vue';
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
@@ -45,7 +52,7 @@ import SelectMembershipModal from '../components/SelectMembershipModal.vue';
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      SelectMembershipModal, CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon
+      SelectMembershipModal, CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, ProfilePage
     },
     setup() {
       const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
