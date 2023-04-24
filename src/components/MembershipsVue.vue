@@ -3,7 +3,7 @@
       <ion-item-group v-for="group in groups" :key="group.year + group.month">
         <ion-item-divider color="primary">{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
         <ion-item v-for="date in group.dates" :key="date.id">
-          {{ formatDate(date.date) }}
+          {{ formatDate(date.date) }} 
         </ion-item>
       </ion-item-group>
     </ion-list>
@@ -11,10 +11,10 @@
   
   <script>
   export default {
-    props: ['attendanceData'],
+    props: ['membershipData'],
     data() {
       return {
-        dates: this.attendanceData,
+        dates: this.memberShipData,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
       }
     },
@@ -33,6 +33,7 @@
             } else {
                 acc.push({ year, month, dates: [curr] })
             }
+            console.log(acc)
             return acc
             }, [])
         }
@@ -45,7 +46,7 @@
         const day = date.getDate()
         const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
         return `${month} ${day}, ${year}, ${time}`
-      }
+      },
     }
   }
   </script>

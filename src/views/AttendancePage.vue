@@ -12,7 +12,11 @@
                 <ion-title style="text-align: right;">{{ timestamp }}</ion-title>
             </ion-toolbar>
         </ion-header>
-        <CardList :dataProp="attendance.getAttendance" v-if="!isShown"/>
+        <ion-item-group v-for="attendanceItem in attendance.getAttendance" :key="attendanceItem.id">
+            <ion-item v-if="!isShown">
+                <ion-label>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</ion-label>
+            </ion-item>
+        </ion-item-group>
         <div class="card-container">
             <ion-card @click="setFocus" v-if="isShown">
                     <ion-card-header>
@@ -41,7 +45,6 @@
     import { IonPage, IonFab, IonFabButton, IonIcon, IonContent } from '@ionic/vue'
     import { defineComponent } from 'vue';
     import { people as peopleIcon, close as closeIcon } from 'ionicons/icons';
-    import CardList from '../components/CardList.vue'
     import { attendanceStore } from '../stores/attendance';
     import { navigationStore } from '../stores/navigation';
     import moment from 'moment'
@@ -49,7 +52,7 @@
     export default defineComponent({
         name: 'AttendancePage',
         components: {
-            IonPage, IonFab, IonFabButton, IonIcon, IonContent, CardList
+            IonPage, IonFab, IonFabButton, IonIcon, IonContent
         },
         data() {
             return {

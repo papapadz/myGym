@@ -8,33 +8,43 @@
 
       <ProfilePage v-if="flipPage.page==3" />
       <ion-content v-else :fullscreen="true">
-        <ion-header collapse="condense">
-          <ion-toolbar>
-            <ion-title size="large"></ion-title>
-          </ion-toolbar>
-        </ion-header>
-        
-        <ion-content>
+          <ion-header collapse="condense">
+            <ion-toolbar>
+              <ion-title size="large"></ion-title>
+            </ion-toolbar>
+            <ion-button @click="showAddForm"></ion-button>
+          </ion-header>
           <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
           <ion-content v-else>
             <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
-            <CardList :dataProp="members.getSearchResult"/>
+            <!-- <CardList :dataProp="members.getSearchResult"/> -->
+            <ion-grid>
+              <ion-row class="ion-justify-content-start">
+                <ion-col size="12" size-sm="3" v-for="memberItem in members.getSearchResult" :key="memberItem.id">
+                  <ion-card>
+                <img class="card-image" :src="memberItem.img.url" alt="Profile Image" />
+                <ion-card-header>
+                  <ion-card-subtitle>
+                    {{ memberItem.card_number }}
+                  </ion-card-subtitle>
+                  <ion-card-title>{{ memberItem.lastname }}, {{ memberItem.firstname }}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-item><button @click="openProfile(memberItem)">View Profile</button></ion-item>
+                </ion-card-content>
+              </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </ion-content>
-          
-          <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
-            <ion-fab-button expand="block" @click="showAddForm" :color="btnColor">
-                <ion-icon :icon="btnIcon" />
-            </ion-fab-button>
-          </ion-fab>
         </ion-content>
       </ion-content>
-    </ion-content>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar  } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
-import CardList from '../components/CardList.vue';
+//import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
 import ProfilePage from './ProfilePage.vue';
 import { membersStore } from '../stores/members';
@@ -45,10 +55,9 @@ import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonFab, IonFabButton, IonIcon, ProfilePage
+      NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, ProfilePage
     },
     setup() {
-      const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
       const navigation = navigationStore()
       const members = membersStore()
       members.getAllMembers()
@@ -63,7 +72,6 @@ export default defineComponent({
       
       return {
         search,
-        BASE_URL,
         navigation,
         members,
         memberList,
@@ -112,7 +120,31 @@ export default defineComponent({
             isNewFormShown: !this.navigation.getMemberPageSettings.isNewFormShown
           }
         })
+      },
+      openProfile(memberData) {
+        this.navigation.setAttendance(memberData.id)
+        this.navigation.setMembership(memberData.id)
+        this.navigation.$patch({
+          flip: {
+            data: memberData,
+            page: 3
+          }
+        })
+        
       }
     }
 });
 </script>
+
+<style>
+.card-image {
+  float: center;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  padding: 10px;
+}
+</style>

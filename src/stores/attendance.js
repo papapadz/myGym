@@ -17,17 +17,19 @@ export const attendanceStore = defineStore('attendance', {
     actions: {
       getAttendanceToday() {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/mobile/attendance/today')
+        axios.get(BASE_URL+'/attendance/today')
           .then(function(response) {
             self.attendance = response.data
         })
       },
       add(cardNum) {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/mobile/attendance/new',{ params: {
+        axios.get(BASE_URL+'/attendance/new',{ params: {
             card_num: cardNum
         }}).then(function(response) {
             self.attendance.push(response.data)
+        }).error(function() {
+          alert('No card number found!')
         })
       }
     }

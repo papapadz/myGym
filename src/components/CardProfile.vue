@@ -1,8 +1,7 @@
 <template>
-  <ion-content>
-    <ion-card>
+  <ion-card>
     <div v-if="!flipped">
-      <div class="card-image">
+      <div class="profile-image">
         <img :src="cardData.img.url">
       </div>
       <ion-card-content>
@@ -58,7 +57,6 @@
         </ion-fab>
     </div>
   </ion-card>
-  </ion-content>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -88,37 +86,41 @@ return {
 }
 },
 beforeMount() {
-console.log(this.navigation.getPage)
-switch(this.navigation.getPage) {
-  case "members":
-    this.cardData = this.data
-    break
-  case "attendance":
-    this.cardData = this.data.person
-    this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
-    break
-}
-if(this.cardData.gender=='M')
-  this.cardData.gender = 'Male'
-else
-  this.cardData.gender = 'Female'
-if(Object.is(this.cardData.active_membership,null)) {
-  if(this.navigation.getPage=="members") {
-    this.membership.text = 'Not enrolled'
-    this.membership.color = 'danger'
+  console.log(this.navigation.getPage)
+  switch(this.navigation.getPage) {
+    case "members":
+      this.cardData = this.data
+      break
+    case "attendance":
+      this.cardData = this.data.person
+      this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
+      break
   }
+  if(!Object.is(this.cardData,undefined) || !Object.is(this.cardData,null)) {
+    if(this.cardData.gender=='M')
+    this.cardData.gender = 'Male'
   else
-    this.membership.text = 'Walk-In'
-} else {
-  this.membership.show = true
-  this.membership.color = 'success'
-  this.membership.text = this.cardData.active_membership.membership_category.membership_name
-  this.membership.expiry = moment(this.cardData.active_membership.expiry_date).format('LL')
-}
-this.membership.joinDate = moment(this.cardData.created_at).format('LL')
-if(this.cardData.attendance.length>0)
-  this.membership.attendanceLastDate = moment(this.cardData.attendance[0].attendance_date).format('LL')
-this.cardData.birthdate = moment(this.cardData.birthdate).format('LL')
+    this.cardData.gender = 'Female'
+    this.membership.joinDate = moment(this.cardData.created_at).format('LL')
+    this.cardData.birthdate = moment(this.cardData.birthdate).format('LL')
+  
+    if(!Object.is(this.cardData.active_membership,undefined) || !Object.is(this.cardData.active_membership,null)) {
+      if(this.navigation.getPage=="members") {
+        this.membership.text = 'Not enrolled'
+        this.membership.color = 'danger'
+      }
+      else
+        this.membership.text = 'Walk-In'
+    } else {
+      this.membership.show = true
+      this.membership.color = 'success'
+      this.membership.text = this.cardData.active_membership.membership_category.membership_name
+      this.membership.expiry = moment(this.cardData.active_membership.expiry_date).format('LL')
+    }
+
+    if(!Object.is(this.cardData.attendance,undefined) || !Object.is(this.cardData.attendance,null))
+      this.membership.attendanceLastDate = moment(this.cardData.attendance[0].attendance_date).format('LL')
+  }
 },
 data() {
   return {
@@ -185,7 +187,7 @@ ion-card {
   min-height: 250px;
 }
 
-.card-image img {
+.profile-image img {
   float: left;
   border-radius: 50%;
   display: block;

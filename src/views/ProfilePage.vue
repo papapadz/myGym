@@ -82,7 +82,12 @@
                                 </ion-item-group>
                             </ion-list>
                         </ion-page>
-                        
+                        <ion-page v-if="selectedCard.title=='Attendance'">
+                            <AttendanceList :attendanceData="navigation.getFlipAttendance" />
+                        </ion-page>
+                        <ion-page v-if="selectedCard.title=='Membership'">
+                            <MembershipsVue :membershipData="navigation.getFlipMemberships" />
+                        </ion-page>
                     </ion-col>
                 </ion-row>
             </ion-grid>  
@@ -93,12 +98,13 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { navigationStore } from '../stores/navigation';
-//import AttendanceList from '../components/AttendanceList.vue';
+import { navigationStore } from '../stores/navigation'
+import AttendanceList from '../components/AttendanceList.vue';
+import MembershipsVue from '../components/MembershipsVue.vue';
 
 export default defineComponent({
     components: {
-        
+        AttendanceList, MembershipsVue
     },
     data() {
         return {
@@ -120,7 +126,7 @@ export default defineComponent({
                 content: 'This is the content for Card 1.',
                 },
                 {
-                title: 'Enrollment',
+                title: 'Membership',
                 image: 'https://img.freepik.com/premium-vector/id-card-icon-comic-style-identity-tag-vector-cartoon-illustration-white-isolated-background-driver-licence-business-concept-splash-effect_157943-6347.jpg',
                 content: 'This is the content for Card 2.',
                 }
@@ -130,7 +136,7 @@ export default defineComponent({
     setup() {
         const navigation = navigationStore()
         const flipData = navigation.getFlipPage
-
+        
         return {
             navigation,
             flipData
