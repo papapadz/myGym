@@ -1,5 +1,6 @@
 <template>
-  <ion-card>
+  <ion-content>
+    <ion-card>
     <div v-if="!flipped">
       <div class="card-image">
         <img :src="cardData.img.url">
@@ -18,8 +19,7 @@
         </ion-chip>
         <div class="fb-like" data-href="https://example.com/my-page" data-layout="button" data-action="like" data-size="small" data-share="true"></div>
       </ion-card-content>
-      <ion-button fill="clear" @click="flipPage">View More</ion-button>
-      <ion-button fill="clear">Action 2</ion-button>
+      <ion-button fill="clear" @click="openProfile">View Profile</ion-button>
     </div>
     <div v-else>
       <ion-card-content>
@@ -52,12 +52,13 @@
               <ion-icon :icon="ribbonOutline"></ion-icon>
             </ion-fab-button>
             <ion-fab-button>
-              <ion-icon :icon="barChart"></ion-icon>
+              <ion-icon :icon="barChart" @click="openProfile"></ion-icon>
             </ion-fab-button>
           </ion-fab-list>
         </ion-fab>
     </div>
   </ion-card>
+  </ion-content>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -162,6 +163,14 @@ methods: {
           page: p
         }
       })
+  },
+  openProfile() {
+    this.navigation.$patch({
+      flip: {
+        data: this.cardData,
+        page: 3
+      }
+    })
   }
 }
 })

@@ -1,55 +1,156 @@
 <template>
-    <ion-page>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>
-            Profile Page
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
+      <ion-page>
         <div class="profile">
-          <div class="profile-banner" style="background-image: url('https://via.placeholder.com/600x200');">
-            <img class="profile-image" src="https://via.placeholder.com/150" alt="Profile Image" />
-            <h2 class="profile-name">{{ user.name }}</h2>
-            <p class="profile-status">{{ user.status }}</p>
+          <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
+            <img :class="isActive" :src="flipData.data.img.url" />
+            <h2 class="profile-name">{{ flipData.data.card_number }}</h2>
           </div>
           <div class="profile-info">
-            <p><strong>Location:</strong> {{ user.location }}</p>
-            <p><strong>Birthday:</strong> {{ user.birthday }}</p>
+            <ion-grid>
+                <ion-row>
+                    <ion-col>
+                        <p><strong>Last Name:</strong> {{ flipData.data.lastname }}</p>
+            <p><strong>First Name:</strong> {{ flipData.data.firstname }}</p>
+            <p><strong>Middle Name:</strong> {{ flipData.data.middlename }}</p>
+                    </ion-col>
+                    <ion-col class="ion-text-end">
+                        <p><strong>Birthday:</strong> {{ flipData.data.birthdate }}</p>
+            <p><strong>Age:</strong> {{ flipData.data.firstname }}</p>
+            <p><strong>Middle Name:</strong> {{ flipData.data.middlename }}</p>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
           </div>
           <div class="profile-timeline">
-            <div class="timeline-post">
-              <img class="timeline-image" src="https://via.placeholder.com/400x300" alt="Post Image" />
-              <p class="timeline-text">{{ user.timeline[0].text }}</p>
-            </div>
+            <ion-grid>
+                <ion-row>
+                 <!-- Card list menu -->
+                    <ion-col size="12" size-md="4">
+                        <ion-list class="card-list">
+                        <ion-item button v-for="(item, index) in cardList" :key="index" @click="selectedCard = item" :class="{ 'selected-item': selectedCard.title === item.title }">
+                                <ion-thumbnail slot="start">
+                                    <img :src="item.image" />
+                                </ion-thumbnail>
+                                <ion-label>{{ item.title }}</ion-label>
+                                </ion-item>
+                        </ion-list>
+                    </ion-col>
+    
+                    <!-- Dynamic card content -->
+                    <ion-col size="12" size-md="8" v-if="selectedCard">
+                        <ion-page v-if="selectedCard.title=='Profile'">
+                            <ion-list lines="none">
+                                <ion-item-group>
+                                    <ion-item-divider>
+                                        <ion-label>
+                                            Personal Information
+                                        </ion-label>
+                                    </ion-item-divider>
+                                        <ion-item>
+                                            <ion-label>
+                                                Name: {{ flipData.data.lastname }}, {{ flipData.data.firstname }} {{ flipData.data.middlename }}
+                                            </ion-label>
+                                        </ion-item>
+                                        <ion-item>
+                                            <ion-label>
+                                                Birthday: {{ flipData.data.birthdate }}
+                                            </ion-label>
+                                        </ion-item>
+                                        <ion-item>
+                                            <ion-label>
+                                                Gender: {{ flipData.data.gender }}
+                                            </ion-label>
+                                        </ion-item>
+                                        <ion-item>
+                                            <ion-label>
+                                                Address: {{ flipData.data.address.name }}, {{ flipData.data.address.city.name }}, {{ flipData.data.address.province.name }}
+                                            </ion-label>
+                                        </ion-item>
+                                </ion-item-group>
+
+                                <ion-item-group>
+                                    <ion-item-divider>
+                                        <ion-label>
+                                            Contact Information
+                                        </ion-label>
+                                    </ion-item-divider>
+                                    <ion-item>
+                                            <ion-label>
+                                                Phone Number: {{ flipData.data.contact_num }}
+                                            </ion-label>
+                                        </ion-item>
+                                </ion-item-group>
+                            </ion-list>
+                        </ion-page>
+                        
+                    </ion-col>
+                </ion-row>
+            </ion-grid>  
           </div>
         </div>
-      </ion-content>
-    </ion-page>
+      </ion-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
+import { navigationStore } from '../stores/navigation';
+//import AttendanceList from '../components/AttendanceList.vue';
+
 export default defineComponent({
+    components: {
+        
+    },
     data() {
         return {
-            user: {
-                name: '',
-                location: '',
-                birthday: '',
-                timeline: [
-                    {
-                        text: ''
-                    }
-                ]
-            }
+            selectedIndex: 0,
+            selectedCard: {
+                title: 'Profile',
+                image: 'https://law.ucdavis.edu/sites/g/files/dgvnsk10866/files/styles/sf_profile/public/media/images/website-user-icon-01b.png?h=b4f6d533&itok=J9JTcFmm',
+                content: 'This is the content for Card 3.',
+            },
+            cardList: [
+                {
+                title: 'Profile',
+                image: 'https://law.ucdavis.edu/sites/g/files/dgvnsk10866/files/styles/sf_profile/public/media/images/website-user-icon-01b.png?h=b4f6d533&itok=J9JTcFmm',
+                content: 'This is the content for Card 3.',
+                },
+                {
+                title: 'Attendance',
+                image: 'https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png',
+                content: 'This is the content for Card 1.',
+                },
+                {
+                title: 'Enrollment',
+                image: 'https://img.freepik.com/premium-vector/id-card-icon-comic-style-identity-tag-vector-cartoon-illustration-white-isolated-background-driver-licence-business-concept-splash-effect_157943-6347.jpg',
+                content: 'This is the content for Card 2.',
+                }
+            ],
         }
+    },
+    setup() {
+        const navigation = navigationStore()
+        const flipData = navigation.getFlipPage
+
+        return {
+            navigation,
+            flipData
+        }
+    },
+    computed: {
+        isActive() {
+            if(!Object.is(this.flipData.data.active_membership,null))
+                return 'profile-image-active'
+            return 'profile-image-inactive'
+        }
+    },
+    mounted() {
+        console.log(this.flipData)
     }
 })
 </script>
 
 <style>
+
 .profile {
   display: flex;
   flex-direction: column;
@@ -73,9 +174,26 @@ export default defineComponent({
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  border: 5px solid white;
   position: absolute;
   bottom: -75px;
+}
+
+.profile-image-active {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -75px;
+    border: 5px solid rgb(0, 102, 255);
+}
+
+.profile-image-inactive {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -75px;
+    border: 5px solid rgb(255, 255, 255);
 }
 
 .profile-name {
@@ -99,29 +217,36 @@ export default defineComponent({
 .profile-timeline {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.timeline-post {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
+.card-list {
+  margin: 1rem;
 }
 
-.timeline-image {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  margin-bottom: 1rem;
+.card-list ion-item {
+  --ripple-color: var(--ion-color-primary);
 }
 
-.timeline-text {
-  width: 100%;
-  text-align: center;
-  font-size: 1.2rem;
+.card-list ion-item.activated {
+  --background: var(--ion-color-light);
+}
+
+/* Dynamic card content styles */
+.dynamic-card {
+  margin: 1rem auto;
+  max-width: 90%;
+}
+
+.dynamic-card ion-card {
+  height: 100%;
+}
+
+.selected-item {
+  font-weight: bold;
 }
 </style>

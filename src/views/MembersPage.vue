@@ -1,17 +1,13 @@
 <template>
-  <ion-page>
     <ion-content>
-      
-      <ProfilePage />
-    </ion-content>
-      <ion-content v-if="1==0">
         <ion-header :translucent="true">
         <ion-toolbar>
           <ion-title>Blank</ion-title>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content :fullscreen="true">
+      <ProfilePage v-if="flipPage.page==3" />
+      <ion-content v-else :fullscreen="true">
         <ion-header collapse="condense">
           <ion-toolbar>
             <ion-title size="large"></ion-title>
@@ -31,14 +27,12 @@
             </ion-fab-button>
           </ion-fab>
         </ion-content>
-          <SelectMembershipModal v-if="flipPage.page==3"/>
       </ion-content>
-      </ion-content>
-  </ion-page>
+    </ion-content>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
 import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
@@ -46,13 +40,12 @@ import ProfilePage from './ProfilePage.vue';
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
-import SelectMembershipModal from '../components/SelectMembershipModal.vue';
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      SelectMembershipModal, CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonPage, IonSearchbar, IonFab, IonFabButton, IonIcon, ProfilePage
+      CardList, NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonFab, IonFabButton, IonIcon, ProfilePage
     },
     setup() {
       const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'

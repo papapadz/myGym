@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 
 export const attendanceStore = defineStore('attendance', {
     state: () => ({ 
       attendance: [],
     }),
     getters: {
-      getAttendance: (state) => state.attendance
+      getAttendance: (state) => state.attendance,
+      getAttendanceByUserID: () => (id) => {
+        return axios.get(BASE_URL+'/attendance/list/user',{ person_id:id }).then((response) => {
+          return response.data
+        })
+      }
     },
     actions: {
       getAttendanceToday() {

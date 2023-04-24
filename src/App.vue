@@ -34,9 +34,7 @@
       <ion-title>Admin</ion-title>
     </ion-toolbar>
   </ion-header>
-
     <ion-router-outlet id="main-content"></ion-router-outlet>
-
 </template>
 
 <script>
@@ -63,6 +61,7 @@ export default defineComponent({
   },
   setup() {
       const navigation = navigationStore()
+      
       return {
         navigation
       }
@@ -78,6 +77,13 @@ export default defineComponent({
     navigate(page) {
       this.navigation.$patch({
         page: page
+      })
+
+      this.navigation.$patch({
+        flip: {
+          data: null,
+          page:1
+        }
       })
     }
   }
