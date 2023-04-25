@@ -122,8 +122,9 @@ export default defineComponent({
         })
       },
       openProfile(memberData) {
-        this.navigation.setAttendance(memberData.id)
-        this.navigation.setMembership(memberData.id)
+        //this.navigation.setAttendance(memberData.id)
+        //this.navigation.setMembership(memberData.id)
+        this.navigation.setFlippedProfile(memberData.id)
         this.navigation.$patch({
           flip: {
             data: memberData,

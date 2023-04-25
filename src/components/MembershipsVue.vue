@@ -1,41 +1,76 @@
 <template>
-    <ion-list>
-      <ion-item-group v-for="group in groups" :key="group.year + group.month">
-        <ion-item-divider color="primary">{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
-        <ion-item v-for="date in group.dates" :key="date.id">
-          {{ formatDate(date.date) }} 
-        </ion-item>
-      </ion-item-group>
+  <ion-content>
+      <ion-list>
+        <ion-item-group>
+          <ion-item-divider>Memberships</ion-item-divider>
+          <ion-item detail="true" lines="none" v-for="membershipItem in this.membershipData" :key="membershipItem.id">
+            <ion-icon v-if="this.isActive(membershipItem.expiry_date)" color="primary" :icon="star" slot="start"></ion-icon>
+            <ion-icon v-else color="disabled" :icon="star" slot="start"></ion-icon>
+            
+            <ion-label>
+              <h3>{{ membershipItem.membership_category.membership_name }}</h3>
+              <p>{{ membershipItem.created_at }} to {{ membershipItem.expiry_date }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-item-group>
     </ion-list>
-  </template>
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button color="success" id="open-modal" expand="block">
+        <ion-icon :icon="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-modal ref="modal" trigger="open-modal" @willDismiss="onWillDismiss">
+      <ion-content class="ion-padding">
+       
+          <ion-radio-group value="strawberries">
+            <ion-radio value="grapes">Grapes</ion-radio><br/>
+            <ion-radio value="strawberries">Strawberries</ion-radio><br />
+            <ion-radio value="pineapple">Pineapple</ion-radio><br />
+            <ion-radio value="cherries">Cherries</ion-radio>
+          </ion-radio-group>
+      </ion-content>
+    </ion-modal>
+  </ion-content>
+</template>
   
   <script>
-  export default {
+  import { star, add } from 'ionicons/icons';
+  import { defineComponent } from 'vue';
+  import moment from 'moment'
+
+  export default defineComponent({
     props: ['membershipData'],
     data() {
       return {
-        dates: this.memberShipData,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
       }
     },
+    setup() {
+      return { star, add };
+    },
     computed: {
         groups() {
-            if (!this.dates || this.dates.length === 0) {
+            if (!this.membershipData || this.membershipData.length === 0) {
                 return []
             }
-            const arr = this.dates.map(date => ({ id: date.id, date: new Date(date.created_at) }))
+            const arr = this.membershipData.map(obj => ({ id: obj.id, date: new Date(obj.created_at), object: obj }))
+            console.log(arr)
             return arr.reduce((acc, curr) => {
             const year = curr.date.getFullYear()
             const month = curr.date.getMonth() + 1
             const exists = acc.find(a => a.year === year && a.month === month)
             if (exists) {
-                exists.dates.push(curr)
+                exists.membershipData.push(curr)
             } else {
-                acc.push({ year, month, dates: [curr] })
+                acc.push({ year, month, membershipData: [curr] })
             }
             console.log(acc)
             return acc
             }, [])
+        },
+        getMembershipDetails(id) {
+          return this.navigation.getFlipMembershipsById(id)
         }
     },
     methods: {
@@ -47,7 +82,32 @@
         const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
         return `${month} ${day}, ${year}, ${time}`
       },
+      isActive(expiry_date) {
+          
+          if(moment().isBefore(moment(expiry_date)))
+            return true
+          else
+            return false
+      },
+      cancel() {
+        this.$refs.modal.$el.dismiss(null, 'cancel');
+      },
+      confirm() {
+        const name = this.$refs.input.$el.value;
+        this.$refs.modal.$el.dismiss(name, 'confirm');
+      },
+      onWillDismiss(ev) {
+        if (ev.detail.role === 'confirm') {
+          this.message = `Hello, ${ev.detail.data}!`;
+        }
+      }
     }
-  }
+  })
   </script>
+
+  <style>
+  .success {
+    background-color: lime;
+  }
+  </style>
   

@@ -1,7 +1,7 @@
 <template>
     <ion-list>
       <ion-item-group v-for="group in groups" :key="group.year + group.month">
-        <ion-item-divider color="primary">{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
+        <ion-item-divider>{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
         <ion-item v-for="date in group.dates" :key="date.id">
           {{ formatDate(date.date) }}
         </ion-item>

@@ -19,9 +19,25 @@ export const navigationStore = defineStore('navigation', {
       getMemberPageSettings: (state) => state.members,
       getFlipPage: (state) => state.flip,
       getFlipAttendance: (state) => state.flipAttendance,
-      getFlipMemberships: (state) => state.flipMemberships
+      getFlipMemberships: (state) => state.flipMemberships,
+      getFlipMembershipsById: (state) => (id) => {
+        return state.flipMemberships.filter(d => d.id == id);
+      }
     },
     actions: {
+      setFlippedProfile(personID) {
+        const self = this
+        axios.get(BASE_URL+'/person/profile/filter', {
+          params: {
+            personID: personID
+          }
+        })
+        .then(function(response) {
+          
+          self.flipAttendance = response.data.attendance
+          self.flipMemberships = response.data.memberships
+        })
+      },
       setAttendance(personID) {
         const self = this
         axios.get(BASE_URL+'/person/attendance', {
