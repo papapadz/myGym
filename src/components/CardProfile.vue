@@ -18,7 +18,6 @@
         </ion-chip>
         <div class="fb-like" data-href="https://example.com/my-page" data-layout="button" data-action="like" data-size="small" data-share="true"></div>
       </ion-card-content>
-      <ion-button fill="clear" @click="openProfile">View Profile</ion-button>
     </div>
     <div v-else>
       <ion-card-content>

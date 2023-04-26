@@ -12,7 +12,8 @@ export const navigationStore = defineStore('navigation', {
         page: 1,
       },
       flipAttendance: [],
-      flipMemberships: []
+      flipMemberships: [],
+      isLoading: false
     }),
     getters: {
       getPage: (state) => state.page,
@@ -22,7 +23,8 @@ export const navigationStore = defineStore('navigation', {
       getFlipMemberships: (state) => state.flipMemberships,
       getFlipMembershipsById: (state) => (id) => {
         return state.flipMemberships.filter(d => d.id == id);
-      }
+      },
+      getIsLoading: (state) => state.isLoading
     },
     actions: {
       setFlippedProfile(personID) {
@@ -59,6 +61,20 @@ export const navigationStore = defineStore('navigation', {
         .then(function(response) {
           self.flipMemberships = response.data
         })
+      },
+      async setMemberAttendanceDetails(attendanceID) {
+        const self = this
+        this.isLoading = true
+        try {
+          await axios.get(BASE_URL+'/attendance/details/'+attendanceID)
+          .then(function(response) {
+            self.flipAttendance = response.data
+          })
+        } catch(error) {
+          console.log(error)
+        } finally {
+          this.isLoading = false
+        }
       }
     }
 })

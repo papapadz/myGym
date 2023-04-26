@@ -22,15 +22,17 @@ export const attendanceStore = defineStore('attendance', {
             self.attendance = response.data
         })
       },
-      add(cardNum) {
+      async add(cardNum) {
         const self = this
-        axios.get(BASE_URL+'/attendance/new',{ params: {
-            card_num: cardNum
-        }}).then(function(response) {
-            self.attendance.push(response.data)
-        }).error(function() {
-          alert('No card number found!')
-        })
+        try {
+          await axios.get(BASE_URL+'/attendance/new',{ params: {
+              card_num: cardNum
+          }}).then(function(response) {
+              self.attendance.push(response.data)
+          })
+        } catch(error) {
+          console.log(error)
+        }
       }
     }
 })

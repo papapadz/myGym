@@ -46,12 +46,6 @@ export const membersStore = defineStore('members', {
           return this.getInputErrors.lastname[0]
         else
           return ''
-      },
-      getMemberShipList() {
-        axios.get(BASE_URL+'/membership/categories/all')
-          .then(function(response) {
-            return response.data
-        })
       }
     },
     actions: {

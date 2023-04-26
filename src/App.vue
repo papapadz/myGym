@@ -76,10 +76,7 @@ export default defineComponent({
   methods: {
     navigate(page) {
       this.navigation.$patch({
-        page: page
-      })
-
-      this.navigation.$patch({
+        page: page,
         flip: {
           data: null,
           page:1

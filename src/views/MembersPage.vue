@@ -1,13 +1,13 @@
 <template>
-    <ion-content>
-        <ion-header :translucent="true">
-        <ion-toolbar>
+  <ion-page>
+    <ion-header :translucent="true">
+      <ion-toolbar>
           <ion-title>Blank</ion-title>
         </ion-toolbar>
-      </ion-header>
+    </ion-header>
 
-      <ProfilePage v-if="flipPage.page==3" />
-      <ion-content v-else :fullscreen="true">
+    <ProfilePage v-if="flipPage.page==3" />  
+    <ion-content v-else :fullscreen="true">
           <ion-header collapse="condense">
             <ion-toolbar>
               <ion-title size="large"></ion-title>
@@ -30,19 +30,28 @@
                   <ion-card-title>{{ memberItem.lastname }}, {{ memberItem.firstname }}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content>
-                  <ion-item><button @click="openProfile(memberItem)">View Profile</button></ion-item>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col>
+                        <ion-button fill="outline" size="small" shape="round" @click="openProfile(memberItem)">View Profile</ion-button>
+                      </ion-col>
+                      <ion-col v-if="memberItem.active_membership">
+                        <ion-button expand="block" fill="outline" color="success" size="small">{{ memberItem.active_membership.membership_category.membership_name }}</ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
                 </ion-card-content>
               </ion-card>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-content>
-        </ion-content>
-      </ion-content>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonButton, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle  } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
 //import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
@@ -55,7 +64,8 @@ import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as 
 export default defineComponent({
     name: 'MembersPage',
     components: {
-      NewMember, IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, ProfilePage
+      NewMember, ProfilePage, 
+      IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonButton, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle
     },
     setup() {
       const navigation = navigationStore()

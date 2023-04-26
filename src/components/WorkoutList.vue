@@ -1,38 +1,38 @@
 <template>
-<ion-item-group>
-  <ion-item-divider>
-    <ion-label>A</ion-label>
-  </ion-item-divider>
-    <ion-item v-for="item in workout.getAttendanceWorkOuts" :key="item.id">
-        <ion-label>Angola</ion-label>
-    </ion-item>
-</ion-item-group>
+  <ion-content>
+    <ion-label v-if="isLoading">Loading Data Please Wait...</ion-label>
+    <ion-card v-else>
+      <ion-card-header>
+        <ion-card-title>{{ attendanceData.person.lastname }}, {{ attendanceData.person.firstname }}</ion-card-title>
+        <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        Here's a small text description for the card content. Nothing more, nothing less.
+      </ion-card-content>
+    </ion-card>
+  </ion-content>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
-import { workoutStore } from '../stores/workout';
-import { IonItemGroup, IonItemDivider, IonLabel, IonItem } from '@ionic/vue';
+import { navigationStore } from '../stores/navigation';
+import { IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonLabel } from '@ionic/vue';
 
 export default defineComponent({
   name: 'WorkoutList',
   component: {
-    IonItemGroup, IonItemDivider, IonLabel, IonItem
+    IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonLabel
   },
-  props: ['propList'],
   setup() {
-    const workout = workoutStore()
-    return {
-        workout
-    }
-  },
-  mounted() {
-    console.log(this.propList)
-  },
-  data() {
-    return {
+    const navigation = navigationStore()
 
+    return {
+      attendanceData: navigation.getFlipAttendance, isLoading: navigation.getIsLoading
     }
+  },
+  methods: {
+    
   }
 })
 </script>

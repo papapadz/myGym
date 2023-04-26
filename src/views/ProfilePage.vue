@@ -1,6 +1,7 @@
 <template>
       <ion-page>
-        <div class="profile">
+        <ion-content>
+            <div class="profile">
           <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
             <img :class="isActive" :src="flipData.data.img.url" />
             <h2 class="profile-name">{{ flipData.data.card_number }}</h2>
@@ -93,10 +94,12 @@
             </ion-grid>  
           </div>
         </div>
+        </ion-content>
       </ion-page>
 </template>
 
 <script>
+import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel } from '@ionic/vue'
 import { defineComponent } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
@@ -104,7 +107,8 @@ import MembershipsVue from '../components/MembershipsVue.vue';
 
 export default defineComponent({
     components: {
-        AttendanceList, MembershipsVue
+        AttendanceList, MembershipsVue,
+        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel
     },
     data() {
         return {
