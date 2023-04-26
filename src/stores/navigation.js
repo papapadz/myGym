@@ -13,7 +13,8 @@ export const navigationStore = defineStore('navigation', {
       },
       flipAttendance: [],
       flipMemberships: [],
-      isLoading: false
+      isLoading: false,
+      selectedAttendanceID: null
     }),
     getters: {
       getPage: (state) => state.page,

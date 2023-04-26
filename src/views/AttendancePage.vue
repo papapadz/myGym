@@ -48,7 +48,7 @@
                             </ion-fab>
                 </div>
             </ion-content>
-            <WorkoutList v-else/>
+            <WorkoutList v-else :attendanceData="selectedData"/>
         </ion-content>
     </ion-page>
   </template>
@@ -78,7 +78,8 @@
                 cardNum: '',
                 isClicked: false,
                 fabColor: 'primary',
-                fabIcon: peopleIcon
+                fabIcon: peopleIcon,
+                selectedData: null
             }
         },
         created() {
@@ -149,7 +150,10 @@
                 return true
             },
             viewMore(attendance) {
-                this.navigation.setMemberAttendanceDetails(attendance.id)
+                // this.navigation.$patch({
+                //     selectedAttendanceID: attendance.id
+                // })
+                this.selectedData = attendance
                 this.page = 2
             }
         }
