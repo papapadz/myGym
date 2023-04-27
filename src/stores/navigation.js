@@ -4,6 +4,9 @@ const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 export const navigationStore = defineStore('navigation', {
     state: () => ({ 
       page: "",
+      user: {
+        id: 1
+      },
       members: {
         isNewFormShown: false
       },
@@ -17,6 +20,7 @@ export const navigationStore = defineStore('navigation', {
       selectedAttendanceID: null
     }),
     getters: {
+      getUser: (state) => state.user,
       getPage: (state) => state.page,
       getMemberPageSettings: (state) => state.members,
       getFlipPage: (state) => state.flip,
@@ -76,6 +80,6 @@ export const navigationStore = defineStore('navigation', {
         } finally {
           this.isLoading = false
         }
-      }
+      },
     }
 })

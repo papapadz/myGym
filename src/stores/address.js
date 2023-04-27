@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-
+const BASE_URL = 'http://localhost/myGymServer/public/api/address'
 export const addressStore = defineStore('address', {
     state: () => ({ 
       regions: [],
@@ -18,28 +18,28 @@ export const addressStore = defineStore('address', {
     actions: {
       getRegions() {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/address/regions')
+        axios.get(BASE_URL+'/regions')
           .then(function(response) {
             self.regions = response.data
         })
       },
       getProvinces(region_id) {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/address/provinces/'+region_id)
+        axios.get(BASE_URL+'/provinces/'+region_id)
           .then(function(response) {
             self.provinces = response.data
         })
       },
       getCities(province_id) {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/address/cities/'+province_id)
+        axios.get(BASE_URL+'/cities/'+province_id)
           .then(function(response) {
             self.cities = response.data
         })
       },
       getBarangays(city_id) {
         const self = this
-        axios.get('http://localhost/myGymServer/public/api/address/barangays/'+city_id)
+        axios.get(BASE_URL+'/barangays/'+city_id)
           .then(function(response) {
             self.barangays = response.data
         })
