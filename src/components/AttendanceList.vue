@@ -1,21 +1,71 @@
 <template>
-    <ion-list>
-      <ion-item-group v-for="group in groups" :key="group.year + group.month">
-        <ion-item-divider>{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
-        <ion-item v-for="date in group.dates" :key="date.id">
-          {{ formatDate(date.date) }}
-        </ion-item>
-      </ion-item-group>
-    </ion-list>
+    <ion-page>
+      <ion-content>
+        <ion-list v-if="page==1">
+          <ion-item-group>
+            <ion-item-divider>Attendance</ion-item-divider>
+          </ion-item-group>
+          <ion-item-group v-for="group in groups" :key="group.year + group.month">
+            <ion-item-divider>{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
+            <ion-item v-for="date in group.dates" :key="date.id" button detail="true" @click="viewMore(getObject(date.id))">
+              <ion-icon :icon="time"></ion-icon>
+              <ion-label v-if="isTimedOut(getObject(date.id).timeout)" class="ion-padding">
+                  <h3>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h3>
+                  <p><ion-icon :icon="time"></ion-icon> {{ getObject(date.id).created_at }} to {{ getObject(date.id).timeout }}</p>
+                </ion-label>
+                <ion-label color="success" v-else class="ion-padding">
+                  <h3>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h3>
+                  <p><ion-icon :icon="time"></ion-icon> {{ getObject(date.id).created_at }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+        <ion-grid v-else :fixed="true">
+          <ion-row>
+            <ion-button class="ion-text-end" color="warning" @click="page=1">
+              <ion-icon :icon="arrowBack"></ion-icon> Go Back
+            </ion-button>
+          </ion-row>
+          <ion-row v-if="page==1" class="ion-justify-content-start">
+              <ion-col v-for="workoutItem in workOutList" :key="workoutItem.id">            
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-title>{{ workoutItem.work_out_item.workout_name }}</ion-card-title>
+                    <ion-card-subtitle>{{ workoutItem.created_at }}</ion-card-subtitle>
+                  </ion-card-header>
+                  <ion-card-content>
+                    {{ workoutItem.notes }}
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+        </ion-grid>
+      </ion-content>
+    </ion-page>
   </template>
   
   <script>
-  export default {
+  import { defineComponent } from 'vue'
+  import { IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue'
+  import { star, walk, time, arrowBack } from 'ionicons/icons'
+
+  export default defineComponent({
     props: ['attendanceData'],
+    components: {
+      IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton
+    },
     data() {
       return {
+        workOutList: null,
+        selectedData: null,
+        page: 1,
         dates: this.attendanceData,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      }
+    },
+    setup() {
+      return {
+        star, walk, time, arrowBack
       }
     },
     computed: {
@@ -45,8 +95,25 @@
         const day = date.getDate()
         const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
         return `${month} ${day}, ${year}, ${time}`
+      },
+      isWalkin(membership) {
+        if(membership!==null)
+          return false
+        return true
+      },
+      isTimedOut(timeout) {
+          if(timeout===null)
+            return false
+        return true
+      },
+      viewMore(attendance) {
+        this.page = 2
+        this.workOutList = attendance.work_outs
+      },
+      getObject(id) {
+          return this.attendanceData.filter(d => d.id == id)[0]
       }
     }
-  }
+  })
   </script>
   

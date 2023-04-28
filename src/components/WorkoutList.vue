@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <ion-content>
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title style="text-align: right;">{{ timestamp }}</ion-title>
@@ -14,7 +15,7 @@
       <ion-row>
         <ion-col size="12" size-md="4">
           <ion-card>
-            <img class="card-image" :src="attendanceData.person.img" />
+            <img class="card-image" :src="attendanceData.person.img.url" />
             <ion-card-header>
               <ion-card-title>{{ renderedData.name }}</ion-card-title>
             </ion-card-header>
@@ -31,7 +32,7 @@
           <ion-grid :fixed="true">
             <ion-row v-if="page==1" class="ion-justify-content-start">
               <ion-col v-for="workoutItem in workOutList" :key="workoutItem.id">            
-                <ion-card>
+                <ion-card :color="getIntensity(workoutItem.work_out_item)">
                   <ion-card-header>
                     <ion-card-title>{{ workoutItem.work_out_item.workout_name }}</ion-card-title>
                     <ion-card-subtitle>{{ workoutItem.created_at }}</ion-card-subtitle>
@@ -83,6 +84,7 @@
         <ion-icon :icon="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
+  </ion-content>
   </ion-page>
 </template>
 
@@ -92,7 +94,7 @@ import { defineComponent, onBeforeMount, ref } from 'vue';
 import { add, close, arrowBack } from 'ionicons/icons'
 import { workoutStore } from '../stores/workout';
 import { navigationStore } from '../stores/navigation';
-import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
+import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
 import moment from 'moment';
 
 export default defineComponent({
@@ -106,7 +108,7 @@ export default defineComponent({
     }
   },
   components: {
-    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonTitle, IonHeader, IonToolbar, IonSelectOption, IonLabel
+    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonTitle, IonHeader, IonToolbar, IonSelectOption, IonLabel
   },
   setup() {
     const workout = workoutStore()
@@ -142,6 +144,14 @@ export default defineComponent({
         this.isLoading = false
         this.page=1
       })
+    },
+    getIntensity(workout) {
+      console.log(workout)
+      switch(workout.intensity) {
+        case 1: return 'success'
+        case 2: return 'warning'
+        case 3: return 'danger'
+      }
     }
   },
   mounted() {
@@ -154,8 +164,6 @@ export default defineComponent({
         age: moment().diff(this.attendanceData.person.birthdate,'years'),
         gender: (this.attendanceData.person.gender=='M' ? 'Male' : 'Female'),
         timein: moment(this.attendanceData.created_at).format("LT")
-
-
       }
     } 
   }

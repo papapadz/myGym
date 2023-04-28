@@ -1,18 +1,12 @@
 <template>
     <ion-page>
-            <ion-header :translucent="true">
-                <ion-toolbar>
-                <ion-title></ion-title>
-                </ion-toolbar>
-            </ion-header>
-  
         <ion-content :fullscreen="true">
             <ion-header :translucent="true">
                 <ion-toolbar>
                     <ion-title style="text-align: right;">{{ timestamp }}</ion-title>
                 </ion-toolbar>
             </ion-header>
-            <ion-content v-if="page==1">
+            <ion-content style="height: 90vh;" v-if="page==1">
                 <ion-item-group v-for="attendanceItem in attendance.getAttendance" :key="attendanceItem.id">
                     <ion-item v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
                         <ion-icon v-if="isWalkin(attendanceItem.person.active_membership)" :icon="walk"></ion-icon>

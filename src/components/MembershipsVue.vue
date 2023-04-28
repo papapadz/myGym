@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content v-if="isAddShown">
       <ion-item>
-          <ion-item-label>Select Membership</ion-item-label>
+          <ion-label>Select Membership</ion-label>
         </ion-item>
       <ion-loading v-if="isSavingMembership" content="Fetching memberships..." />
       <ion-content v-else>
@@ -27,12 +27,14 @@
       <ion-list>
         <ion-item-group>
           <ion-item-divider>Memberships</ion-item-divider>
-          <ion-item detail="true" lines="none" v-for="membershipItem in this.membershipData" :key="membershipItem.id">
+          <ion-item lines="none" v-for="membershipItem in this.membershipData" :key="membershipItem.id">
             <ion-icon v-if="this.isActive(membershipItem.expiry_date)" color="primary" :icon="star" slot="start"></ion-icon>
             <ion-icon v-else color="disabled" :icon="star" slot="start"></ion-icon>
             <ion-label>
               <h3>{{ membershipItem.membership_category.membership_name }}</h3>
-              <p>{{ membershipItem.created_at }} to {{ membershipItem.expiry_date }}</p>
+              <p>{{ displayDate(membershipItem) }}</p>
+              <hr>
+              <ion-badge v-if="this.isActive(membershipItem.expiry_date)" color="success">{{ getDaysLeft(membershipItem.expiry_date) }}</ion-badge>
             </ion-label>
           </ion-item>
         </ion-item-group>
@@ -104,6 +106,15 @@
       },
       reset() {
         this.isAddShown=false
+      },
+      getDaysLeft(date) {
+            const daysLeft = moment.duration(moment(date).diff()).days()
+            return 'Membership expires in '+moment.duration(daysLeft, "days").humanize()
+      },
+      displayDate(membership) {
+        const dateTo = moment(membership.created_at).format('LL')
+        const dateFrom = moment(membership.expiry_date).format('LL')
+        return dateTo+" to "+dateFrom
       }
     }
   })

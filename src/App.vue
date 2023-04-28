@@ -2,7 +2,7 @@
 <ion-menu-toggle>
   <ion-menu side="start" content-id="main-content">
     
-      <ion-header>
+    <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Menu</ion-title>
       </ion-toolbar>
@@ -18,7 +18,7 @@
           Members
         </ion-item>
         <ion-item :router-link="{ path: '/attendance' }" routerDirection="root" ion-menu-toggle @click="navigate('attendance')">
-          <ion-icon slot="start" :icon="peopleIcon" />
+          <ion-icon slot="start" :icon="calendar" />
           Attendance
         </ion-item>
       </ion-list>
@@ -39,7 +39,7 @@
 
 <script>
 import { IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet, IonMenuToggle } from '@ionic/vue';
-import { menu as menuIcon, people as peopleIcon, cart as cartIcon } from 'ionicons/icons';
+import { menu as menuIcon, people as peopleIcon, calendar } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 import { navigationStore } from './stores/navigation';
 
@@ -70,7 +70,7 @@ export default defineComponent({
     return {
       menuIcon,
       peopleIcon,
-      cartIcon,
+      calendar,
     };
   },
   methods: {

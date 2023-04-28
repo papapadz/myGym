@@ -1,105 +1,102 @@
 <template>
       <ion-page>
         <ion-content>
-            <div class="profile">
-          <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
-            <img :class="isActive" :src="flipData.data.img.url" />
-            <h2 class="profile-name">{{ flipData.data.card_number }}</h2>
-          </div>
-          <div class="profile-info">
             <ion-grid>
                 <ion-row>
-                    <ion-col>
-                        <p><strong>Last Name:</strong> {{ flipData.data.lastname }}</p>
-            <p><strong>First Name:</strong> {{ flipData.data.firstname }}</p>
-            <p><strong>Middle Name:</strong> {{ flipData.data.middlename }}</p>
-                    </ion-col>
-                    <ion-col class="ion-text-end">
-                        <p><strong>Birthday:</strong> {{ flipData.data.birthdate }}</p>
-            <p><strong>Age:</strong> {{ flipData.data.firstname }}</p>
-            <p><strong>Middle Name:</strong> {{ flipData.data.middlename }}</p>
+                    <ion-col size="12">
+                        <div class="profile">
+                            <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
+                                <img :class="isActive" :src="flipData.data.img.url" />
+                            </div>
+                        </div>
                     </ion-col>
                 </ion-row>
-            </ion-grid>
-          </div>
-          <div class="profile-timeline">
-            <ion-grid>
-                <ion-row>
-                 <!-- Card list menu -->
-                    <ion-col size="12" size-md="4">
-                        <ion-list class="card-list">
-                        <ion-item button v-for="(item, index) in cardList" :key="index" @click="selectedCard = item" :class="{ 'selected-item': selectedCard.title === item.title }">
-                                <ion-thumbnail slot="start">
-                                    <img :src="item.image" />
-                                </ion-thumbnail>
-                                <ion-label>{{ item.title }}</ion-label>
-                                </ion-item>
-                        </ion-list>
+                <ion-row class="ion-padding">
+                    <ion-col size="12">
+                        <hr>
                     </ion-col>
-    
-                    <!-- Dynamic card content -->
-                    <ion-col size="12" size-md="8" v-if="selectedCard">
-                        <ion-page v-if="selectedCard.title=='Profile'">
-                            <ion-list lines="none">
-                                <ion-item-group>
-                                    <ion-item-divider>
-                                        <ion-label>
-                                            Personal Information
-                                        </ion-label>
-                                    </ion-item-divider>
-                                        <ion-item>
-                                            <ion-label>
-                                                Name: {{ flipData.data.lastname }}, {{ flipData.data.firstname }} {{ flipData.data.middlename }}
-                                            </ion-label>
-                                        </ion-item>
-                                        <ion-item>
-                                            <ion-label>
-                                                Birthday: {{ flipData.data.birthdate }}
-                                            </ion-label>
-                                        </ion-item>
-                                        <ion-item>
-                                            <ion-label>
-                                                Gender: {{ flipData.data.gender }}
-                                            </ion-label>
-                                        </ion-item>
-                                        <ion-item>
-                                            <ion-label>
-                                                Address: {{ flipData.data.address.name }}, {{ flipData.data.address.city.name }}, {{ flipData.data.address.province.name }}
-                                            </ion-label>
-                                        </ion-item>
-                                </ion-item-group>
+                </ion-row>
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-segment>
+                                    <ion-segment-button v-for="(item, index) in cardList" :key="index" @click="selectedCard = item" :value="{ 'default': selectedCard.title === item.title }">
+                                        <ion-label>{{ item.title }}</ion-label>
+                                    </ion-segment-button>
+                                </ion-segment>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="12" v-if="selectedCard" style="height: 50vh">
+                                <ion-content>
+                                    <ion-content v-if="selectedCard.title=='Profile'">
+                                        <ion-list lines="none">
+                                            <ion-item-group>
+                                                <ion-item-divider>
+                                                    <ion-label>
+                                                        Card Number
+                                                    </ion-label>
+                                                </ion-item-divider>
+                                                <ion-item>
+                                                        <ion-label>
+                                                            {{ flipData.data.card_number }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                            </ion-item-group>
 
-                                <ion-item-group>
-                                    <ion-item-divider>
-                                        <ion-label>
-                                            Contact Information
-                                        </ion-label>
-                                    </ion-item-divider>
-                                    <ion-item>
-                                            <ion-label>
-                                                Phone Number: {{ flipData.data.contact_num }}
-                                            </ion-label>
-                                        </ion-item>
-                                </ion-item-group>
-                            </ion-list>
-                        </ion-page>
-                        <ion-page v-if="selectedCard.title=='Attendance'">
-                            <AttendanceList :attendanceData="navigation.getFlipAttendance" />
-                        </ion-page>
-                        <ion-page v-if="selectedCard.title=='Membership'">
-                            <MembershipsVue :membershipData="navigation.getFlipMemberships" />
-                        </ion-page>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>  
-          </div>
-        </div>
+                                            <ion-item-group>
+                                                <ion-item-divider>
+                                                    <ion-label>
+                                                        Personal Information
+                                                    </ion-label>
+                                                </ion-item-divider>
+                                                    <ion-item>
+                                                        <ion-label>
+                                                            Name: {{ flipData.data.lastname }}, {{ flipData.data.firstname }} {{ flipData.data.middlename }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label>
+                                                            Birthday: {{ flipData.data.birthdate }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label>
+                                                            Gender: {{ flipData.data.gender }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label>
+                                                            Address: {{ flipData.data.address.name }}, {{ flipData.data.address.city.name }}, {{ flipData.data.address.province.name }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                            </ion-item-group>
+
+                                            <ion-item-group>
+                                                <ion-item-divider>
+                                                    <ion-label>
+                                                        Contact Information
+                                                    </ion-label>
+                                                </ion-item-divider>
+                                                <ion-item>
+                                                        <ion-label>
+                                                            Phone Number: {{ flipData.data.contact_num }}
+                                                        </ion-label>
+                                                    </ion-item>
+                                            </ion-item-group>
+                                        </ion-list>
+                                    </ion-content>
+                                    <AttendanceList v-if="selectedCard.title=='Attendance'" :attendanceData="navigation.getFlipAttendance" />
+                                    <MembershipsVue  v-if="selectedCard.title=='Membership'" :membershipData="navigation.getFlipMemberships" />
+                                </ion-content>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid> 
         </ion-content>
       </ion-page>
 </template>
 
 <script>
-import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel } from '@ionic/vue'
+import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton } from '@ionic/vue'
 import { defineComponent } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
@@ -108,31 +105,23 @@ import MembershipsVue from '../components/MembershipsVue.vue';
 export default defineComponent({
     components: {
         AttendanceList, MembershipsVue,
-        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel
+        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton
     },
     data() {
         return {
             selectedIndex: 0,
             selectedCard: {
                 title: 'Profile',
-                image: 'https://law.ucdavis.edu/sites/g/files/dgvnsk10866/files/styles/sf_profile/public/media/images/website-user-icon-01b.png?h=b4f6d533&itok=J9JTcFmm',
-                content: 'This is the content for Card 3.',
             },
             cardList: [
                 {
-                title: 'Profile',
-                image: 'https://law.ucdavis.edu/sites/g/files/dgvnsk10866/files/styles/sf_profile/public/media/images/website-user-icon-01b.png?h=b4f6d533&itok=J9JTcFmm',
-                content: 'This is the content for Card 3.',
+                    title: 'Profile'
                 },
                 {
-                title: 'Attendance',
-                image: 'https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png',
-                content: 'This is the content for Card 1.',
+                    title: 'Attendance'
                 },
                 {
-                title: 'Membership',
-                image: 'https://img.freepik.com/premium-vector/id-card-icon-comic-style-identity-tag-vector-cartoon-illustration-white-isolated-background-driver-licence-business-concept-splash-effect_157943-6347.jpg',
-                content: 'This is the content for Card 2.',
+                    title: 'Membership'
                 }
             ],
         }
@@ -152,9 +141,6 @@ export default defineComponent({
                 return 'profile-image-active'
             return 'profile-image-inactive'
         }
-    },
-    mounted() {
-        console.log(this.flipData)
     }
 })
 </script>
@@ -219,7 +205,6 @@ export default defineComponent({
 }
 
 .profile-info {
-  width: 100%;
   padding: 1rem;
   border-bottom: 1px solid #ddd;
 }
@@ -246,17 +231,12 @@ export default defineComponent({
   --background: var(--ion-color-light);
 }
 
-/* Dynamic card content styles */
-.dynamic-card {
-  margin: 1rem auto;
-  max-width: 90%;
-}
-
-.dynamic-card ion-card {
-  height: 100%;
-}
 
 .selected-item {
   font-weight: bold;
+}
+
+.full-height {
+    height: 100%;
 }
 </style>
