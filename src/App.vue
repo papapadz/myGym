@@ -1,4 +1,5 @@
 <template>
+  <ion-page>
 <ion-menu-toggle>
   <ion-menu side="start" content-id="main-content">
     
@@ -35,10 +36,11 @@
     </ion-toolbar>
   </ion-header>
     <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-page>
 </template>
 
 <script>
-import { IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet, IonMenuToggle } from '@ionic/vue';
+import { IonPage, IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet, IonMenuToggle } from '@ionic/vue';
 import { menu as menuIcon, people as peopleIcon, calendar } from 'ionicons/icons';
 import { defineComponent } from 'vue';
 import { navigationStore } from './stores/navigation';
@@ -57,7 +59,8 @@ export default defineComponent({
     IonMenuButton,
     IonRouterOutlet,
     IonButtons,
-    IonMenuToggle
+    IonMenuToggle,
+    IonPage
   },
   setup() {
       const navigation = navigationStore()

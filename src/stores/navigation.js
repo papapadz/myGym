@@ -81,5 +81,12 @@ export const navigationStore = defineStore('navigation', {
           this.isLoading = false
         }
       },
+      async timeOut(attendanceID) {
+        try {
+          await axios.get(BASE_URL+'/attendance/timeout/'+attendanceID)
+        } catch(error) {
+          console.log(error)
+        }
+      }
     }
 })

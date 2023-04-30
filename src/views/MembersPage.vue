@@ -8,9 +8,9 @@
 
     <ProfilePage v-if="flipPage.page==3" />  
     <ion-content v-else :fullscreen="true">
-          <ion-header collapse="condense">
-            
-          </ion-header>
+      <ion-button @click="showAddForm">Add</ion-button>
+        
+      <ion-header collapse="condense"></ion-header>
           <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
           <ion-content v-else>
             <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>

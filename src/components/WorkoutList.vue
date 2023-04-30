@@ -26,6 +26,9 @@
             <ion-button class="ion-text-end" color="warning" @click="back">
               <ion-icon :icon="arrowBack"></ion-icon> Go Back
             </ion-button>
+            <ion-button v-if="!attendanceData.timeout" class="ion-text-start" color="danger" @click="out">
+              <ion-icon :icon="exit"></ion-icon> Clock Out
+            </ion-button>
           </ion-card>
         </ion-col>
         <ion-col size="12" size-md="8">
@@ -91,7 +94,7 @@
 
 <script>
 import { defineComponent, onBeforeMount, ref } from 'vue';
-import { add, close, arrowBack } from 'ionicons/icons'
+import { add, close, arrowBack, exit } from 'ionicons/icons'
 import { workoutStore } from '../stores/workout';
 import { navigationStore } from '../stores/navigation';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
@@ -122,7 +125,7 @@ export default defineComponent({
     })
 
     return {
-      isLoading, workout, add, close, arrowBack, navigation
+      isLoading, workout, add, close, arrowBack, navigation, exit
     }
   },
   methods: {
@@ -152,6 +155,11 @@ export default defineComponent({
         case 2: return 'warning'
         case 3: return 'danger'
       }
+    },
+    out() {
+      this.navigation.timeOut(this.attendanceData.id).then(() => {
+        this.$router.go(0);
+      })
     }
   },
   mounted() {
