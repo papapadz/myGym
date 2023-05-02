@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 
 export const adminStore = defineStore('admin', {
     state: () => ({
-        stat: []
+        stat: null
     }),
     getters: {
         getStatData: (state) => state.stat

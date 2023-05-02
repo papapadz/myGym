@@ -7,7 +7,7 @@
                 </ion-toolbar>
             </ion-header>
             <ion-content style="height: 90vh;" v-if="page==1">
-                <ion-item-group v-for="attendanceItem in attendance.getAttendance" :key="attendanceItem.id">
+                <ion-item-group v-for="attendanceItem in getAttendanceToday" :key="attendanceItem.id">
                     <ion-item v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
                         <ion-icon v-if="isWalkin(attendanceItem.person.active_membership)" :icon="walk"></ion-icon>
                         <ion-icon v-else :icon="star"></ion-icon>
@@ -48,10 +48,11 @@
   </template>
   
 <script>
-    import { defineComponent } from 'vue';
+    import { defineComponent, onMounted } from 'vue';
     import { people as peopleIcon, close as closeIcon, walk, star, time } from 'ionicons/icons';
     import { attendanceStore } from '../stores/attendance';
     import { navigationStore } from '../stores/navigation';
+    import { membersStore } from '../stores/members'
     import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel } from '@ionic/vue'
     import moment from 'moment'
     import WorkoutList from '../components/WorkoutList.vue'
@@ -79,19 +80,29 @@
         created() {
                 setInterval(this.getNow, 1000);
             },
+        computed: {
+            getAttendanceToday() {
+                return this.attendance.getAttendance
+            }
+        },
         setup() {
             const navigation = navigationStore()
             const attendance = attendanceStore()
+            const members = membersStore()
+
+            onMounted(() => {
+                attendance.getAttendanceToday()
+            })
+
             return {
                 navigation,
                 attendance,
                 walk,
                 star,
-                time
+                time,
+                attendanceToday: attendance.getAttendance,
+                allMembers: members.getMembers
             }
-        },
-        mounted() {
-            this.attendance.getAttendanceToday()
         },
         methods: {
             showModal() {
@@ -127,7 +138,8 @@
             },
             findMember(cardNum) {
                 console.log(cardNum)
-                this.attendance.add(cardNum)
+                const newItem = this.attendance.add(cardNum)
+                console.log(newItem)
             },
             getNow: function() {        
                 this.timestamp = moment().format('ddd, MMMM D, YYYY h:mm:ss a');

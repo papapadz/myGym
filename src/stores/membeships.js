@@ -36,7 +36,9 @@ export const membershipStore = defineStore('membership', {
                 formData.append('itemID', requestData.itemID)
                 //const response = await axios.get(BASE_URL+'/person/membership/new',formData)
                 //this.newItem = response.data
-                await axios.post(BASE_URL+'/person/membership/new', formData)
+                const response = await axios.post(BASE_URL+'/person/membership/new', formData)
+
+                this.newItem = response.data
               } catch (error) {
                 console.error(error)
               } finally {

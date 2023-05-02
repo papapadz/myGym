@@ -15,20 +15,18 @@ export const attendanceStore = defineStore('attendance', {
       }
     },
     actions: {
-      getAttendanceToday() {
-        const self = this
-        axios.get(BASE_URL+'/attendance/today')
-          .then(function(response) {
-            self.attendance = response.data
-        })
+      async getAttendanceToday() {
+        try {
+          const response = await axios.get(BASE_URL+'/attendance/today')
+          this.attendance = response.data 
+        } catch(error) {
+          console.error(error)
+        }
       },
       async add(cardNum) {
-        const self = this
         try {
-          await axios.get(BASE_URL+'/attendance/new',{ params: {
-              card_num: cardNum
-          }}).then(function(response) {
-              self.attendance.push(response.data)
+          await axios.get(BASE_URL+'/attendance/new',{params: {card_num: cardNum}}).then(() => {
+            this.getAttendanceToday()
           })
         } catch(error) {
           console.log(error)

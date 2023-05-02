@@ -27,7 +27,7 @@
       <ion-list>
         <ion-item-group>
           <ion-item-divider>Memberships</ion-item-divider>
-          <ion-item lines="none" v-for="membershipItem in this.membershipData" :key="membershipItem.id">
+          <ion-item lines="none" v-for="membershipItem in getMemberships" :key="membershipItem.id" detail="true" button="true" @click="showPaymentDetails(membershipItem)">
             <ion-icon v-if="this.isActive(membershipItem.expiry_date)" color="primary" :icon="star" slot="start"></ion-icon>
             <ion-icon v-else color="disabled" :icon="star" slot="start"></ion-icon>
             <ion-label>
@@ -66,6 +66,7 @@
     },
     data() {
       return {
+        memberships: this.membershipData,
         isAddShown: false,
         selectedMembership: null,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -87,6 +88,11 @@
 
       return { navigation, isLoading, useMembershipStore, isFetchingMemberships, isSavingMembership, star, add, informationCircle, close, addCircle, removeCircle };
     },
+    computed: {
+      getMemberships() {
+        return this.memberships
+      }
+    },
     methods: {
       isActive(expiry_date) {
           
@@ -102,6 +108,9 @@
         this.useMembershipStore.enroll({
           personID: this.navigation.getFlipPage.data.id,
           itemID: id
+        }).then(() => {
+          this.memberships.push(this.useMembershipStore.newItem)
+          this.isAddShown=false
         })
       },
       reset() {
@@ -115,6 +124,9 @@
         const dateTo = moment(membership.created_at).format('LL')
         const dateFrom = moment(membership.expiry_date).format('LL')
         return dateTo+" to "+dateFrom
+      },
+      showPaymentDetails(membership) {
+        console.log(membership)
       }
     }
   })
