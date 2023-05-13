@@ -44,7 +44,7 @@ import ProfilePage from './ProfilePage.vue';
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
 import { people as peopleIcon, close as closeIcon, add as plusIcon, checkbox as checkIcon } from 'ionicons/icons';
-import moment from 'moment';
+import { isPast } from 'date-fns'
 //import { OverlayEventDetail } from '@ionic/core/components';
 
 export default defineComponent({
@@ -89,11 +89,11 @@ export default defineComponent({
       checkStatus(item) {
         
         if(item.active_membership) {
-          const dateDiff = moment().diff(item.active_membership.expiry_date,'days')
-          if(dateDiff<0)
-            return 'list-card active'
-            
-          return 'list-card near-expiry'
+          
+          if(isPast(new Date(item.active_membership.expiry_date)))
+            return 'list-card near-expiry'
+
+          return 'list-card active'
         }
           
         return 'list-card'

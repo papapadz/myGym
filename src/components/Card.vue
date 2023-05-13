@@ -19,7 +19,7 @@
   import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue'
   import { defineComponent } from 'vue';
   import { navigationStore } from '../stores/navigation';
-  import moment from 'moment'
+  import { format } from 'date-fns'
 
   export default defineComponent({
     name: 'CardItem',
@@ -54,7 +54,7 @@
           break
         case "attendance":
           this.cardData = this.data.person
-          this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
+          this.membership.timein = 'logged in ' + format(this.data.created_at,'LLL d, yyyy')
           break
       }
       if(this.cardData.gender=='M')

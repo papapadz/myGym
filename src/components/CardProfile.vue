@@ -61,8 +61,8 @@
 import { defineComponent } from 'vue';
 import { navigationStore } from '../stores/navigation';
 import { membersStore } from '../stores/members';
-import moment from 'moment'
 import { schoolOutline as schoolIcon, gridOutline, pencil, ribbonOutline, barChart } from 'ionicons/icons';
+import { format } from 'date-fns'
 
 export default defineComponent({
 name: 'CardProfile',
@@ -92,7 +92,7 @@ beforeMount() {
       break
     case "attendance":
       this.cardData = this.data.person
-      this.membership.timein = 'logged in ' + moment(this.data.created_at).format('LT')
+      this.membership.timein = 'logged in ' + format(new Date(this.data.created_at),'LLL d, yyyy')
       break
   }
   if(!Object.is(this.cardData,undefined) || !Object.is(this.cardData,null)) {
@@ -100,8 +100,8 @@ beforeMount() {
     this.cardData.gender = 'Male'
   else
     this.cardData.gender = 'Female'
-    this.membership.joinDate = moment(this.cardData.created_at).format('LL')
-    this.cardData.birthdate = moment(this.cardData.birthdate).format('LL')
+    this.membership.joinDate = format(this.cardData.created_at,'LLL d, yyyy')
+    this.cardData.birthdate = format(this.cardData.birthdate,'LLL d, yyyy')
   
     if(!Object.is(this.cardData.active_membership,undefined) || !Object.is(this.cardData.active_membership,null)) {
       if(this.navigation.getPage=="members") {
@@ -114,11 +114,11 @@ beforeMount() {
       this.membership.show = true
       this.membership.color = 'success'
       this.membership.text = this.cardData.active_membership.membership_category.membership_name
-      this.membership.expiry = moment(this.cardData.active_membership.expiry_date).format('LL')
+      this.membership.expiry = format(new Date(this.cardData.active_membership.expiry_date),'LLL d, yyyy')
     }
 
     if(!Object.is(this.cardData.attendance,undefined) || !Object.is(this.cardData.attendance,null))
-      this.membership.attendanceLastDate = moment(this.cardData.attendance[0].attendance_date).format('LL')
+      this.membership.attendanceLastDate = format(new Date(this.cardData.attendance[0].attendance_date),'LLL d, yyyy')
   }
 },
 data() {

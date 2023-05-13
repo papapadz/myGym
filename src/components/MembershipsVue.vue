@@ -1,26 +1,19 @@
 <template>
   <ion-page>
     <ion-content v-if="isAddShown">
+      <MembershipItemVue v-if="navPage==2" :membershipItem="selectedMembership"/>
       <ion-item>
           <ion-label>Select Membership</ion-label>
         </ion-item>
       <ion-loading v-if="isSavingMembership" content="Fetching memberships..." />
       <ion-content v-else>
-        <ion-item-sliding detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id">
-          <ion-item>
+        <ion-item button detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id" @click="viewMore(membershipListItem)">
             <ion-label>
               <h3>{{ membershipListItem.membership_name }}</h3>
               <p>{{ membershipListItem.remarks }}</p>
               <p>{{ membershipListItem.amount }}</p>
             </ion-label>
           </ion-item>
-          <ion-item-options side="end">
-            <ion-item-option @click="() => this.enroll(membershipListItem.id)">
-              <ion-icon :icon="addCircle"></ion-icon>
-              Enroll
-            </ion-item-option>
-          </ion-item-options>
-          </ion-item-sliding>
       </ion-content>
     </ion-content>
     <ion-content v-else>
@@ -52,17 +45,18 @@
 </template>
   
 <script>
-  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonItemOption, IonItemOptions, IonItemSliding } from '@ionic/vue'
+  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel } from '@ionic/vue'
   import { star, add, informationCircle, close, addCircle, removeCircle } from 'ionicons/icons';
   import { defineComponent, ref, onBeforeMount } from 'vue';
-  import moment from 'moment'
   import { membershipStore } from '../stores/membeships'
   import { navigationStore } from '../stores/navigation';
+  import { format, formatDistanceToNow, isPast } from 'date-fns'
+  import MembershipItemVue from './MembershipItem.vue';
 
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonItemOption, IonItemOptions, IonItemSliding
+      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue
     },
     data() {
       return {
@@ -79,6 +73,8 @@
       const isSavingMembership = useMembershipStore.getIsSavingMembership
       const isLoading = ref(false)
 
+      const navPage = ref(navigation.getMembershipsNavigation.page)
+
       onBeforeMount(() => {
         isLoading.value = true
         useMembershipStore.fetchMemberships().then(() => {
@@ -86,7 +82,7 @@
         })
       })
 
-      return { navigation, isLoading, useMembershipStore, isFetchingMemberships, isSavingMembership, star, add, informationCircle, close, addCircle, removeCircle };
+      return { navigation, isLoading, useMembershipStore, isFetchingMemberships, isSavingMembership, star, add, informationCircle, close, addCircle, removeCircle, navPage };
     },
     computed: {
       getMemberships() {
@@ -95,11 +91,10 @@
     },
     methods: {
       isActive(expiry_date) {
-          
-          if(moment().isBefore(moment(expiry_date)))
-            return true
-          else
+          const thisDate = new Date(expiry_date)
+          if(isPast(thisDate))
             return false
+          return true 
       },
       openAddMembership() {
         this.isAddShown = true
@@ -117,16 +112,27 @@
         this.isAddShown=false
       },
       getDaysLeft(date) {
-            const daysLeft = moment.duration(moment(date).diff()).days()
-            return 'Membership expires in '+moment.duration(daysLeft, "days").humanize()
+          const thisDate = new Date(date)
+            const daysLeft = formatDistanceToNow(thisDate)
+            console.log('asdasd')
+            return 'Membership expires in ' + daysLeft
       },
       displayDate(membership) {
-        const dateTo = moment(membership.created_at).format('LL')
-        const dateFrom = moment(membership.expiry_date).format('LL')
+        const dateTo = format(new Date(membership.created_at), 'LLL d, yyyy')
+        const dateFrom = format(new Date(membership.expiry_date), 'LLL d, yyyy')
         return dateTo+" to "+dateFrom
       },
       showPaymentDetails(membership) {
         console.log(membership)
+      },
+      viewMore(membership) {
+        this.selectedMembership = membership
+        this.navigation.$patch({
+          getMembershipsNavigation: {
+            page: 2
+          }
+        })
+        alert('asdsa')
       }
     }
   })

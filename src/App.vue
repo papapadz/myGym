@@ -32,7 +32,7 @@
       <ion-buttons slot="start">
         <ion-menu-button />
       </ion-buttons>
-      <ion-title>Admin</ion-title>
+      <ion-title><center>{{ timestamp }}</center></ion-title>
     </ion-toolbar>
   </ion-header>
     <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -42,8 +42,9 @@
 <script>
 import { IonPage, IonMenu, IonButtons, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonMenuButton, IonRouterOutlet, IonMenuToggle } from '@ionic/vue';
 import { menu as menuIcon, people as peopleIcon, calendar } from 'ionicons/icons';
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { navigationStore } from './stores/navigation';
+import { format } from 'date-fns'
 
 export default defineComponent({
   name: 'App',
@@ -64,9 +65,15 @@ export default defineComponent({
   },
   setup() {
       const navigation = navigationStore()
-      
+      const timestamp = ref(format(new Date(),'EEE, LLL d, yyy h:mm:ss a'))
+
+      onMounted(() => {
+        setInterval(() => {
+          timestamp.value = format(new Date(),'EEE, LLL d, yyy h:mm:ss a');
+        }, 1000);  
+      })
       return {
-        navigation
+        navigation, timestamp
       }
   },
   data() {

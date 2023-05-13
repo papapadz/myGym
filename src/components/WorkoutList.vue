@@ -98,7 +98,7 @@ import { add, close, arrowBack, exit } from 'ionicons/icons'
 import { workoutStore } from '../stores/workout';
 import { navigationStore } from '../stores/navigation';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
-import moment from 'moment';
+import { format, differenceInYears } from 'date-fns'
 
 export default defineComponent({
   props: ['attendanceData'],
@@ -169,9 +169,9 @@ export default defineComponent({
     renderedData() {
       return {
         name: this.attendanceData.person.lastname+', '+this.attendanceData.person.firstname,
-        age: moment().diff(this.attendanceData.person.birthdate,'years'),
+        age: differenceInYears(new Date(), new Date(this.attendanceData.person.birthdate)),
         gender: (this.attendanceData.person.gender=='M' ? 'Male' : 'Female'),
-        timein: moment(this.attendanceData.created_at).format("LT")
+        timein: format(new Date(this.attendanceData.created_at),'hh:mm a')
       }
     } 
   }

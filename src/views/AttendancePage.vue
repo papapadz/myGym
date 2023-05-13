@@ -1,11 +1,11 @@
 <template>
     <ion-page>
+        <ion-header :translucent="true">
+            <ion-toolbar>
+                <ion-title style="text-align: right;"></ion-title>
+            </ion-toolbar>
+        </ion-header>
         <ion-content :fullscreen="true">
-            <ion-header :translucent="true">
-                <ion-toolbar>
-                    <ion-title style="text-align: right;">{{ timestamp }}</ion-title>
-                </ion-toolbar>
-            </ion-header>
             <ion-content style="height: 90vh;" v-if="page==1">
                 <ion-item-group v-for="attendanceItem in getAttendanceToday" :key="attendanceItem.id">
                     <ion-item v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
@@ -54,7 +54,6 @@
     import { navigationStore } from '../stores/navigation';
     import { membersStore } from '../stores/members'
     import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel } from '@ionic/vue'
-    import moment from 'moment'
     import WorkoutList from '../components/WorkoutList.vue'
 
     export default defineComponent({
@@ -66,7 +65,6 @@
         data() {
             return {
                 page: 1,
-                timestamp: "",
                 peopleIcon,
                 closeIcon,
                 isShown: false,
@@ -77,9 +75,6 @@
                 selectedData: null
             }
         },
-        created() {
-                setInterval(this.getNow, 1000);
-            },
         computed: {
             getAttendanceToday() {
                 return this.attendance.getAttendance
@@ -140,9 +135,6 @@
                 console.log(cardNum)
                 const newItem = this.attendance.add(cardNum)
                 console.log(newItem)
-            },
-            getNow: function() {        
-                this.timestamp = moment().format('ddd, MMMM D, YYYY h:mm:ss a');
             },
             isWalkin(membership) {
                 
