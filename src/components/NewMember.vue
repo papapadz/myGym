@@ -102,13 +102,13 @@
       <ion-button v-if="page>1" color="warning" @click="page--"><ion-icon :icon="arrowBack"></ion-icon> Back</ion-button>
       <ion-button v-if="page<4" color="primary" @click="next">Next <ion-icon :icon="arrowForward"></ion-icon></ion-button>
       <ion-button v-if="page==4" color="success" @click="confirm">Save</ion-button>
-      <ion-button v-if="page==4" color="danger" @click="cancel">Cancel</ion-button>
+      <ion-button color="danger" @click="cancel">Cancel</ion-button>
     </div>        
   </ion-content>
 </template>
 
 <script>
-import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonNote, IonButton, IonIcon } from '@ionic/vue'
+import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonNote, IonButton, IonIcon, IonCard, IonCardContent, IonLoading } from '@ionic/vue'
 import { defineComponent, ref } from 'vue';
 import { people as peopleIcon, close as closeIcon, arrowBack, arrowForward } from 'ionicons/icons';
 import { addressStore } from '../stores/address'
@@ -118,7 +118,7 @@ import { navigationStore } from '../stores/navigation';
 export default defineComponent({
     name: 'NewMember',
     components: {
-      IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonContent, IonNote, IonButton, IonIcon
+      IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonContent, IonNote, IonButton, IonIcon, IonCard, IonCardContent, IonLoading
     },
     setup() {
       const address = addressStore()

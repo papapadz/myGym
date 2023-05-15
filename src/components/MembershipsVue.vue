@@ -6,7 +6,6 @@
         </ion-item>
       <ion-loading v-if="isSavingMembership" content="Fetching memberships..." />
       <ion-content v-else>
-        
           <ion-content v-if="navPage.page==2">
             <MembershipItemVue :membershipItem="selectedMembership"/>
           </ion-content>
@@ -39,7 +38,7 @@
     </ion-list>
     <MembershipDetailsVue v-else :membershipObject="selectedMembership" />
     </ion-content>
-    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab slot="fixed" vertical="top" horizontal="end">
       <ion-fab-button v-if="!navPage.isAddShown || !navPage.isPaymentHistoryShown" color="success" id="open-modal" expand="block" @click="openAddMembership">
         <ion-icon :icon="add"></ion-icon>
       </ion-fab-button>
@@ -51,7 +50,7 @@
 </template>
   
 <script>
-  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel } from '@ionic/vue'
+  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge } from '@ionic/vue'
   import { star, add, informationCircle, close, addCircle, removeCircle } from 'ionicons/icons';
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';
   import { membershipStore } from '../stores/membeships'
@@ -63,7 +62,7 @@
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue, MembershipDetailsVue
+      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, MembershipItemVue, MembershipDetailsVue
     },
     data() {
       return {
@@ -117,11 +116,16 @@
           return true 
       },
       openAddMembership() {
-        this.navigation.$patch({
-          membershipsNavigation: {
-            isAddShown: true
-          }
-        })
+        console.log(this.navPage.isPaymentHistoryShown)
+        if(this.navPage.isPaymentHistoryShown) {
+          
+        } else {
+          this.navigation.$patch({
+            membershipsNavigation: {
+              isAddShown: true
+            }
+          })
+        }
       },
       async enroll(id) {
         this.useMembershipStore.enroll({

@@ -12,7 +12,7 @@
                     </ion-item-divider>
                     <ion-item v-for="item in membershipDetails.payments" :key="item.id">
                         <ion-label>
-                            <h2>{{ item.payment.toLocaleString('en-PH') }}</h2>
+                            <h2>Php {{ item.payment.toLocaleString('en-PH') }}</h2>
                             <p>{{ formatDate(item.created_at) }}</p>
                         </ion-label>
                     </ion-item>
