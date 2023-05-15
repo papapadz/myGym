@@ -19,7 +19,7 @@
                         <ion-row>
                             <ion-col size="12">
                                 <ion-segment>
-                                    <ion-segment-button v-for="(item, index) in cardList" :key="index" @click="selectedCard = item" :value="{ 'default': selectedCard.title === item.title }">
+                                    <ion-segment-button v-for="(item, index) in cardList" :key="index" @click="selectCard(item)" :value="{ 'default': selectedCard.title === item.title }">
                                         <ion-label>{{ item.title }}</ion-label>
                                     </ion-segment-button>
                                 </ion-segment>
@@ -140,6 +140,18 @@ export default defineComponent({
             if(!Object.is(this.flipData.data.active_membership,null))
                 return 'profile-image-active'
             return 'profile-image-inactive'
+        }
+    },
+    methods: {
+        selectCard(item) {
+            this.selectedCard = item
+            this.navigation.$patch({
+                membershipsNavigation: {
+                    page:1,
+                    isAddShown: false,
+                    isPaymentHistoryShown: false
+                }
+            })
         }
     }
 })

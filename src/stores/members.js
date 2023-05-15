@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { navigationStore } from './navigation'
 
 const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
 
@@ -13,12 +12,12 @@ export const membersStore = defineStore('members', {
         lastname: '',
         firstname: '',
         middlename: '',
-        birthdate: '',
+        birthdate: null,
         gender: '',
-        address_id: '',
+        address_id: null,
         contact_num: '',
-        card_number: '',
-        category: '',
+        card_number: null,
+        category: null,
         img: null
       },
       errors: {
@@ -49,13 +48,14 @@ export const membersStore = defineStore('members', {
       }
     },
     actions: {
-      getAllMembers() {
-        const self = this
-        axios.get(BASE_URL+'/person/all')
-          .then(function(response) {
-            self.members = response.data
-            self.searchResults = response.data
-        })
+      async getAllMembers() {
+        try {
+          const response = await axios.get(BASE_URL+'/person/all')
+          this.members = response.data
+          this.searchResults = response.data
+        } catch(error) {
+          console.error(error)
+        }
       },
       validateInput(field) {
         switch(field) {
@@ -70,7 +70,7 @@ export const membersStore = defineStore('members', {
             self.categories = response.data
         })
       },
-      add() {
+      async add() {
         const self = this
         let formData = new FormData();
         formData.append('lastname', this.person.lastname)
@@ -84,7 +84,7 @@ export const membersStore = defineStore('members', {
         formData.append('card_number', this.person.card_number)
         formData.append('img_file', this.person.img)
 
-        axios.post(BASE_URL+'/person/new',
+        await axios.post(BASE_URL+'/person/new',
           formData,
           {
             headers: {
@@ -92,26 +92,20 @@ export const membersStore = defineStore('members', {
             }
           }
         ).then(function(){
-          const navigation = navigationStore()
-        
+          this.members.push(this.person)
           console.log('SUCCESS!!');
           self.person = {
             lastname: '',
             firstname: '',
             middlename: '',
-            birthdate: '',
+            birthdate: null,
             gender: '',
-            address_id: '',
+            address_id: null,
             contact_num: '',
-            card_number: '',
-            category: '',
+            card_number: null,
+            category: null,
             img: null
           }
-          navigation.$patch({
-            members: {
-              isNewFormShown: false
-            }
-          })
         })
         .catch(function(err){
           const errorReponse = err.response.data.errors

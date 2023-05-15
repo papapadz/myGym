@@ -1,23 +1,28 @@
 <template>
   <ion-page>
-    <ion-content v-if="isAddShown">
-      <MembershipItemVue v-if="navPage==2" :membershipItem="selectedMembership"/>
+    <ion-content v-if="navPage.isAddShown">
       <ion-item>
           <ion-label>Select Membership</ion-label>
         </ion-item>
       <ion-loading v-if="isSavingMembership" content="Fetching memberships..." />
       <ion-content v-else>
-        <ion-item button detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id" @click="viewMore(membershipListItem)">
-            <ion-label>
-              <h3>{{ membershipListItem.membership_name }}</h3>
-              <p>{{ membershipListItem.remarks }}</p>
-              <p>{{ membershipListItem.amount }}</p>
-            </ion-label>
-          </ion-item>
+        
+          <ion-content v-if="navPage.page==2">
+            <MembershipItemVue :membershipItem="selectedMembership"/>
+          </ion-content>
+          <ion-content v-else>
+            <ion-item button detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id" @click="viewMore(membershipListItem)">
+              <ion-label>
+                <h3>{{ membershipListItem.membership_name }}</h3>
+                <p>{{ membershipListItem.remarks }}</p>
+                <p>{{ membershipListItem.amount }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-content>
       </ion-content>
     </ion-content>
     <ion-content v-else>
-      <ion-list>
+      <ion-list v-if="!navPage.isPaymentHistoryShown">
         <ion-item-group>
           <ion-item-divider>Memberships</ion-item-divider>
           <ion-item lines="none" v-for="membershipItem in getMemberships" :key="membershipItem.id" detail="true" button="true" @click="showPaymentDetails(membershipItem)">
@@ -32,9 +37,10 @@
           </ion-item>
         </ion-item-group>
     </ion-list>
+    <MembershipDetailsVue v-else :membershipObject="selectedMembership" />
     </ion-content>
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button v-if="!isAddShown" color="success" id="open-modal" expand="block" @click="openAddMembership">
+      <ion-fab-button v-if="!navPage.isAddShown || !navPage.isPaymentHistoryShown" color="success" id="open-modal" expand="block" @click="openAddMembership">
         <ion-icon :icon="add"></ion-icon>
       </ion-fab-button>
       <ion-fab-button v-else color="danger" id="open-modal" expand="block" @click="reset">
@@ -47,21 +53,21 @@
 <script>
   import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel } from '@ionic/vue'
   import { star, add, informationCircle, close, addCircle, removeCircle } from 'ionicons/icons';
-  import { defineComponent, ref, onBeforeMount } from 'vue';
+  import { defineComponent, ref, onBeforeMount, computed } from 'vue';
   import { membershipStore } from '../stores/membeships'
   import { navigationStore } from '../stores/navigation';
   import { format, formatDistanceToNow, isPast } from 'date-fns'
   import MembershipItemVue from './MembershipItem.vue';
+  import MembershipDetailsVue from './MembershipDetails.vue';
 
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue
+      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue, MembershipDetailsVue
     },
     data() {
       return {
         memberships: this.membershipData,
-        isAddShown: false,
         selectedMembership: null,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
       }
@@ -73,7 +79,9 @@
       const isSavingMembership = useMembershipStore.getIsSavingMembership
       const isLoading = ref(false)
 
-      const navPage = ref(navigation.getMembershipsNavigation.page)
+      const navPage = computed(() => {
+        return navigation.getMembershipsNavigation
+      })
 
       onBeforeMount(() => {
         isLoading.value = true
@@ -82,7 +90,19 @@
         })
       })
 
-      return { navigation, isLoading, useMembershipStore, isFetchingMemberships, isSavingMembership, star, add, informationCircle, close, addCircle, removeCircle, navPage };
+      return { 
+        navigation, 
+        isLoading, 
+        useMembershipStore, 
+        isFetchingMemberships, 
+        isSavingMembership, 
+        star, 
+        add, 
+        informationCircle, 
+        close, 
+        addCircle, 
+        removeCircle, 
+        navPage };
     },
     computed: {
       getMemberships() {
@@ -97,7 +117,11 @@
           return true 
       },
       openAddMembership() {
-        this.isAddShown = true
+        this.navigation.$patch({
+          membershipsNavigation: {
+            isAddShown: true
+          }
+        })
       },
       async enroll(id) {
         this.useMembershipStore.enroll({
@@ -105,11 +129,21 @@
           itemID: id
         }).then(() => {
           this.memberships.push(this.useMembershipStore.newItem)
-          this.isAddShown=false
+          this.navigation.$patch({
+            membershipsNavigation: {
+              isAddShown: false
+            }
+          })
         })
       },
       reset() {
-        this.isAddShown=false
+        this.navigation.$patch({
+            membershipsNavigation: {
+                page:1,
+                isAddShown: false,
+                isPaymentHistoryShown: false
+            }
+        })
       },
       getDaysLeft(date) {
           const thisDate = new Date(date)
@@ -118,21 +152,25 @@
             return 'Membership expires in ' + daysLeft
       },
       displayDate(membership) {
-        const dateTo = format(new Date(membership.created_at), 'LLL d, yyyy')
+        const dateTo = format(new Date(membership.start_date), 'LLL d, yyyy')
         const dateFrom = format(new Date(membership.expiry_date), 'LLL d, yyyy')
         return dateTo+" to "+dateFrom
       },
       showPaymentDetails(membership) {
-        console.log(membership)
+        this.selectedMembership = membership
+        this.navigation.$patch({
+          membershipsNavigation: {
+            isPaymentHistoryShown: true
+          }
+        })
       },
       viewMore(membership) {
         this.selectedMembership = membership
         this.navigation.$patch({
-          getMembershipsNavigation: {
+          membershipsNavigation: {
             page: 2
           }
         })
-        alert('asdsa')
       }
     }
   })

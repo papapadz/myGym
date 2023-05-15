@@ -20,7 +20,8 @@ export const navigationStore = defineStore('navigation', {
       selectedAttendanceID: null,
       membershipsNavigation: {
         page: 1,
-        status: ''
+        isAddShown: false,
+        isPaymentHistoryShown: false
       }
     }),
     getters: {
@@ -92,6 +93,9 @@ export const navigationStore = defineStore('navigation', {
         } catch(error) {
           console.log(error)
         }
+      },
+      addFlipMembership(membership) {
+        this.flipMemberships.push(membership)
       }
     }
 })

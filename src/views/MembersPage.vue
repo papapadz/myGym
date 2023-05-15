@@ -8,36 +8,39 @@
 
     <ProfilePage v-if="flipPage.page==3" />  
     <ion-content v-else :fullscreen="true">
-      <ion-button @click="showAddForm">Add</ion-button>
-        
       <ion-header collapse="condense"></ion-header>
           <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
           <ion-content v-else>
-            <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
-            <!-- <CardList :dataProp="members.getSearchResult"/> -->
-            <ion-grid>
-              <ion-row size="auto" class="ion-justify-content-start">
-                <ion-col size-md="6" size-lg="3" size-xs="12" v-for="memberItem in members.getSearchResult" :key="memberItem.id">
-                  <ion-card :class="checkStatus(memberItem)" @click="openProfile(memberItem)">
-                    <img class="card-image" :src="memberItem.img.url" alt="Profile Image" />
-                    <ion-card-header>
-                      <ion-card-subtitle>
-                        {{ memberItem.card_number }}
-                      </ion-card-subtitle>
-                      <ion-card-title>{{ memberItem.lastname }}, {{ memberItem.firstname }}</ion-card-title>
-                    </ion-card-header>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
+            <ion-content v-if="!isLoading">
+              <ion-fab vertical="top" horizontal="end">
+                <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
+              </ion-fab>
+              <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
+              <!-- <CardList :dataProp="members.getSearchResult"/> -->
+              <ion-grid>
+                <ion-row size="auto" class="ion-justify-content-start">
+                  <ion-col size-md="6" size-lg="3" size-xs="12" v-for="memberItem in members.getSearchResult" :key="memberItem.id">
+                    <ion-card :class="checkStatus(memberItem)" @click="openProfile(memberItem)">
+                      <img class="card-image" :src="memberItem.img.url" alt="Profile Image" />
+                      <ion-card-header>
+                        <ion-card-subtitle>
+                          {{ memberItem.card_number }}
+                        </ion-card-subtitle>
+                        <ion-card-title>{{ memberItem.lastname }}, {{ memberItem.firstname }}</ion-card-title>
+                      </ion-card-header>
+                    </ion-card>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-content>
           </ion-content>
     </ion-content>
   </ion-page>
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle  } from '@ionic/vue'
-import { defineComponent, ref } from 'vue';
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
+import { defineComponent, ref, onBeforeMount } from 'vue';
 //import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
 import ProfilePage from './ProfilePage.vue';
@@ -51,13 +54,12 @@ export default defineComponent({
     name: 'MembersPage',
     components: {
       NewMember, ProfilePage, 
-      IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle
+      IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon
     },
     setup() {
       const navigation = navigationStore()
       const members = membersStore()
-      members.getAllMembers()
-
+      const isLoading = ref(false)
       const memberList = members.getMembers
       const results = ref(memberList)
       const flipPage = ref(navigation.getFlipPage)
@@ -66,6 +68,13 @@ export default defineComponent({
         members.find(val)
       }
       
+      onBeforeMount(() => {
+        isLoading.value = true
+        members.getAllMembers().then(() => {
+          isLoading.value = false
+        })
+      })
+
       return {
         search,
         navigation,
@@ -100,18 +109,6 @@ export default defineComponent({
       },
       searchMember(event) {
         this.results = this.members.getSearchResult(event.target.value)
-      },
-      cancel() {
-        //this.$refs.modal.$el.dismiss(null, 'cancel');
-        this.navigation.$patch({
-          members: {
-            isNewFormShown: false
-          }
-        })
-      },
-      confirm() {
-        const name = this.$refs.input.$el.value;
-        this.$refs.modal.$el.dismiss(name, 'confirm');
       },
       showAddForm() {
         if(this.navigation.getMemberPageSettings.isNewFormShown) {
