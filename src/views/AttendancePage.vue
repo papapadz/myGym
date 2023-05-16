@@ -8,10 +8,10 @@
         <ion-content :fullscreen="true">
             <ion-content style="height: 90vh;" v-if="page==1">
                 <ion-item-group v-for="attendanceItem in getAttendanceToday" :key="attendanceItem.id">
-                    <ion-item v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
+                    <ion-item :color="isTimedOut(attendanceItem.timeout)" v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
                         <ion-icon v-if="isWalkin(attendanceItem.person.active_membership)" :icon="walk"></ion-icon>
                         <ion-icon v-else :icon="star"></ion-icon>
-                        <ion-label :class="isTimedOut(attendanceItem.timeout)">
+                        <ion-label class="ion-padding">
                             <h2>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</h2>
                             <p><ion-icon :icon="time"></ion-icon> {{ displayDateFormat(attendanceItem) }}</p>
                         </ion-label>
@@ -143,8 +143,7 @@
             },
             isTimedOut(timeout) {
                 if(!timeout)
-                    return 'active ion-padding'
-                return 'ion-padding'
+                    return 'success'
             },
             viewMore(attendance) {
                 // this.navigation.$patch({
@@ -159,7 +158,6 @@
                     return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a') + ' to ' + format(new Date(attendance.timeout), 'hh:mm a')
                 
                 return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a')
-                
             }
         }
     });

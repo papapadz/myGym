@@ -142,7 +142,6 @@ export default defineComponent({
       })
     },
     getIntensity(workout) {
-      console.log(workout)
       switch(workout.intensity) {
         case 1: return 'success'
         case 2: return 'warning'

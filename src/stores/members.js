@@ -57,6 +57,14 @@ export const membersStore = defineStore('members', {
           console.error(error)
         }
       },
+      async getActiveMembers() {
+        try {
+          const response = await axios.get(BASE_URL+'/person/active/all')
+          this.members = response.data
+        } catch(error) {
+          console.error(error)
+        }
+      },
       validateInput(field) {
         switch(field) {
           case 'lastname':

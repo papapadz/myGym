@@ -9,13 +9,9 @@
             <ion-item-divider>{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
             <ion-item v-for="date in group.dates" :key="date.id" button detail="true" @click="viewMore(getObject(date.id))">
               <ion-icon :icon="time"></ion-icon>
-              <ion-label v-if="isTimedOut(getObject(date.id).timeout)" class="ion-padding">
-                  <h3>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h3>
-                  <p><ion-icon :icon="time"></ion-icon> {{ getObject(date.id).created_at }} to {{ getObject(date.id).timeout }}</p>
-                </ion-label>
-                <ion-label color="success" v-else class="ion-padding">
-                  <h3>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h3>
-                  <p><ion-icon :icon="time"></ion-icon> {{ getObject(date.id).created_at }}</p>
+              <ion-label class="ion-padding">
+                  <h2>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h2>
+                  <p><ion-icon :icon="time"></ion-icon> {{ displayDateFormat(getObject(date.id)) }}</p>
               </ion-label>
             </ion-item>
           </ion-item-group>
@@ -26,9 +22,9 @@
               <ion-icon :icon="arrowBack"></ion-icon> Go Back
             </ion-button>
           </ion-row>
-          <ion-row v-if="page==1" class="ion-justify-content-start">
-              <ion-col v-for="workoutItem in workOutList" :key="workoutItem.id">            
-                <ion-card>
+          <ion-row v-if="page==2" class="ion-justify-content-start">
+              <ion-col v-for="workoutItem in getWorkoutList" :key="workoutItem.id">            
+                <ion-card :color="getIntensity(workoutItem.work_out_item)">
                   <ion-card-header>
                     <ion-card-title>{{ workoutItem.work_out_item.workout_name }}</ion-card-title>
                     <ion-card-subtitle>{{ workoutItem.created_at }}</ion-card-subtitle>
@@ -46,13 +42,14 @@
   
   <script>
   import { defineComponent } from 'vue'
-  import { IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue'
+  import { IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent } from '@ionic/vue'
   import { star, walk, time, arrowBack } from 'ionicons/icons'
+  import { format } from 'date-fns'
 
   export default defineComponent({
     props: ['attendanceData'],
     components: {
-      IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton
+      IonList, IonItemGroup, IonItemDivider, IonItem, IonIcon, IonPage, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent
     },
     data() {
       return {
@@ -85,6 +82,9 @@
             }
             return acc
             }, [])
+        },
+        getWorkoutList() {
+          return this.workOutList
         }
     },
     methods: {
@@ -112,6 +112,20 @@
       },
       getObject(id) {
           return this.attendanceData.filter(d => d.id == id)[0]
+      },
+      getIntensity(workout) {
+        console.log(workout)
+        switch(workout.intensity) {
+          case 1: return 'success'
+          case 2: return 'warning'
+          case 3: return 'danger'
+        }
+      },
+      displayDateFormat(attendance) {
+          if(attendance.timeout)
+              return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a') + ' to ' + format(new Date(attendance.timeout), 'hh:mm a')
+
+          return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a')
       }
     }
   })

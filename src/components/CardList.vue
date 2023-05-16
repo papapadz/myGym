@@ -1,70 +1,46 @@
 <template>
-    <ion-grid>
-      <ion-row>
-        <ion-col v-for="card in dataProp" :key="card.id" size="12" size-md="6" size-lg="4">
-          <CardProfile :data="card" />
+    <ion-grid :fixed="true">
+      <ion-loading v-if="isLoading"></ion-loading>
+      <ion-row v-else>
+        <ion-col v-for="item in members" :key="item.id" size="12" size-md="6" size-lg="3">
+          <Card :cardData="item" />
         </ion-col>
       </ion-row>
     </ion-grid>
 </template>
   
   <script>
-  import { IonGrid, IonRow, IonCol} from '@ionic/vue';
-  import CardProfile from '@/components/CardProfile'
-  import { defineComponent } from 'vue';  
-  import { navigationStore } from '../stores/navigation';
-  import { workoutStore } from '../stores/workout';
+  import { IonGrid, IonRow, IonCol, IonLoading } from '@ionic/vue';
+  import { defineComponent, ref, onBeforeMount, computed } from 'vue';  
   import { membersStore } from '../stores/members';
+  import Card from '../components/Card.vue'
 
   export default defineComponent({
     name: 'CardList',
     components: {
-      CardProfile, IonGrid, IonRow, IonCol
+      IonGrid, IonRow, IonCol, Card, IonLoading
     },
-    props: [
-      'dataProp'
-    ],
     setup() {
-      const navigation = navigationStore()
-      const workout = workoutStore()
-      const members = membersStore()
-      const membersList = members.getMembers
+      const member = membersStore()
+      const isLoading = ref(true)
+
+      onBeforeMount(() => {
+        isLoading.value = true
+        member.getActiveMembers().then(() => {
+          isLoading.value = false
+        })
+      })
+
+      const members = computed(() => { return member.getMembers })
+
       return {
-        navigation,
-        workout,
-        membersList
-      }
-    },
-    data() {
-      return {
-        dataList: [],
-        isOpen: false,
-        cardSelected: null
-      };
-    },
-    methods: {
-      viewCard(x) {
-        console.log(x)
-        this.cardSelected = this.dataProp.find(e => e.id == x)
-        
-        switch(this.navigation.getPage) {
-          case 'members': 
-          break
-          case 'attendance':
-            this.workout.getAttendanceWorkOutToday(x)
-            this.dataList = this.workout.getAttendanceWorkOuts
-          break
-        }
-        this.setOpen(true)
-      },
-      setOpen(val) {
-        this.isOpen = val
+        members, isLoading
       }
     }
-  });
+  })
   </script>
 
-<style>
+<style scoped>
 .card-container {
       display: flex;
       align-items: center;

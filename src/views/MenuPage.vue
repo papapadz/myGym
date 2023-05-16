@@ -7,15 +7,19 @@
           </ion-toolbar>
         </ion-header>
         <br><br>
-        <ion-grid class="ion-padding">
+        <ion-loading v-if="isLoading"></ion-loading>
+        <ion-grid v-else class="ion-padding">
           <ion-row>
-            <ion-col v-for="pageItem in pages" :key="pageItem.code">
+            <ion-col v-for="pageItem in pages" :key="pageItem.code" size-md="6" size-lg="3" size-xs="12">
               <ion-card @click="show(pageItem)" class="list-card">
                 <ion-card-content>
-                  <ion-badge color="primary"><h1>{{ getStatData(pageItem.code) }}</h1></ion-badge> {{ pageItem.title }}
+                  <ion-badge color="primary"><h1>{{ getStatData(pageItem.code) }}</h1></ion-badge> <h1>{{ pageItem.title }}</h1>
                 </ion-card-content>
               </ion-card>  
             </ion-col>
+          </ion-row>
+          <ion-row v-if="selected.code==1">
+            <CardList />
           </ion-row>
           <ion-row v-if="selected.code==2">
             <ion-col class="chart-container">
@@ -38,17 +42,18 @@
 </template>
   
   <script>
-  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge } from '@ionic/vue';
+  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonLoading } from '@ionic/vue';
   import { defineComponent, ref, onMounted } from 'vue';
   import { adminStore } from '../stores/admin'
   import AddMembershipsVue from '../components/AddMemberships.vue'
   import AddWorkoutVue from '../components/AddWorkout.vue'
   import AttendanceChartVue from '../components/AttendanceChart.vue'
+  import CardList from '../components/CardList.vue'
 
   export default defineComponent({
     name: 'MenuPage',
     components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue
+        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue, IonLoading, CardList
     },
     data() {
       return {
@@ -58,7 +63,7 @@
         },
         pages: [
           {code: 1, title: 'Active Memberships'},
-          {code: 2, title: 'Attendance'},
+          {code: 2, title: 'Attendees Today'},
           {code: 3, title: 'Memberships'},
           {code: 4, title: 'Workouts'}
         ]
@@ -70,15 +75,14 @@
       
       onMounted(() => {
         isLoading.value = true
-        admin.fetchStatData().then(() => isLoading.value = false)
+        admin.fetchStatData().then(() => {
+         isLoading.value = false
+        })
       })
 
       return {
         isLoading, admin
       }
-    },
-    mounted() {
-      this.admin.fetchStatData()
     },
     computed: {
       callStatData() {
@@ -89,8 +93,8 @@
       getStatData(item) {
         if(this.callStatData!==null) {
           switch(item) {
-            case 1: return this.callStatData.members.length
-            case 2: return this.callStatData.activeMembership.length
+            case 1: return this.callStatData.activeMembership.length
+            case 2: return this.callStatData.members.length
             case 3: return this.callStatData.memberships.length
             case 4: return this.callStatData.workouts.length
           }

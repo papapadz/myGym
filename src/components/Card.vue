@@ -1,80 +1,41 @@
 <template>
-  <ion-card>
-    <img :src="cardData.img.url" alt="Profile Image" >
+  <ion-card v-if="cardData" outline="success">
     <ion-card-header>
-      <ion-card-subtitle>{{ cardData.card_number }}</ion-card-subtitle>
-      <ion-card-title>{{ cardData.lastname }}, {{ cardData.firstname }}</ion-card-title>
+      <ion-card-subtitle>{{ cardData.person.card_number }}</ion-card-subtitle>
+      <ion-card-title>{{ cardData.person.lastname }}, {{ cardData.person.firstname }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <center>
-        <ion-chip :color="membership.color">{{ membership.text }}</ion-chip>
-        <ion-chip v-if="membership.show" color="warning">{{ membership.expiry }}</ion-chip>
-        <ion-chip v-if="navigation.getPage=='attendance'" :color="secondary">{{ membership.timein }}</ion-chip>
-      </center>
+      <ion-chip color="primary">{{ getDaysLeft(cardData.person.active_membership.expiry_date) }}</ion-chip>
+      <ion-chip color="warning">Balance: {{ balance(cardData) }}</ion-chip>
     </ion-card-content>
   </ion-card>
 </template>
 
 <script>
-  import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue'
+  import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonCardContent } from '@ionic/vue'
   import { defineComponent } from 'vue';
-  import { navigationStore } from '../stores/navigation';
-  import { format } from 'date-fns'
+  import { formatDistanceToNow } from 'date-fns'
 
   export default defineComponent({
     name: 'CardItem',
-    props: ['data'],
+    props: ['cardData'],
     components: {
-      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip
+      IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonCardContent
     },
-    setup() {
-      const navigation = navigationStore()
-      return {
-        navigation
-      }
-    },
-    data() {
-      return {
-        cardData: {},
-        membership: {
-          text: '',
-          color: 'primary',
-          show: false,
-          expiry: '',
-          timein: ''
+    methods: {
+        getDaysLeft(date) {
+            const thisDate = new Date(date)
+            const daysLeft = formatDistanceToNow(thisDate)
+            console.log('asdasd')
+            return 'Membership expires in ' + daysLeft
         },
-        gender: ''
-      }
-    },
-    beforeMount() {
-      console.log(this.navigation.getPage)
-      switch(this.navigation.getPage) {
-        case "members":
-          this.cardData = this.data
-          break
-        case "attendance":
-          this.cardData = this.data.person
-          this.membership.timein = 'logged in ' + format(this.data.created_at,'LLL d, yyyy')
-          break
-      }
-      if(this.cardData.gender=='M')
-        this.gender = 'Male'
-      else
-        this.gender = 'Female'
-
-      if(Object.is(this.cardData.active_membership,null)) {
-        if(this.navigation.getPage=="members") {
-          this.membership.text = 'Not enrolled'
-          this.membership.color = 'danger'
+        balance(item) {
+            let total = parseFloat(item.person.active_membership.membership_category.amount)
+            for(const k in item.payments) {
+              total -= parseFloat(item.payments[k].payment)
+            }
+            return 'Php ' + total.toLocaleString('en-PH')
         }
-        else
-          this.membership.text = 'Walk-In'
-      } else {
-        this.membership.show = true
-        this.membership.color = 'success'
-        this.membership.text = this.cardData.active_membership.membership_category.membership_name+" membership"
-        this.membership.expiry = "expires on " + this.cardData.active_membership.expiry_date
-      }
     }
   });
   </script>
