@@ -20,6 +20,15 @@
           </ion-content>
       </ion-content>
     </ion-content>
+    <ion-content v-else-if="navPage.isPaymentFormShown">
+      <ion-card>
+        <ion-card-content>
+          <h2><ion-badge>1</ion-badge> Payment Received</h2>
+          <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
+          <ion-button color="success" @click="save">Save</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
     <ion-content v-else>
       <ion-list v-if="!navPage.isPaymentHistoryShown">
         <ion-item-group>
@@ -39,7 +48,7 @@
     <MembershipDetailsVue v-else :membershipObject="selectedMembership" />
     </ion-content>
     <ion-fab slot="fixed" vertical="top" horizontal="end">
-      <ion-fab-button v-if="!navPage.isAddShown || !navPage.isPaymentHistoryShown" color="success" id="open-modal" expand="block" @click="openAddMembership">
+      <ion-fab-button v-if="!navPage.isClicked" color="success" id="open-modal" expand="block" @click="open">
         <ion-icon :icon="add"></ion-icon>
       </ion-fab-button>
       <ion-fab-button v-else color="danger" id="open-modal" expand="block" @click="reset">
@@ -50,7 +59,7 @@
 </template>
   
 <script>
-  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge } from '@ionic/vue'
+  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, IonInput } from '@ionic/vue'
   import { star, add, informationCircle, close, addCircle, removeCircle } from 'ionicons/icons';
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';
   import { membershipStore } from '../stores/membeships'
@@ -62,13 +71,14 @@
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, MembershipItemVue, MembershipDetailsVue
+      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, MembershipItemVue, MembershipDetailsVue, IonInput
     },
     data() {
       return {
         memberships: this.membershipData,
         selectedMembership: null,
-        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        amount: null
       }
     },
     setup() {
@@ -115,16 +125,32 @@
             return false
           return true 
       },
-      openAddMembership() {
-        console.log(this.navPage.isPaymentHistoryShown)
+      open() {
         if(this.navPage.isPaymentHistoryShown) {
-          
-        } else {
           this.navigation.$patch({
             membershipsNavigation: {
-              isAddShown: true
+              isPaymentFormShown: true,
+              isClicked: true
             }
           })
+        } else {
+            if(this.navigation.getFlipPage.data.active_membership!=null) {
+              if(isPast(new Date(this.navigation.getFlipPage.data.active_membership.expiry_date)))
+                  this.navigation.$patch({
+                    membershipsNavigation: {
+                      isAddShown: true,
+                      isClicked: true
+                    }
+                  })
+                else
+                  alert('You still have an existing membership')
+            } else
+                this.navigation.$patch({
+                  membershipsNavigation: {
+                    isAddShown: true,
+                    isClicked: true
+                  }
+                })
         }
       },
       async enroll(id) {
@@ -141,13 +167,22 @@
         })
       },
       reset() {
-        this.navigation.$patch({
-            membershipsNavigation: {
-                page:1,
-                isAddShown: false,
-                isPaymentHistoryShown: false
-            }
-        })
+        if(this.navPage.isPaymentHistoryShown)
+          this.navigation.$patch({
+              membershipsNavigation: {
+                  page:1,
+                  isPaymentFormShown: false,
+                  isClicked: false,
+              }
+          })
+        else
+          this.navigation.$patch({
+              membershipsNavigation: {
+                  page:1,
+                  isAddShown: false,
+                  isClicked: false,
+              }
+          })
       },
       getDaysLeft(date) {
           const thisDate = new Date(date)
@@ -175,6 +210,26 @@
             page: 2
           }
         })
+      },
+      save() {
+        if(this.amount>0) {
+          const x = confirm('Are you sure you want to save this?')
+          if(x) {
+            this.useMembershipStore.pay({
+              membershipID: this.selectedMembership.id,
+              amount: this.amount
+            }).then(() => {
+              this.navigation.$patch({
+                membershipsNavigation: {
+                  isPaymentFormShown: false,
+                  isClicked: false
+                }
+              })
+            })
+          }
+        } else 
+          alert('Please enter a valid amount')
+        
       }
     }
   })

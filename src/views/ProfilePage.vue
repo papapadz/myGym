@@ -86,7 +86,7 @@
                                         </ion-list>
                                     </ion-content>
                                     <AttendanceList v-if="selectedCard.title=='Attendance'" :attendanceData="navigation.getFlipAttendance" />
-                                    <MembershipsVue  v-if="selectedCard.title=='Membership'" :membershipData="navigation.getFlipMemberships" />
+                                    <MembershipsVue  v-if="selectedCard.title=='Membership'" :membershipData="flipMembership" />
                                 </ion-content>
                             </ion-col>
                         </ion-row>
@@ -97,7 +97,7 @@
 
 <script>
 import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton } from '@ionic/vue'
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
@@ -129,10 +129,13 @@ export default defineComponent({
     setup() {
         const navigation = navigationStore()
         const flipData = navigation.getFlipPage
-        
+        const flipMembership = computed(() => {
+            return navigation.getFlipMemberships
+        })
         return {
             navigation,
-            flipData
+            flipData,
+            flipMembership
         }
     },
     computed: {

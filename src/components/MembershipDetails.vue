@@ -1,11 +1,15 @@
 <template>
     <ion-content v-if="!isLoading">
         <ion-card>
+            <ion-card-header>
+                <ion-button size="small" color="warning" @click="back"><ion-icon  slot="start" :icon="arrowBack"></ion-icon> Back</ion-button>
+                <ion-button v-if="isActive(membershipDetails.expiry_date)" size="small" color="danger" @click="cancel"><ion-icon slot="start" :icon="trash"></ion-icon> Cancel</ion-button>
+            </ion-card-header>
             <ion-card-content>
                 <h2>Package: {{ membershipDetails.membership_category.membership_name }}</h2>
                 <h3>Price: Php {{ membershipDetails.membership_category.amount.toLocaleString('en-PH') }}</h3>
                 <h3>Start: {{ formatDate(membershipDetails.start_date) }}</h3>
-                <h3><ion-badge>{{ getDaysLeft(membershipDetails.expiry_date) }}</ion-badge></h3>
+                <h3><ion-badge v-if="isActive(membershipDetails.expiry_date)">{{ getDaysLeft(membershipDetails.expiry_date) }}</ion-badge></h3>
                 <ion-list>
                     <ion-item-divider>
                         <ion-label> <h2><b>Payments</b></h2> </ion-label>
@@ -24,22 +28,26 @@
 
 <script>
 import { defineComponent, ref, computed } from "vue";
-import { IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel } from "@ionic/vue"
+import { IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonCardHeader } from "@ionic/vue"
 import { membershipStore } from "../stores/membeships";
-import { format, formatDistanceToNow } from 'date-fns'
+import { navigationStore } from "../stores/navigation";
+import { format, formatDistanceToNow, isPast } from 'date-fns'
+import { arrowBack, trash } from 'ionicons/icons'
 
 export default defineComponent({
     props: ['membershipObject'],
     components: {
-        IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel
+        IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonCardHeader
     },
     setup() {
         const membership = membershipStore()
+        const navigation = navigationStore()
+
         const membershipDetails = computed(() => {
             return membership.selectedMembership
         })
         const isLoading = ref(false)
-        return { membership, membershipDetails, isLoading }
+        return { membership, membershipDetails, isLoading, arrowBack, navigation, trash }
     },
     beforeMount() {
         this.isLoading = true
@@ -48,6 +56,12 @@ export default defineComponent({
         })
     },
     methods: {
+        isActive(expiry_date) {
+            const thisDate = new Date(expiry_date)
+            if(isPast(thisDate))
+                return false
+            return true 
+        },
         formatDate(date) {
             return format(new Date(date), 'LLL d, yyyy hh:mm a')
         },
@@ -56,7 +70,30 @@ export default defineComponent({
             const daysLeft = formatDistanceToNow(thisDate)
             console.log('asdasd')
             return 'Membership expires in ' + daysLeft
-      },
+        },
+        back() {
+            this.navigation.$patch({
+                membershipsNavigation: {
+                    isPaymentHistoryShown: false
+                }
+            })
+        },
+        cancel() {
+            const x = confirm('Are you sure you want to cancel this membership?')
+
+            if(x) {
+                this.membership.cancel(this.membershipDetails.id).then(() => {
+                    // this.navigation.setMembership(this.navigation.getFlipPage.data.id).then(() => {
+                    //     this.navigation.$patch({
+                    //         membershipsNavigation: {
+                    //             isPaymentHistoryShown: false,
+                    //         }
+                    //     })
+                    // })
+                    this.$router.go(0)
+                })
+            }
+        }
     }
 })
 </script>

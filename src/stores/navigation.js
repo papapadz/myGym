@@ -21,7 +21,9 @@ export const navigationStore = defineStore('navigation', {
       membershipsNavigation: {
         page: 1,
         isAddShown: false,
-        isPaymentHistoryShown: false
+        isPaymentHistoryShown: false,
+        isPaymentFormShown: false,
+        isClicked: false,
       }
     }),
     getters: {
@@ -62,16 +64,15 @@ export const navigationStore = defineStore('navigation', {
           self.flipAttendance = response.data
         })
       },
-      setMembership(personID) {
-        const self = this
-        axios.get(BASE_URL+'/person/memberships', {
-          params: {
-            personID: personID
-          }
-        })
-        .then(function(response) {
-          self.flipMemberships = response.data
-        })
+      async setMembership(personID) {
+        try {
+          const formData = new FormData()
+          formData.append('personID', personID)
+          const response = axios.get(BASE_URL+'/person/memberships',formData)
+          this.flipMemberships = response.data
+        } catch(error) {
+          console.error(error)
+        }
       },
       async setMemberAttendanceDetails(attendanceID) {
         const self = this

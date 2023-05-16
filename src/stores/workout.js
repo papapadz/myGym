@@ -55,5 +55,27 @@ export const workoutStore = defineStore('workout', {
                 console.error(error)
             }
         },
+        async addNewWorkout(workout) {
+            try {
+              const formData = new FormData()
+              formData.append('id', workout.id)
+              formData.append('workout_name', workout.workout_name)
+              formData.append('remarks', workout.remarks)
+              formData.append('intensity', workout.intensity)
+              formData.append('new', workout.isNew)
+  
+              const response = await axios.post(BASE_URL+'/workout/new', formData)
+              console.log(response.data)
+            } catch (error) {
+              console.error(error)
+            } finally {
+              if(workout.isNew)
+                this.workoutItems.push(workout)
+              else {
+                const i = this.workoutItems.findIndex(d => d.id === workout.id)
+                this.workoutItems[i] = workout
+              }
+            }
+          }
     }
 })

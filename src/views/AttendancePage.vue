@@ -11,13 +11,9 @@
                     <ion-item v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
                         <ion-icon v-if="isWalkin(attendanceItem.person.active_membership)" :icon="walk"></ion-icon>
                         <ion-icon v-else :icon="star"></ion-icon>
-                        <ion-label v-if="isTimedOut(attendanceItem.timeout)" class="ion-padding">
-                            <h3>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</h3>
-                            <p><ion-icon :icon="time"></ion-icon> {{ attendanceItem.created_at }} to {{ attendanceItem.timeout }}</p>
-                        </ion-label>
-                        <ion-label color="success" v-else class="ion-padding">
-                            <h3>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</h3>
-                            <p><ion-icon :icon="time"></ion-icon> {{ attendanceItem.created_at }}</p>
+                        <ion-label :class="isTimedOut(attendanceItem.timeout)">
+                            <h2>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</h2>
+                            <p><ion-icon :icon="time"></ion-icon> {{ displayDateFormat(attendanceItem) }}</p>
                         </ion-label>
                     </ion-item>
                 </ion-item-group>
@@ -35,7 +31,7 @@
                         <ion-title size="large">Blank</ion-title>
                     </ion-toolbar>
                     </ion-header>
-                    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-padding">
+                    <ion-fab slot="fixed" vertical="top" horizontal="end" class="ion-padding">
                                 <ion-fab-button @click="showModal" :color="fabColor">
                                     <ion-icon :icon="fabIcon" />
                                 </ion-fab-button>
@@ -55,6 +51,7 @@
     import { membersStore } from '../stores/members'
     import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel } from '@ionic/vue'
     import WorkoutList from '../components/WorkoutList.vue'
+    import { format, isPast } from 'date-fns'
 
     export default defineComponent({
         name: 'AttendancePage',
@@ -138,14 +135,16 @@
             },
             isWalkin(membership) {
                 
-                if(membership!==null)
-                    return false
+                if(membership!==null) {
+                    if(!isPast(new Date(membership.expiry_date)))
+                        return false
+                }
                 return true
             },
             isTimedOut(timeout) {
-                if(timeout===null)
-                    return false
-                return true
+                if(!timeout)
+                    return 'active ion-padding'
+                return 'ion-padding'
             },
             viewMore(attendance) {
                 // this.navigation.$patch({
@@ -153,12 +152,20 @@
                 // })
                 this.selectedData = attendance
                 this.page = 2
+            },
+            displayDateFormat(attendance) {
+                console.log(attendance.timeout)
+                if(attendance.timeout)
+                    return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a') + ' to ' + format(new Date(attendance.timeout), 'hh:mm a')
+                
+                return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a')
+                
             }
         }
     });
 </script>
   
-  <style>
+  <style scoped>
     .card-container {
       display: flex;
       align-items: center;
@@ -172,5 +179,9 @@
       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
       transition: 0.3s;
       border-radius: 5px;
+    }
+
+    .active {
+        color: rgb(25, 155, 25)
     }
   </style>

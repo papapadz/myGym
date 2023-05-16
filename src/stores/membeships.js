@@ -22,13 +22,10 @@ export const membershipStore = defineStore('membership', {
     actions: {
         async fetchMemberships() {
           try {
-            this.isFetchingMemberships = true;
             const response = await axios.get(BASE_URL+'/membership/categories/all')
             this.membershipList = response.data
           } catch (error) {
             console.error(error)
-          } finally {
-            this.isFetchingMemberships = false
           }
         },
         async enroll(requestData) {
@@ -54,6 +51,50 @@ export const membershipStore = defineStore('membership', {
             this.selectedMembership = response.data
           } catch (error) {
             console.error(error)
+          }
+        },
+        async pay(requestData) {
+          try {
+            const formData = new FormData()
+            formData.append('membershipID', requestData.membershipID)
+            formData.append('payment', requestData.amount)
+
+            const response = await axios.post(BASE_URL+'/membership/pay',formData)
+
+            console.log(response.data)
+          } catch (error) {
+            console.error(error)
+          }
+        },
+        async cancel(membershipID) {
+          try {
+            await axios.get(BASE_URL+'/membership/cancel/'+membershipID)
+          } catch(error) {
+            console.error(error)
+          } 
+        },
+        async newMembershipCategory(membership) {
+          console.log(membership)
+          try {
+            const formData = new FormData()
+            formData.append('id', membership.id)
+            formData.append('membership_name', membership.membership_name)
+            formData.append('remarks', membership.remarks)
+            formData.append('amount', membership.amount)
+            formData.append('duration', membership.duration)
+            formData.append('new', membership.isNew)
+
+            const response = await axios.post(BASE_URL+'/membership/category/new', formData)
+            console.log(response.data)
+          } catch (error) {
+            console.error(error)
+          } finally {
+            if(membership.isNew)
+              this.membershipList.push(membership)
+            else {
+              const i = this.membershipList.findIndex(d => d.id === membership.id)
+              this.membershipList[i] = membership
+            }
           }
         }
     }

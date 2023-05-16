@@ -17,16 +17,19 @@
               </ion-card>  
             </ion-col>
           </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-card>
-                <ion-card-header>{{ title }}</ion-card-header>
-                <ion-card-content>
-                  <div class="chart-container">
-                    <canvas ref="myChart"></canvas>
-                  </div>
-                </ion-card-content>
-              </ion-card>
+          <ion-row v-if="selected.code==2">
+            <ion-col class="chart-container">
+              <AttendanceChartVue />
+            </ion-col>
+          </ion-row>
+          <ion-row v-if="selected.code==3">
+            <ion-col class="chart-container">
+              <AddMembershipsVue />
+            </ion-col>
+          </ion-row>
+          <ion-row v-if="selected.code==4">
+            <ion-col class="chart-container">
+              <AddWorkoutVue />
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -35,22 +38,27 @@
 </template>
   
   <script>
-  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonBadge } from '@ionic/vue';
+  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge } from '@ionic/vue';
   import { defineComponent, ref, onMounted } from 'vue';
   import { adminStore } from '../stores/admin'
-  import Chart from 'chart.js/auto';
+  import AddMembershipsVue from '../components/AddMemberships.vue'
+  import AddWorkoutVue from '../components/AddWorkout.vue'
+  import AttendanceChartVue from '../components/AttendanceChart.vue'
 
   export default defineComponent({
     name: 'MenuPage',
     components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonBadge
+        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue
     },
     data() {
       return {
-        title: null,
+        selected: {
+          code: 1,
+          title: 'Members'
+        },
         pages: [
-          {code: 1, title: 'Members'},
-          {code: 2, title: 'Active Memberships'},
+          {code: 1, title: 'Active Memberships'},
+          {code: 2, title: 'Attendance'},
           {code: 3, title: 'Memberships'},
           {code: 4, title: 'Workouts'}
         ]
@@ -71,23 +79,6 @@
     },
     mounted() {
       this.admin.fetchStatData()
-
-      const ctx = this.$refs.myChart.getContext('2d');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          datasets: [{
-            label: 'Sales',
-            data: [12, 19, 3, 5, 2, 3, 5, 2, 4, 12, 2, 15],
-            borderColor: 'blue',
-            fill: false,
-          }]
-        },
-        options: {
-          responsive: true
-        }
-      });
     },
     computed: {
       callStatData() {
@@ -107,7 +98,7 @@
         return null;
       },
       show(item) {
-        this.title = item.title
+        this.selected = item
       }
     }
   });
