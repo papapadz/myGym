@@ -126,7 +126,12 @@ export default defineComponent({
       this.page = 2
     },
     back() {
-      this.$router.go(0);
+      //this.$router.go('/attendance');
+      this.navigation.$patch({
+        attendanceNavigation: {
+          page: 1
+        }
+      })
     },
     saveWorkout() {
       const rdata = {

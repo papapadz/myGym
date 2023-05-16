@@ -24,6 +24,9 @@ export const navigationStore = defineStore('navigation', {
         isPaymentHistoryShown: false,
         isPaymentFormShown: false,
         isClicked: false,
+      },
+      attendanceNavigation: {
+        page: 1
       }
     }),
     getters: {
@@ -37,7 +40,8 @@ export const navigationStore = defineStore('navigation', {
         return state.flipMemberships.filter(d => d.id == id);
       },
       getIsLoading: (state) => state.isLoading,
-      getMembershipsNavigation: (state) => state.membershipsNavigation
+      getMembershipsNavigation: (state) => state.membershipsNavigation,
+      getAttendanceNavigation: (state) => state.attendanceNavigation
     },
     actions: {
       setFlippedProfile(personID) {

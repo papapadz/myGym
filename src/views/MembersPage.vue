@@ -11,7 +11,8 @@
       <ion-header collapse="condense"></ion-header>
           <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
           <ion-content v-else>
-            <ion-content v-if="!isLoading">
+            <ion-loading  v-if="isLoading"></ion-loading>
+            <ion-content v-else>
               <ion-fab vertical="top" horizontal="end">
                 <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
               </ion-fab>
@@ -39,7 +40,7 @@
 </template>
 
 <script>
-import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon  } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon, IonLoading  } from '@ionic/vue'
 import { defineComponent, ref, onBeforeMount } from 'vue';
 //import CardList from '../components/CardList.vue';
 import NewMember from '../components/NewMember.vue'
@@ -54,12 +55,12 @@ export default defineComponent({
     name: 'MembersPage',
     components: {
       NewMember, ProfilePage, 
-      IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon
+      IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon, IonLoading
     },
     setup() {
       const navigation = navigationStore()
       const members = membersStore()
-      const isLoading = ref(false)
+      const isLoading = ref(true)
       const memberList = members.getMembers
       const results = ref(memberList)
       const flipPage = ref(navigation.getFlipPage)

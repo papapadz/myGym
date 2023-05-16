@@ -5,8 +5,9 @@
                 <ion-title style="text-align: right;"></ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content :fullscreen="true">
-            <ion-content style="height: 90vh;" v-if="page==1">
+        <ion-loading v-if="isLoading"></ion-loading>
+        <ion-content v-else :fullscreen="true">
+            <ion-content style="height: 90vh;" v-if="navPage.page==1">
                 <ion-item-group v-for="attendanceItem in getAttendanceToday" :key="attendanceItem.id">
                     <ion-item :color="isTimedOut(attendanceItem.timeout)" v-if="!isShown" button detail="true" @click="viewMore(attendanceItem)">
                         <ion-icon v-if="isWalkin(attendanceItem.person.active_membership)" :icon="walk"></ion-icon>
@@ -44,12 +45,12 @@
   </template>
   
 <script>
-    import { defineComponent, onMounted } from 'vue';
+    import { defineComponent, onMounted, ref, computed } from 'vue';
     import { people as peopleIcon, close as closeIcon, walk, star, time } from 'ionicons/icons';
     import { attendanceStore } from '../stores/attendance';
     import { navigationStore } from '../stores/navigation';
     import { membersStore } from '../stores/members'
-    import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel } from '@ionic/vue'
+    import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading } from '@ionic/vue'
     import WorkoutList from '../components/WorkoutList.vue'
     import { format, isPast } from 'date-fns'
 
@@ -57,7 +58,7 @@
         name: 'AttendancePage',
         components: {
             WorkoutList,
-            IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel
+            IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading
         },
         data() {
             return {
@@ -81,9 +82,17 @@
             const navigation = navigationStore()
             const attendance = attendanceStore()
             const members = membersStore()
+            const isLoading = ref(true)
+
+            const navPage = computed(() => {
+                return navigation.getAttendanceNavigation
+            })
 
             onMounted(() => {
-                attendance.getAttendanceToday()
+                isLoading.value = true
+                attendance.getAttendanceToday().then(() => {
+                    isLoading.value = false
+                })
             })
 
             return {
@@ -93,7 +102,8 @@
                 star,
                 time,
                 attendanceToday: attendance.getAttendance,
-                allMembers: members.getMembers
+                allMembers: members.getMembers,
+                navPage
             }
         },
         methods: {
@@ -146,11 +156,13 @@
                     return 'success'
             },
             viewMore(attendance) {
-                // this.navigation.$patch({
-                //     selectedAttendanceID: attendance.id
-                // })
                 this.selectedData = attendance
-                this.page = 2
+                this.navigation.$patch({
+                    attendanceNavigation: {
+                        page: 2
+                    }
+                })
+                //this.page = 2
             },
             displayDateFormat(attendance) {
                 console.log(attendance.timeout)
