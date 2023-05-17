@@ -117,7 +117,7 @@ export const membersStore = defineStore('members', {
       },
       find(searchVal) {
         const query = searchVal.toLowerCase();
-        this.searchResults = this.members.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query))
+        this.searchResults = this.members.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query) || d.card_number.toLowerCase().includes(query))
       },
     }
 })

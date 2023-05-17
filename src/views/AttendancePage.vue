@@ -15,6 +15,7 @@
                         <ion-label class="ion-padding">
                             <h2>{{ attendanceItem.person.lastname }}, {{ attendanceItem.person.firstname }}</h2>
                             <p><ion-icon :icon="time"></ion-icon> {{ displayDateFormat(attendanceItem) }}</p>
+                            <p>{{ displayExpiryDateFormat(attendanceItem.person.active_membership) }}</p>
                         </ion-label>
                     </ion-item>
                 </ion-item-group>
@@ -168,6 +169,11 @@
                     return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a') + ' to ' + format(new Date(attendance.timeout), 'hh:mm a')
                 
                 return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a')
+            },
+            displayExpiryDateFormat(membership) {
+                if(!this.isWalkin(membership))
+                    return 'Expiry Date: '+format(new Date(membership.expiry_date), 'LLL d, yyyy')
+                
             }
         }
     });
