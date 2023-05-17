@@ -92,6 +92,7 @@ import { workoutStore } from '../stores/workout';
 import { navigationStore } from '../stores/navigation';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
 import { format, differenceInYears } from 'date-fns'
+import { attendanceStore } from '../stores/attendance';
 
 export default defineComponent({
   props: ['attendanceData'],
@@ -107,6 +108,7 @@ export default defineComponent({
     IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonTitle, IonHeader, IonToolbar, IonSelectOption, IonLabel
   },
   setup() {
+    const attendance = attendanceStore()
     const workout = workoutStore()
     const navigation = navigationStore()
     const isLoading = ref(false)
@@ -118,7 +120,7 @@ export default defineComponent({
     })
 
     return {
-      isLoading, workout, add, close, arrowBack, navigation, exit
+      isLoading, workout, add, close, arrowBack, navigation, exit, attendance
     }
   },
   methods: {
@@ -157,7 +159,13 @@ export default defineComponent({
       const x = confirm('Are you sure you want to clock out?')
       if(x)
         this.navigation.timeOut(this.attendanceData.id).then(() => {
-          this.$router.go(0);
+          this.attendance.getAttendanceToday().then(() => {
+            this.navigation.$patch({
+              attendanceNavigation: {
+                page: 1
+              }
+            })
+          })
         })
     }
   },

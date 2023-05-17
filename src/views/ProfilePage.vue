@@ -101,6 +101,7 @@ import { defineComponent, computed } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
+import { isPast } from 'date-fns'
 
 export default defineComponent({
     components: {
@@ -141,7 +142,8 @@ export default defineComponent({
     computed: {
         isActive() {
             if(!Object.is(this.flipData.data.active_membership,null))
-                return 'profile-image-active'
+                if(!isPast(new Date(this.flipData.data.active_membership.expiry_date)))
+                    return 'profile-image-active'
             return 'profile-image-inactive'
         }
     },

@@ -1,5 +1,5 @@
 <template>
-  <ion-card v-if="cardData" outline="success">
+  <ion-card outline="success">
     <ion-card-header>
       <ion-card-subtitle>{{ cardData.person.card_number }}</ion-card-subtitle>
       <ion-card-title>{{ cardData.person.lastname }}, {{ cardData.person.firstname }}</ion-card-title>

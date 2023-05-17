@@ -161,7 +161,8 @@
           this.memberships.push(this.useMembershipStore.newItem)
           this.navigation.$patch({
             membershipsNavigation: {
-              isAddShown: false
+              isAddShown: false,
+              isClicked: false
             }
           })
         })

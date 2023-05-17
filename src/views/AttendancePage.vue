@@ -139,9 +139,7 @@
                 //this.$refs.child.$el.focus();
             },
             findMember(cardNum) {
-                console.log(cardNum)
-                const newItem = this.attendance.add(cardNum)
-                console.log(newItem)
+                this.attendance.add(cardNum)
             },
             isWalkin(membership) {
                 

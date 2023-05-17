@@ -1,6 +1,6 @@
 <template>
-<ion-page>
-<ion-menu-toggle v-if="isLoggedIn">
+<ion-page v-if="isLoggedIn">
+<ion-menu-toggle>
   <ion-menu side="start" content-id="main-content">
     <ion-header>
       <ion-toolbar color="warning">
@@ -43,7 +43,7 @@
   </ion-menu>
 
 </ion-menu-toggle>
-<ion-header v-if="isLoggedIn">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button />
@@ -52,6 +52,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-router-outlet id="main-content"></ion-router-outlet>
+</ion-page>
+<ion-page v-else>
+  <LoginPageVue />
 </ion-page>
 </template>
 
@@ -62,6 +65,7 @@ import { defineComponent, onMounted, ref, computed } from 'vue';
 import { navigationStore } from './stores/navigation';
 import { adminStore } from './stores/admin'
 import { format } from 'date-fns'
+import LoginPageVue from './views/LoginPage.vue'
 
 export default defineComponent({
   name: 'App',
@@ -79,7 +83,7 @@ export default defineComponent({
     IonButtons,
     IonMenuToggle,
     IonPage,
-    IonItemGroup, IonItemDivider, IonLabel, IonButton
+    IonItemGroup, IonItemDivider, IonLabel, IonButton, LoginPageVue
   },
   setup() {
       const navigation = navigationStore()
@@ -132,8 +136,7 @@ export default defineComponent({
             data: {}
           }
         })
-        
-        window.location.replace('/')
+        //window.location.replace('/')
       }
     }
   }
