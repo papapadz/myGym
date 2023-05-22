@@ -24,6 +24,7 @@ export const navigationStore = defineStore('navigation', {
         isPaymentHistoryShown: false,
         isPaymentFormShown: false,
         isClicked: false,
+        isExtendFormShown: false
       },
       attendanceNavigation: {
         page: 1

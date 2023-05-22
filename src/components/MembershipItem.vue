@@ -17,6 +17,8 @@
                                 <ion-datetime v-model="selectedDate" :min="minDate" locale="en-PH" presentation="date"></ion-datetime>
                                 <h2><ion-badge>2</ion-badge> Payment Received</h2>
                                 <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
+                                <h2><ion-badge>3</ion-badge> Remarks</h2>
+                                <ion-input type="decimal" class="large" placeholder="Remarks" v-model="remarks"></ion-input>
                                 <ion-button color="success" @click="save">Save</ion-button>
                                 <br>
                             </div>
@@ -56,6 +58,7 @@ export default defineComponent({
             amount: 0,
             minDate: new Date().toISOString(),
             loading: false,
+            remarks: 'Downpayment'
         }
     },
     methods: {
@@ -69,7 +72,8 @@ export default defineComponent({
                     personID: this.personData.id,
                     itemID: this.membershipItem.id,
                     startDate: this.selectedDate,
-                    payment: this.amount
+                    payment: this.amount,
+                    remarks: this.remarks
                 }
                 await this.membership.enroll(data).then(() => {
                     this.loading = false
@@ -79,10 +83,14 @@ export default defineComponent({
                 alert('An error occurred while saving, please try again.')
                 console.error(error)
             } finally {
+                this.loading = false
                 this.navigation.$patch({
                         membershipsNavigation: {
                             page:1,
-                            isAddShown: false
+                            isAddShown: false,
+                            isPaymentFormShown: false,
+                            isClicked: false,
+                            isExtendFormShown: false
                         }
                     })
             }

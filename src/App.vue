@@ -123,7 +123,15 @@ export default defineComponent({
         flip: {
           data: null,
           page:1
-        }
+        },
+        membershipsNavigation: {
+          page: 1,
+          isAddShown: false,
+          isPaymentHistoryShown: false,
+          isPaymentFormShown: false,
+          isClicked: false,
+          isExtendFormShown: false
+        },
       })
     },
     logout() {

@@ -7,7 +7,9 @@
           </ion-toolbar>
         </ion-header>
         <br><br>
-        <ion-loading v-if="isLoading"></ion-loading>
+        <ProfilePage v-if="flipPage.page==3"/>
+        <div v-else>
+          <ion-loading v-if="isLoading"></ion-loading>
         <ion-grid v-else class="ion-padding">
           <ion-row>
             <ion-col v-for="pageItem in pages" :key="pageItem.code" size-md="6" size-lg="3" size-xs="12">
@@ -37,6 +39,7 @@
             </ion-col>
           </ion-row>
         </ion-grid>
+        </div>
     </ion-content>
   </ion-page>
 </template>
@@ -49,11 +52,13 @@
   import AddWorkoutVue from '../components/AddWorkout.vue'
   import AttendanceChartVue from '../components/AttendanceChart.vue'
   import CardList from '../components/CardList.vue'
+  import ProfilePage from './ProfilePage.vue'
+  import { navigationStore } from '../stores/navigation';
 
   export default defineComponent({
     name: 'MenuPage',
     components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue, IonLoading, CardList
+        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue, IonLoading, CardList, ProfilePage
     },
     data() {
       return {
@@ -72,7 +77,9 @@
     setup() {
       const admin = adminStore()
       const isLoading = ref(false)
-      
+      const navigation = navigationStore()
+      const flipPage = ref(navigation.getFlipPage)
+
       onMounted(() => {
         isLoading.value = true
         admin.fetchStatData().then(() => {
@@ -81,7 +88,7 @@
       })
 
       return {
-        isLoading, admin
+        isLoading, admin, flipPage
       }
     },
     computed: {

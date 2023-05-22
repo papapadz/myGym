@@ -3,7 +3,7 @@
       <ion-loading v-if="isLoading"></ion-loading>
       <ion-row v-else>
         <ion-col v-for="cardData in members" :key="cardData.id" size="12" size-md="6" size-lg="3">
-          <ion-card outline="success">
+          <ion-card outline="success" class="list-card" button @click="openProfile(cardData.person)">
             <ion-card-header>
               <ion-card-subtitle>{{ cardData.person.card_number }}</ion-card-subtitle>
               <ion-card-title>{{ cardData.person.lastname }}, {{ cardData.person.firstname }}</ion-card-title>
@@ -23,6 +23,7 @@
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';  
   import { formatDistanceToNow } from 'date-fns'
 import { adminStore } from '../stores/admin';
+import { navigationStore } from '../stores/navigation';
 
   export default defineComponent({
     name: 'CardList',
@@ -30,6 +31,7 @@ import { adminStore } from '../stores/admin';
       IonGrid, IonRow, IonCol, IonLoading
     },
     setup() {
+      const navigation = navigationStore()
       const admin = adminStore()
       const isLoading = ref(true)
 
@@ -43,7 +45,7 @@ import { adminStore } from '../stores/admin';
       const members = computed(() => { return admin.getActiveMembersList })
 
       return {
-        members, isLoading
+        members, isLoading, navigation
       }
     },
     methods: {
@@ -59,16 +61,32 @@ import { adminStore } from '../stores/admin';
               total -= parseFloat(item.payments[k].payment)
             }
             return 'Php ' + total.toLocaleString('en-PH')
-        }
+        },
+        openProfile(memberData) {
+          this.navigation.setFlippedProfile(memberData.id)
+          this.navigation.$patch({
+            flip: {
+              data: memberData,
+              page: 3
+            }
+          })
+      }
     }
   })
   </script>
 
 <style scoped>
 .card-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+  
+.list-card:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+  transition: all 0.3s ease-in-out;
+}
+    
 </style>

@@ -32,7 +32,10 @@
         balance(item) {
             let total = parseFloat(item.person.active_membership.membership_category.amount)
             for(const k in item.payments) {
-              total -= parseFloat(item.payments[k].payment)
+              if(item.payments[k].is_payment)
+                total -= parseFloat(item.payments[k].payment)
+              else
+                total += parseFloat(item.payments[k].payment)
             }
             return 'Php ' + total.toLocaleString('en-PH')
         }

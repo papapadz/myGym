@@ -71,49 +71,33 @@ export const membersStore = defineStore('members', {
         })
       },
       async add() {
-        const self = this
-        let formData = new FormData();
-        formData.append('lastname', this.person.lastname)
-        formData.append('firstname', this.person.firstname)
-        formData.append('middlename', this.person.middlename)
-        formData.append('birthdate', this.person.birthdate)
-        formData.append('gender', this.person.gender)
-        formData.append('address_id', this.person.address_id)
-        formData.append('contact_num', this.person.contact_num)
-        formData.append('category_id', this.person.category)
-        formData.append('card_number', this.person.card_number)
-        formData.append('img_file', this.person.img)
 
-        await axios.post(BASE_URL+'/person/new',
-          formData,
-          {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+        try {
+          let formData = new FormData();
+          formData.append('lastname', this.person.lastname)
+          formData.append('firstname', this.person.firstname)
+          formData.append('middlename', this.person.middlename)
+          formData.append('birthdate', this.person.birthdate)
+          formData.append('gender', this.person.gender)
+          formData.append('address_id', this.person.address_id)
+          formData.append('contact_num', this.person.contact_num)
+          formData.append('category_id', this.person.category)
+          formData.append('card_number', this.person.card_number)
+          formData.append('img_file', this.person.img)
+
+          await axios.post(BASE_URL+'/person/new',
+              formData,
+              {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+              }
+            )
+          } catch(error) { 
+            console.log(error)
+          } finally {
+            this.getAllMembers()
           }
-        ).then(function(){
-          this.members.push(this.person)
-          console.log('SUCCESS!!');
-          self.person = {
-            lastname: '',
-            firstname: '',
-            middlename: '',
-            birthdate: null,
-            gender: '',
-            address_id: null,
-            contact_num: '',
-            card_number: null,
-            category: null,
-            img: null
-          }
-        })
-        .catch(function(err){
-          const errorReponse = err.response.data.errors
-          console.log(errorReponse)
-          if(Object.prototype.hasOwnProperty.call(errorReponse, 'lastname')) {
-            self.errors.lastname = errorReponse.lastname
-          }
-        });
       },
       find(searchVal) {
         const query = searchVal.toLowerCase();

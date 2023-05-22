@@ -37,8 +37,8 @@ export const membershipStore = defineStore('membership', {
                 formData.append('itemID', requestData.itemID)
                 formData.append('startDate', requestData.startDate)
                 formData.append('payment', requestData.payment)
-                //const response = await axios.get(BASE_URL+'/person/membership/new',formData)
-                //this.newItem = response.data
+                formData.append('remarks', requestData.remarks)
+
                 const response = await axios.post(BASE_URL+'/person/membership/new', formData)
                 navigation.addFlipMembership(response.data)
               } catch (error) {
@@ -58,6 +58,8 @@ export const membershipStore = defineStore('membership', {
             const formData = new FormData()
             formData.append('membershipID', requestData.membershipID)
             formData.append('payment', requestData.amount)
+            formData.append('remarks', requestData.remarks)
+            formData.append('isPayment', (requestData.isPayment ? 1 : 0))
 
             const response = await axios.post(BASE_URL+'/membership/pay',formData)
 
@@ -95,6 +97,17 @@ export const membershipStore = defineStore('membership', {
               const i = this.membershipList.findIndex(d => d.id === membership.id)
               this.membershipList[i] = membership
             }
+          }
+        },
+        async extend(extensionObject) {
+          try {
+            const formData = new FormData()
+            formData.append('id', extensionObject.membershipID)
+            formData.append('value', extensionObject.value)
+            formData.append('duration', extensionObject.duration)
+            await axios.post(BASE_URL+'/membership/extend',formData) 
+          } catch(error) {
+            console.error(error)
           }
         }
     }

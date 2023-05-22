@@ -4,7 +4,7 @@
       <ion-item>
           <ion-label>Select Membership</ion-label>
         </ion-item>
-      <ion-loading v-if="isSavingMembership" content="Fetching memberships..." />
+      <ion-loading v-if="isLoading" />
       <ion-content v-else>
           <ion-content v-if="navPage.page==2">
             <MembershipItemVue :membershipItem="selectedMembership"/>
@@ -23,8 +23,13 @@
     <ion-content v-else-if="navPage.isPaymentFormShown">
       <ion-card>
         <ion-card-content>
-          <h2><ion-badge>1</ion-badge> Payment Received</h2>
+          <h2><ion-button @click="toggle" slot="end" size="small" :color="isPayment ? 'success' : 'danger'"> {{ isPaymentLabel }}</ion-button>
+          </h2>
+          <hr/>
+          <h2><ion-icon :color="isPayment ? 'success' : 'danger'" :icon="isPayment ? add : remove"></ion-icon> Amount</h2>
           <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
+          <h2>Remarks/Particulars</h2>
+          <ion-input class="large" placeholder="Enter note/remarks" v-model="remarks"></ion-input>
           <ion-button color="success" @click="save">Save</ion-button>
         </ion-card-content>
       </ion-card>
@@ -40,7 +45,7 @@
               <h3>{{ membershipItem.membership_category.membership_name }}</h3>
               <p>{{ displayDate(membershipItem) }}</p>
               <hr>
-              <ion-badge v-if="this.isActive(membershipItem.expiry_date)" color="success">{{ getDaysLeft(membershipItem.expiry_date) }}</ion-badge>
+              <ion-chip v-if="this.isActive(membershipItem.expiry_date)" color="success">{{ getDaysLeft(membershipItem.expiry_date) }}</ion-chip>
             </ion-label>
           </ion-item>
         </ion-item-group>
@@ -59,8 +64,8 @@
 </template>
   
 <script>
-  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, IonInput } from '@ionic/vue'
-  import { star, add, informationCircle, close, addCircle, removeCircle } from 'ionicons/icons';
+  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonInput } from '@ionic/vue'
+  import { star, add, informationCircle, close, addCircle, removeCircle, remove } from 'ionicons/icons';
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';
   import { membershipStore } from '../stores/membeships'
   import { navigationStore } from '../stores/navigation';
@@ -71,14 +76,15 @@
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonBadge, MembershipItemVue, MembershipDetailsVue, IonInput
+      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue, MembershipDetailsVue, IonInput
     },
     data() {
       return {
         memberships: this.membershipData,
         selectedMembership: null,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        amount: null
+        amount: null,
+        remarks: ''
       }
     },
     setup() {
@@ -87,7 +93,8 @@
       const isFetchingMemberships = useMembershipStore.getIsSavingMembership
       const isSavingMembership = useMembershipStore.getIsSavingMembership
       const isLoading = ref(false)
-
+      const isPayment = ref(true)
+      const isPaymentLabel = ref('Receive Payment')
       const navPage = computed(() => {
         return navigation.getMembershipsNavigation
       })
@@ -111,7 +118,10 @@
         close, 
         addCircle, 
         removeCircle, 
-        navPage };
+        remove,
+        navPage,
+        isPayment,
+        isPaymentLabel };
     },
     computed: {
       getMemberships() {
@@ -174,6 +184,7 @@
                   page:1,
                   isPaymentFormShown: false,
                   isClicked: false,
+                  isExtendFormShown: false
               }
           })
         else
@@ -218,8 +229,13 @@
           if(x) {
             this.useMembershipStore.pay({
               membershipID: this.selectedMembership.id,
-              amount: this.amount
+              amount: this.amount,
+              remarks: this.remarks,
+              isPayment: this.isPayment
             }).then(() => {
+              this.amount = 0
+              this.remarks = ''
+              this.isPayment = true
               this.navigation.$patch({
                 membershipsNavigation: {
                   isPaymentFormShown: false,
@@ -231,12 +247,22 @@
         } else 
           alert('Please enter a valid amount')
         
+      },
+      toggle() {
+        if(this.isPayment) {
+          this.isPaymentLabel = 'Add to Credit'
+          this.isPayment = false
+        }
+        else {
+          this.isPaymentLabel = 'Receive Payment'
+          this.isPayment = true
+        }
       }
     }
   })
 </script>
 
-  <style>
+  <style scoped>
   .success {
     background-color: lime;
   }

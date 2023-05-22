@@ -179,21 +179,12 @@ export default defineComponent({
         if(this.members.person.img==null)
               alert('Please upload an image')
         else {
-          try {
             this.loading = true
             await this.members.add().then(() => {
               alert('Member has successfully been added!')
               this.loading = false
+              this.cancel()
             })
-          } catch(error) {
-            alert('Error saving, please make sure all fields are filled up. Try again.')
-          } finally {
-            this.navigation.$patch({
-              members: {
-                isNewFormShown: false
-              }
-            })
-          }
         }
       },
       selectAddress(flag) {

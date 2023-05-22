@@ -128,6 +128,7 @@ export default defineComponent({
         })
       },
       openProfile(memberData) {
+        console.log(this.$router)
         //this.navigation.setAttendance(memberData.id)
         //this.navigation.setMembership(memberData.id)
         this.navigation.setFlippedProfile(memberData.id)
@@ -137,7 +138,7 @@ export default defineComponent({
             page: 3
           }
         })
-        
+        this.$router.push({path: 'member/', replace: true})
       }
     }
 });
