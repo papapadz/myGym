@@ -62,7 +62,7 @@ export default defineComponent({
     },
     setup() {
         const workout = workoutStore()
-        const isLoading = ref(false)
+        const isLoading = ref(true)
 
         onBeforeMount(() => {
             isLoading.value = true
