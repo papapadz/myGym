@@ -23,19 +23,19 @@
           <ion-row v-if="selected.code==1">
             <CardList />
           </ion-row>
-          <ion-row v-if="selected.code==2">
-            <ion-col class="chart-container">
-              <AttendanceChartVue />
+          <ion-row v-else-if="selected.code==2">
+            <ion-col>
+              <AttendanceChartVue class="chart-container" />
             </ion-col>
           </ion-row>
-          <ion-row v-if="selected.code==3">
-            <ion-col class="chart-container">
-              <AddMembershipsVue />
+          <ion-row v-else-if="selected.code==3">
+            <ion-col>
+              <AddMembershipsVue class="chart-container" />
             </ion-col>
           </ion-row>
-          <ion-row v-if="selected.code==4">
-            <ion-col class="chart-container">
-              <AddWorkoutVue />
+          <ion-row v-else-if="selected.code==4">
+            <ion-col>
+              <AddWorkoutVue class="chart-container" />
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -125,6 +125,6 @@
 .chart-container {
   position: relative;
   width: 100%;
-  height: 50vh;
+  height: 70vh;
 }
 </style>

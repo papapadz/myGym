@@ -6,7 +6,9 @@
                 <ion-card-header>Workouts</ion-card-header>
                 <ion-list>
                     <ion-item button detail="true" v-for="item in workoutList" :key="item.id" @click="select(item)">
-                        <ion-icon :color="getIntensity(item)" :icon="flame" slot="start"></ion-icon>
+                        <ion-icon v-if="item.intensity==1" color="success" :icon="flame" slot="start" />
+                        <ion-icon v-else-if="item.intensity==2" color="warning" :icon="flame" slot="start" />
+                        <ion-icon v-else color="danger" :icon="flame" slot="start" />
                         <ion-label>
                             <h3>{{ item.workout_name }}</h3>
                             <p>{{ item.remarks }}</p>
@@ -51,14 +53,14 @@
 </template>
 
 <script>
-import { IonContent, IonLoading, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect } from '@ionic/vue'
+import { IonContent, IonLoading, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect, IonButton, IonCard } from '@ionic/vue'
 import { defineComponent, onBeforeMount, computed, ref } from 'vue'
 import { stopOutline, pencil, add, flame } from 'ionicons/icons'
 import { workoutStore } from '../stores/workout'
 
 export default defineComponent({
     components: {
-        IonLoading, IonContent, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect
+        IonLoading, IonContent, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect, IonButton, IonCard
     },
     setup() {
         const workout = workoutStore()
@@ -114,16 +116,6 @@ export default defineComponent({
                 this.isLoading = false
                 this.page = 1
             })
-        },
-        getIntensity(workout) {
-            switch(workout.intensity) {
-                case 1:
-                    return 'success'
-                case 2:
-                    return 'warning'
-                case 3:
-                    return 'danger'
-            }
         }
     }
 })
