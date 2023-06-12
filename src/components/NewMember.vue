@@ -125,7 +125,7 @@ export default defineComponent({
       const members = membersStore()
       const navigation = navigationStore()
       const loading = ref(false)
-
+      
       return {
         address,
         members,

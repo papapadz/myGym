@@ -29,7 +29,7 @@
                             <ion-col size="12" v-if="selectedCard" style="height: 50vh">
                                 <ion-content>
                                     <ion-content v-if="selectedCard.title=='Profile'">
-                                        <ion-list lines="none">
+                                        <ion-list v-if="!isEditing" lines="none">
                                             <ion-item-group>
                                                 <ion-item-divider>
                                                     <ion-label>
@@ -37,9 +37,7 @@
                                                     </ion-label>
                                                 </ion-item-divider>
                                                 <ion-item>
-                                                        <ion-label>
-                                                            {{ flipData.data.card_number }}
-                                                        </ion-label>
+                                                        <ion-label>{{ flipData.data.card_number }}</ion-label>
                                                     </ion-item>
                                             </ion-item-group>
 
@@ -84,6 +82,7 @@
                                                     </ion-item>
                                             </ion-item-group>
                                         </ion-list>
+                                        <NewMemberVue v-else />
                                     </ion-content>
                                     <AttendanceList v-if="selectedCard.title=='Attendance'" :attendanceData="navigation.getFlipAttendance" />
                                     <MembershipsVue  v-if="selectedCard.title=='Membership'" :membershipData="flipMembership" />
@@ -99,7 +98,7 @@
                     <ion-fab-button @click="deleteMember">
                         <ion-icon color="danger" :icon="trash"></ion-icon>
                     </ion-fab-button>
-                    <ion-fab-button>
+                    <ion-fab-button @click="isEditing=true">
                         <ion-icon color="primary" :icon="pencil"></ion-icon>
                     </ion-fab-button>
                 </ion-fab-list>
@@ -109,7 +108,7 @@
 </template>
 
 <script>
-import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton } from '@ionic/vue'
+import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/vue'
 import { defineComponent, computed } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
@@ -117,13 +116,15 @@ import MembershipsVue from '../components/MembershipsVue.vue';
 import { isPast } from 'date-fns'
 import { chevronUpCircle, trash, pencil } from 'ionicons/icons'
 import { membersStore } from '../stores/members';
+import NewMemberVue from '../components/NewMember.vue';
 export default defineComponent({
     components: {
-        AttendanceList, MembershipsVue,
-        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton
+        AttendanceList, MembershipsVue, NewMemberVue,
+        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList
     },
     data() {
         return {
+            isEditing: false,
             selectedIndex: 0,
             selectedCard: {
                 title: 'Profile',
@@ -148,6 +149,7 @@ export default defineComponent({
             return navigation.getFlipMemberships
         })
         const members = membersStore()
+        const profileData = navigation.getFlipPage
 
         return {
             navigation,
@@ -155,6 +157,7 @@ export default defineComponent({
             flipData,
             flipMembership,
             chevronUpCircle, trash, pencil,
+            profileData
         }
     },
     computed: {
