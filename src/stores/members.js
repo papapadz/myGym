@@ -103,5 +103,18 @@ export const membersStore = defineStore('members', {
         const query = searchVal.toLowerCase();
         this.searchResults = this.members.filter(d => d.lastname.toLowerCase().includes(query) || d.firstname.toLowerCase().includes(query) || d.card_number.toLowerCase().includes(query))
       },
+      async delete(id) {
+        try {
+          await axios.get(BASE_URL+'/person/delete/'+id)
+        } catch(error) {
+          console.error(error)
+        } finally {
+          const index = this.searchResults.findIndex(member => { return member.id === id })
+          this.searchResults.splice(index, 1)
+
+          const ii = this.members.findIndex(member => { return member.id === id })
+          this.members.splice(ii, 1)
+        }
+      }
     }
 })

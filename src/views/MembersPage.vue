@@ -17,10 +17,9 @@
                 <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
               </ion-fab>
               <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
-              <!-- <CardList :dataProp="members.getSearchResult"/> -->
               <ion-grid>
                 <ion-row size="auto" class="ion-justify-content-start">
-                  <ion-col size-md="6" size-lg="3" size-xs="12" v-for="memberItem in members.getSearchResult" :key="memberItem.id">
+                  <ion-col size-md="6" size-lg="3" size-xs="12" v-for="memberItem in memberResults" :key="memberItem.id">
                     <ion-card :class="checkStatus(memberItem)" @click="openProfile(memberItem)">
                       <img class="card-image" :src="memberItem.img.url" alt="Profile Image" />
                       <ion-card-header>
@@ -41,8 +40,7 @@
 
 <script>
 import { IonHeader, IonToolbar, IonContent, IonTitle, IonSearchbar, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonPage, IonCardTitle, IonFab, IonFabButton, IonIcon, IonLoading  } from '@ionic/vue'
-import { defineComponent, ref, onBeforeMount } from 'vue';
-//import CardList from '../components/CardList.vue';
+import { defineComponent, ref, onBeforeMount, computed } from 'vue';
 import NewMember from '../components/NewMember.vue'
 import ProfilePage from './ProfilePage.vue';
 import { membersStore } from '../stores/members';
@@ -64,7 +62,9 @@ export default defineComponent({
       const memberList = members.getMembers
       const results = ref(memberList)
       const flipPage = ref(navigation.getFlipPage)
-      
+      const memberResults = computed(() => {
+        return members.getSearchResult
+      })
       const search = (val) => {
         members.find(val)
       }
@@ -86,7 +86,8 @@ export default defineComponent({
         closeIcon,
         plusIcon,
         checkIcon,
-        flipPage
+        flipPage,
+        memberResults
       }
     },
     data() {

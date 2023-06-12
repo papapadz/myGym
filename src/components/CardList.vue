@@ -1,9 +1,9 @@
 <template>
-    <ion-grid :fixed="true">
+    <ion-grid :fixed="true" >
       <ion-loading v-if="isLoading"></ion-loading>
       <ion-row v-else>
         <ion-col v-for="cardData in members" :key="cardData.id" size="12" size-md="6" size-lg="3">
-          <ion-card outline="success" class="list-card" button @click="openProfile(cardData.person)">
+          <ion-card v-if="cardData && cardData.person" outline="success" class="list-card" button @click="openProfile(cardData.person)">
             <ion-card-header>
               <ion-card-subtitle>{{ cardData.person.card_number }}</ion-card-subtitle>
               <ion-card-title>{{ cardData.person.lastname }}, {{ cardData.person.firstname }}</ion-card-title>

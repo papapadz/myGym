@@ -90,7 +90,20 @@
                                 </ion-content>
                             </ion-col>
                         </ion-row>
-                    </ion-grid> 
+            </ion-grid> 
+            <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+                <ion-fab-button>
+                  <ion-icon :icon="chevronUpCircle"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-list side="top">
+                    <ion-fab-button @click="deleteMember">
+                        <ion-icon color="danger" :icon="trash"></ion-icon>
+                    </ion-fab-button>
+                    <ion-fab-button>
+                        <ion-icon color="primary" :icon="pencil"></ion-icon>
+                    </ion-fab-button>
+                </ion-fab-list>
+              </ion-fab>
         </ion-content>
       </ion-page>
 </template>
@@ -102,7 +115,8 @@ import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
 import { isPast } from 'date-fns'
-
+import { chevronUpCircle, trash, pencil } from 'ionicons/icons'
+import { membersStore } from '../stores/members';
 export default defineComponent({
     components: {
         AttendanceList, MembershipsVue,
@@ -133,10 +147,14 @@ export default defineComponent({
         const flipMembership = computed(() => {
             return navigation.getFlipMemberships
         })
+        const members = membersStore()
+
         return {
             navigation,
+            members,
             flipData,
-            flipMembership
+            flipMembership,
+            chevronUpCircle, trash, pencil,
         }
     },
     computed: {
@@ -157,6 +175,18 @@ export default defineComponent({
                     isPaymentHistoryShown: false
                 }
             })
+        },
+        deleteMember() {
+            const x = confirm('Are you sure you want to delete this member?')
+            if(x) {
+                this.members.delete(this.flipData.data.id).then(() => {
+                    this.navigation.$patch({
+                        flip: {
+                            page: 1
+                        }
+                    })
+                })
+            }
         }
     }
 })
