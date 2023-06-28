@@ -18,7 +18,8 @@ export const adminStore = defineStore('admin', {
         responseObject: {
             status: 1
         },
-        activeMembersList: []
+        activeMembersList: [],
+        categories: [],
     }),
     getters: {
         getStatData: (state) => state.stat,
@@ -26,7 +27,8 @@ export const adminStore = defineStore('admin', {
         getUserList: (state) => state.userList,
         getHasError: (state) => state.hasError,
         getResponseObject: (state) => state.responseObject,
-        getActiveMembersList: (state) => state.activeMembersList
+        getActiveMembersList: (state) => state.activeMembersList,
+        getCategories: (state) => state.categories
     },
     actions: {
         async fetchStatData() {
@@ -113,6 +115,10 @@ export const adminStore = defineStore('admin', {
             } catch(error) {
               console.error(error)
             }
-          },
+        },
+        async fetchCategories() {
+            const response = await axios.get(BASE_URL+'/admin/get/user/categories')
+            this.categories = response.data
+        }
     }
 })

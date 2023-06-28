@@ -29,7 +29,7 @@
                             <ion-col size="12" v-if="selectedCard" style="height: 50vh">
                                 <ion-content>
                                     <ion-content v-if="selectedCard.title=='Profile'">
-                                        <ion-list v-if="!isEditing" lines="none">
+                                        <ion-list lines="none">
                                             <ion-item-group>
                                                 <ion-item-divider>
                                                     <ion-label>
@@ -37,8 +37,9 @@
                                                     </ion-label>
                                                 </ion-item-divider>
                                                 <ion-item>
-                                                        <ion-label>{{ flipData.data.card_number }}</ion-label>
-                                                    </ion-item>
+                                                    <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
+                                                    <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.card_number"></ion-input>
+                                                </ion-item>
                                             </ion-item-group>
 
                                             <ion-item-group>
@@ -48,19 +49,34 @@
                                                     </ion-label>
                                                 </ion-item-divider>
                                                     <ion-item>
-                                                        <ion-label>
-                                                            Name: {{ flipData.data.lastname }}, {{ flipData.data.firstname }} {{ flipData.data.middlename }}
-                                                        </ion-label>
+                                                        <ion-label slot="start" position="stacked">Last Name:</ion-label>
+                                                        <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.lastname"></ion-input>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
-                                                        <ion-label>
-                                                            Birthday: {{ flipData.data.birthdate }}
-                                                        </ion-label>
+                                                        <ion-label slot="start" position="stacked">First Name:</ion-label>
+                                                        <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.firstname"></ion-input>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
-                                                        <ion-label>
-                                                            Gender: {{ flipData.data.gender }}
+                                                        <ion-label slot="start"  position="stacked">Middle Name:</ion-label>
+                                                        <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.middlename"></ion-input>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label slot="start" position="stacked">Birthday:</ion-label>
+                                                        <ion-input type="date" :clear-input="true" :readonly="!isEditing" v-model="profileData.birthdate"></ion-input>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label slot="start">
+                                                           Gender
                                                         </ion-label>
+                                                        <ion-select placeholder="Select Gender" v-model="profileData.gender">
+                                                            <ion-select-option value="M">Male</ion-select-option>
+                                                            <ion-select-option value="F">Female</ion-select-option>
+                                                        </ion-select>  
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
                                                         <ion-label>
@@ -82,7 +98,6 @@
                                                     </ion-item>
                                             </ion-item-group>
                                         </ion-list>
-                                        <NewMemberVue v-else />
                                     </ion-content>
                                     <AttendanceList v-if="selectedCard.title=='Attendance'" :attendanceData="navigation.getFlipAttendance" />
                                     <MembershipsVue  v-if="selectedCard.title=='Membership'" :membershipData="flipMembership" />
@@ -98,7 +113,7 @@
                     <ion-fab-button @click="deleteMember">
                         <ion-icon color="danger" :icon="trash"></ion-icon>
                     </ion-fab-button>
-                    <ion-fab-button @click="isEditing=true">
+                    <ion-fab-button @click="editMember">
                         <ion-icon color="primary" :icon="pencil"></ion-icon>
                     </ion-fab-button>
                 </ion-fab-list>
@@ -108,7 +123,7 @@
 </template>
 
 <script>
-import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/vue'
+import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption } from '@ionic/vue'
 import { defineComponent, computed } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
@@ -116,14 +131,15 @@ import MembershipsVue from '../components/MembershipsVue.vue';
 import { isPast } from 'date-fns'
 import { chevronUpCircle, trash, pencil } from 'ionicons/icons'
 import { membersStore } from '../stores/members';
-import NewMemberVue from '../components/NewMember.vue';
+import { adminStore } from '../stores/admin'
 export default defineComponent({
     components: {
-        AttendanceList, MembershipsVue, NewMemberVue,
-        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList
+        AttendanceList, MembershipsVue,
+        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption
     },
     data() {
         return {
+            profileData: this.flipData.data,
             isEditing: false,
             selectedIndex: 0,
             selectedCard: {
@@ -149,15 +165,15 @@ export default defineComponent({
             return navigation.getFlipMemberships
         })
         const members = membersStore()
-        const profileData = navigation.getFlipPage
-
+        const admin = adminStore()
+        
         return {
             navigation,
             members,
             flipData,
             flipMembership,
             chevronUpCircle, trash, pencil,
-            profileData
+            admin
         }
     },
     computed: {
@@ -190,6 +206,18 @@ export default defineComponent({
                     })
                 })
             }
+        },
+        editMember() {
+            let memberData = this.flipData.data
+            this.admin.fetchCategories().then(() => {
+                memberData.category = this.admin.getCategories.find(e => e.id == this.flipData.data.category.id)
+            }).finally(() => {
+                
+                this.members.$patch({
+                    person: memberData
+                })
+                this.isEditing = true
+            })
         }
     }
 })
