@@ -16,30 +16,30 @@ export const addressStore = defineStore('address', {
       getBarangayList: (state) => state.barangays
     },
     actions: {
-      getRegions() {
+      async getRegions() {
         const self = this
-        axios.get(BASE_URL+'/regions')
+        await axios.get(BASE_URL+'/regions')
           .then(function(response) {
             self.regions = response.data
         })
       },
-      getProvinces(region_id) {
+      async getProvinces(region_id) {
         const self = this
-        axios.get(BASE_URL+'/provinces/'+region_id)
+        await axios.get(BASE_URL+'/provinces/'+region_id)
           .then(function(response) {
             self.provinces = response.data
         })
       },
-      getCities(province_id) {
+      async getCities(province_id) {
         const self = this
-        axios.get(BASE_URL+'/cities/'+province_id)
+        await axios.get(BASE_URL+'/cities/'+province_id)
           .then(function(response) {
             self.cities = response.data
         })
       },
-      getBarangays(city_id) {
+      async getBarangays(city_id) {
         const self = this
-        axios.get(BASE_URL+'/barangays/'+city_id)
+        await axios.get(BASE_URL+'/barangays/'+city_id)
           .then(function(response) {
             self.barangays = response.data
         })

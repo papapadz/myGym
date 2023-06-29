@@ -1,6 +1,7 @@
 <template>
       <ion-page>
-        <ion-content>
+        <ion-loading v-if="isLoading"></ion-loading>
+        <ion-content v-else>
             <ion-grid>
                 <ion-row>
                     <ion-col size="12">
@@ -49,22 +50,22 @@
                                                     </ion-label>
                                                 </ion-item-divider>
                                                     <ion-item>
-                                                        <ion-label slot="start" position="stacked">Last Name:</ion-label>
+                                                        <ion-label slot="start">Last Name:</ion-label>
                                                         <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.lastname"></ion-input>
                                                         <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
-                                                        <ion-label slot="start" position="stacked">First Name:</ion-label>
+                                                        <ion-label slot="start">First Name:</ion-label>
                                                         <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.firstname"></ion-input>
                                                         <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
-                                                        <ion-label slot="start"  position="stacked">Middle Name:</ion-label>
+                                                        <ion-label slot="start" >Middle Name:</ion-label>
                                                         <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.middlename"></ion-input>
                                                         <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                                     <ion-item>
-                                                        <ion-label slot="start" position="stacked">Birthday:</ion-label>
+                                                        <ion-label slot="start">Birthday:</ion-label>
                                                         <ion-input type="date" :clear-input="true" :readonly="!isEditing" v-model="profileData.birthdate"></ion-input>
                                                         <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
@@ -72,7 +73,8 @@
                                                         <ion-label slot="start">
                                                            Gender
                                                         </ion-label>
-                                                        <ion-select placeholder="Select Gender" v-model="profileData.gender">
+                                                        <ion-input v-if="!isEditing" :readonly="!isEditing" :value="(profileData.gender=='M' ? 'Male' : 'Female')"></ion-input>
+                                                        <ion-select v-else placeholder="Select Gender" v-model="profileData.gender">
                                                             <ion-select-option value="M">Male</ion-select-option>
                                                             <ion-select-option value="F">Female</ion-select-option>
                                                         </ion-select>  
@@ -80,8 +82,33 @@
                                                     </ion-item>
                                                     <ion-item>
                                                         <ion-label>
-                                                            Address: {{ flipData.data.address.name }}, {{ flipData.data.address.city.name }}, {{ flipData.data.address.province.name }}
+                                                            Address:
                                                         </ion-label>
+                                                        <ion-input v-if="!isEditing" :readonly="!isEditing" :value="displayAddress"></ion-input>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label position="floating">Select Region</ion-label>
+                                                        <ion-select placeholder="Select Region" v-model="selectedAddress.region" @ionChange="selectAddress(1)">
+                                                            <ion-select-option v-for="item in address.getRegionList" :key="item.id" :value="item.region_id">{{ item.name }}</ion-select-option>
+                                                        </ion-select>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label position="floating">Select Province</ion-label>
+                                                        <ion-select placeholder="Select Province" v-model="selectedAddress.province" @ionChange="selectAddress(2)">
+                                                            <ion-select-option v-for="item in address.getProvinceList" :key="item.id" :value="item.province_id">{{ item.name }}</ion-select-option>
+                                                        </ion-select>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label position="floating">Select City/Municipality</ion-label>
+                                                        <ion-select placeholder="Select City/Municipality" v-model="selectedAddress.city" @ionChange="selectAddress(3)">
+                                                            <ion-select-option v-for="item in address.getCityList" :key="item.id" :value="item.city_id">{{ item.name }}</ion-select-option>
+                                                        </ion-select>
+                                                    </ion-item>
+                                                    <ion-item>
+                                                        <ion-label position="floating">Select Barangay</ion-label>
+                                                        <ion-select placeholder="Select Barangay" v-model="profileData.address_id" @ionChange="selectAddress(4)">
+                                                            <ion-select-option v-for="item in address.getBarangayList" :key="item.id" :value="item.code">{{ item.name }}</ion-select-option>
+                                                        </ion-select>
                                                     </ion-item>
                                             </ion-item-group>
 
@@ -123,8 +150,8 @@
 </template>
 
 <script>
-import { IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption } from '@ionic/vue'
-import { defineComponent, computed } from 'vue';
+import { IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption } from '@ionic/vue'
+import { defineComponent, computed, ref } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
@@ -132,13 +159,20 @@ import { isPast } from 'date-fns'
 import { chevronUpCircle, trash, pencil } from 'ionicons/icons'
 import { membersStore } from '../stores/members';
 import { adminStore } from '../stores/admin'
+import { addressStore } from '../stores/address';
+
 export default defineComponent({
     components: {
         AttendanceList, MembershipsVue,
-        IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption
+        IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption
     },
     data() {
         return {
+            selectedAddress: {
+                region: '',
+                province: '',
+                city: ''
+            },
             profileData: this.flipData.data,
             isEditing: false,
             selectedIndex: 0,
@@ -159,6 +193,7 @@ export default defineComponent({
         }
     },
     setup() {
+        const isLoading = ref(false)
         const navigation = navigationStore()
         const flipData = navigation.getFlipPage
         const flipMembership = computed(() => {
@@ -166,14 +201,17 @@ export default defineComponent({
         })
         const members = membersStore()
         const admin = adminStore()
-        
+        const address = addressStore()
+
         return {
             navigation,
             members,
             flipData,
             flipMembership,
             chevronUpCircle, trash, pencil,
-            admin
+            admin,
+            address,
+            isLoading
         }
     },
     computed: {
@@ -182,6 +220,9 @@ export default defineComponent({
                 if(!isPast(new Date(this.flipData.data.active_membership.expiry_date)))
                     return 'profile-image-active'
             return 'profile-image-inactive'
+        },
+        displayAddress() {
+            return this.flipData.data.address.name+', '+this.flipData.data.address.city.name+', '+this.flipData.data.address.province.name
         }
     },
     methods: {
@@ -217,6 +258,30 @@ export default defineComponent({
                     person: memberData
                 })
                 this.isEditing = true
+            })
+        },
+        selectAddress(flag) {
+            switch(flag) {
+            case 1:
+                this.address.getProvinces(this.selectedAddress.region)
+                this.selectedAddress.province = ''
+                this.selectedAddress.city = ''
+                this.selectedAddress.barangay = ''
+                break
+            case 2:
+                this.address.getCities(this.selectedAddress.province)
+                this.selectedAddress.city = ''
+                this.selectedAddress.barangay = ''
+                break
+            case 3:
+                this.address.getBarangays(this.selectedAddress.city)
+                break
+            }
+        },
+        async fetchRegions() {
+            this.isLoading = true
+            this.address.getRegions().then(() => {
+                this.isLoading = false
             })
         }
     }
