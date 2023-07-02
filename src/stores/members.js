@@ -63,7 +63,7 @@ export const membersStore = defineStore('members', {
             return this.errors.lastname!='' ? false : true
         }
       },
-      getCategories() {
+      async getCategories() {
         const self = this
         axios.get(BASE_URL+'/person/categories')
           .then(function(response) {
@@ -114,6 +114,28 @@ export const membersStore = defineStore('members', {
 
           const ii = this.members.findIndex(member => { return member.id === id })
           this.members.splice(ii, 1)
+        }
+      },
+      async update(personObj) {
+        try {
+          
+        console.log(formData)
+        let formData = new FormData();
+        formData.append('lastname', personObj.lastname)
+        formData.append('firstname', personObj.firstname)
+        formData.append('middlename', personObj.middlename)
+        formData.append('birthdate', personObj.birthdate)
+        formData.append('gender', personObj.gender)
+        formData.append('address_id', personObj.address_id)
+        formData.append('contact_num', personObj.contact_num)
+        formData.append('category_id', personObj.category_id)
+        formData.append('card_number', personObj.card_number)          
+        //formData.append('img_file', person.img)
+        
+        await axios.post(BASE_URL+'/update/profile',formData)
+
+        } catch(error) {
+          console.error(error)
         }
       }
     }

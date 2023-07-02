@@ -11,7 +11,7 @@
       <ion-header collapse="condense"></ion-header>
           <NewMember v-if="navigation.getMemberPageSettings.isNewFormShown"/>
           <ion-content v-else>
-            <ion-loading  v-if="isLoading"></ion-loading>
+            <ion-loading v-if="isLoading"></ion-loading>
             <ion-content v-else>
               <ion-fab vertical="top" horizontal="end">
                 <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
@@ -59,7 +59,9 @@ export default defineComponent({
       const navigation = navigationStore()
       const members = membersStore()
       const isLoading = ref(true)
-      const memberList = members.getMembers
+      const memberList = computed(() => {
+        return members.getMembers
+      })
       const results = ref(memberList)
       const flipPage = ref(navigation.getFlipPage)
       const memberResults = computed(() => {

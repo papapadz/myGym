@@ -1,7 +1,6 @@
 <template>
       <ion-page>
-        <ion-loading v-if="isLoading"></ion-loading>
-        <ion-content v-else>
+        <ion-content>
             <ion-grid>
                 <ion-row>
                     <ion-col size="12">
@@ -26,7 +25,7 @@
                                 </ion-segment>
                             </ion-col>
                         </ion-row>
-                        <ion-row>
+                        <ion-row class="ion-padding-bottom">
                             <ion-col size="12" v-if="selectedCard" style="height: 50vh">
                                 <ion-content>
                                     <ion-content v-if="selectedCard.title=='Profile'">
@@ -42,7 +41,8 @@
                                                     <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.card_number"></ion-input>
                                                 </ion-item>
                                             </ion-item-group>
-
+                                            
+                                            <ion-loading v-if="isLoading"></ion-loading>
                                             <ion-item-group>
                                                 <ion-item-divider>
                                                     <ion-label>
@@ -86,29 +86,33 @@
                                                         </ion-label>
                                                         <ion-input v-if="!isEditing" :readonly="!isEditing" :value="displayAddress"></ion-input>
                                                     </ion-item>
-                                                    <ion-item>
+                                                    <ion-item  v-if="isEditing">
                                                         <ion-label position="floating">Select Region</ion-label>
                                                         <ion-select placeholder="Select Region" v-model="selectedAddress.region" @ionChange="selectAddress(1)">
                                                             <ion-select-option v-for="item in address.getRegionList" :key="item.id" :value="item.region_id">{{ item.name }}</ion-select-option>
                                                         </ion-select>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
-                                                    <ion-item>
+                                                    <ion-item v-if="isEditing">
                                                         <ion-label position="floating">Select Province</ion-label>
                                                         <ion-select placeholder="Select Province" v-model="selectedAddress.province" @ionChange="selectAddress(2)">
                                                             <ion-select-option v-for="item in address.getProvinceList" :key="item.id" :value="item.province_id">{{ item.name }}</ion-select-option>
                                                         </ion-select>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
-                                                    <ion-item>
+                                                    <ion-item v-if="isEditing">
                                                         <ion-label position="floating">Select City/Municipality</ion-label>
                                                         <ion-select placeholder="Select City/Municipality" v-model="selectedAddress.city" @ionChange="selectAddress(3)">
                                                             <ion-select-option v-for="item in address.getCityList" :key="item.id" :value="item.city_id">{{ item.name }}</ion-select-option>
                                                         </ion-select>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
-                                                    <ion-item>
+                                                    <ion-item v-if="isEditing">
                                                         <ion-label position="floating">Select Barangay</ion-label>
                                                         <ion-select placeholder="Select Barangay" v-model="profileData.address_id" @ionChange="selectAddress(4)">
                                                             <ion-select-option v-for="item in address.getBarangayList" :key="item.id" :value="item.code">{{ item.name }}</ion-select-option>
                                                         </ion-select>
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                             </ion-item-group>
 
@@ -119,9 +123,25 @@
                                                     </ion-label>
                                                 </ion-item-divider>
                                                 <ion-item>
-                                                        <ion-label>
-                                                            Phone Number: {{ flipData.data.contact_num }}
+                                                    <ion-label slot="start" >Phone Nunber:</ion-label>
+                                                    <ion-input :clear-input="true" :readonly="!isEditing" v-model="profileData.contact_num"></ion-input>
+                                                    <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
+                                                </ion-item>
+                                            </ion-item-group>
+
+                                            <ion-item-group>
+                                                <ion-item-divider>
+                                                    <ion-label>Other Information</ion-label>
+                                                </ion-item-divider>
+                                                <ion-item>
+                                                        <ion-label slot="start">
+                                                           Category
                                                         </ion-label>
+                                                        <ion-input v-if="!isEditing" :readonly="!isEditing" :value="profileData.category.category"></ion-input>
+                                                        <ion-select v-else placeholder="Select Category" v-model="profileData.category_id">
+                                                            <ion-select-option v-for="cateItem in members.getMemberCategories" :key="cateItem.id" :value="cateItem.id">{{ cateItem.category }}</ion-select-option>
+                                                        </ion-select>  
+                                                        <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
                                                     </ion-item>
                                             </ion-item-group>
                                         </ion-list>
@@ -137,11 +157,17 @@
                   <ion-icon :icon="chevronUpCircle"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-list side="top">
-                    <ion-fab-button @click="deleteMember">
+                    <ion-fab-button v-if="!isEditing" @click="deleteMember">
                         <ion-icon color="danger" :icon="trash"></ion-icon>
                     </ion-fab-button>
-                    <ion-fab-button @click="editMember">
+                    <ion-fab-button v-if="!isEditing" @click="editMember">
                         <ion-icon color="primary" :icon="pencil"></ion-icon>
+                    </ion-fab-button>
+                    <ion-fab-button v-if="isEditing" @click="saveEdit">
+                        <ion-icon color="success" :icon="save"></ion-icon>
+                    </ion-fab-button>
+                    <ion-fab-button v-if="isEditing" @click="isEditing=false">
+                        <ion-icon color="danger" :icon="close"></ion-icon>
                     </ion-fab-button>
                 </ion-fab-list>
               </ion-fab>
@@ -156,7 +182,7 @@ import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
 import { isPast } from 'date-fns'
-import { chevronUpCircle, trash, pencil } from 'ionicons/icons'
+import { chevronUpCircle, trash, pencil, close, save } from 'ionicons/icons'
 import { membersStore } from '../stores/members';
 import { adminStore } from '../stores/admin'
 import { addressStore } from '../stores/address';
@@ -208,7 +234,7 @@ export default defineComponent({
             members,
             flipData,
             flipMembership,
-            chevronUpCircle, trash, pencil,
+            chevronUpCircle, trash, pencil, close, save,
             admin,
             address,
             isLoading
@@ -249,6 +275,7 @@ export default defineComponent({
             }
         },
         editMember() {
+            this.isLoading = true
             let memberData = this.flipData.data
             this.admin.fetchCategories().then(() => {
                 memberData.category = this.admin.getCategories.find(e => e.id == this.flipData.data.category.id)
@@ -257,32 +284,61 @@ export default defineComponent({
                 this.members.$patch({
                     person: memberData
                 })
-                this.isEditing = true
+
+                this.address.getRegions().then(() => {
+                    this.isEditing = true
+                }).finally(() => {
+                    
+                    this.members.getCategories().then(() => {
+                        this.isLoading = false
+                    })
+                })
+
             })
         },
         selectAddress(flag) {
+            this.isLoading = true
             switch(flag) {
             case 1:
-                this.address.getProvinces(this.selectedAddress.region)
-                this.selectedAddress.province = ''
-                this.selectedAddress.city = ''
-                this.selectedAddress.barangay = ''
+                this.address.getProvinces(this.selectedAddress.region).then(() => {
+                    this.isLoading = false
+                    this.selectedAddress.province = ''
+                    this.selectedAddress.city = ''
+                    this.selectedAddress.barangay = ''
+                })
+                
                 break
             case 2:
-                this.address.getCities(this.selectedAddress.province)
-                this.selectedAddress.city = ''
-                this.selectedAddress.barangay = ''
+                this.address.getCities(this.selectedAddress.province).then(() => {
+                    this.isLoading = false
+                    this.selectedAddress.city = ''
+                    this.selectedAddress.barangay = ''
+                })
                 break
             case 3:
-                this.address.getBarangays(this.selectedAddress.city)
+                this.address.getBarangays(this.selectedAddress.city).then(() => {
+                    this.isLoading = false
+                })
                 break
+            default: 
+                this.isLoading = false
             }
         },
-        async fetchRegions() {
+        fetchRegions() {
             this.isLoading = true
             this.address.getRegions().then(() => {
                 this.isLoading = false
             })
+        },
+        saveEdit() {
+            const x = confirm('Are you sure you want save the changes made?')
+            if(x) {
+                this.isLoading = true
+                this.members.update(this.profileData).then(() => {
+                    this.isEditing = false
+                    this.isLoading = false
+                })
+            }
         }
     }
 })
