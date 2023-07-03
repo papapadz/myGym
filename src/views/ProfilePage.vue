@@ -339,6 +339,10 @@ export default defineComponent({
                     this.isLoading = false
                 })
             }
+        },
+        cancelEdit() {
+            this.isEditing = false
+            
         }
     }
 })

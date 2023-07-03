@@ -119,8 +119,8 @@ export const membersStore = defineStore('members', {
       async update(personObj) {
         try {
           
-        console.log(formData)
-        let formData = new FormData();
+        const formData = new FormData();
+        formData.append('personID', personObj.id)
         formData.append('lastname', personObj.lastname)
         formData.append('firstname', personObj.firstname)
         formData.append('middlename', personObj.middlename)
@@ -132,8 +132,8 @@ export const membersStore = defineStore('members', {
         formData.append('card_number', personObj.card_number)          
         //formData.append('img_file', person.img)
         
-        await axios.post(BASE_URL+'/update/profile',formData)
-
+        const respone = await axios.post(BASE_URL+'/person/update/profile',formData)
+        console.log(respone.data)
         } catch(error) {
           console.error(error)
         }
