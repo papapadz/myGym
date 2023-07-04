@@ -133,10 +133,14 @@ export const membersStore = defineStore('members', {
         //formData.append('img_file', person.img)
         
         const respone = await axios.post(BASE_URL+'/person/update/profile',formData)
-        console.log(respone.data)
+        return respone.data
         } catch(error) {
           console.error(error)
         }
+      },
+      async findMember(id) {
+        const respone = await axios.get(BASE_URL+'/person/find/'+id)
+        return respone.data
       }
     }
 })

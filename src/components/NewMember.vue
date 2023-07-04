@@ -34,7 +34,7 @@
         </ion-item>
         <ion-item>
           <ion-label position="floating">Enter Contact Number</ion-label>
-          <ion-input v-model="members.person.contact_num" type="text" placeholder="Cellphone Number"></ion-input>
+          <ion-input maxlength="11" v-model="members.person.contact_num" type="text" placeholder="Cellphone Number"></ion-input>
           <ion-note :v-slot="error">{{ members.getInputErrors.contact_num }}</ion-note>
         </ion-item>
         <ion-item>

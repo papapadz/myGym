@@ -152,7 +152,7 @@
                             </ion-col>
                         </ion-row>
             </ion-grid> 
-            <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+            <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="selectedCard.title=='Profile'">
                 <ion-fab-button>
                   <ion-icon :icon="chevronUpCircle"></ion-icon>
                 </ion-fab-button>
@@ -166,7 +166,7 @@
                     <ion-fab-button v-if="isEditing" @click="saveEdit">
                         <ion-icon color="success" :icon="save"></ion-icon>
                     </ion-fab-button>
-                    <ion-fab-button v-if="isEditing" @click="isEditing=false">
+                    <ion-fab-button v-if="isEditing" @click="cancelEdit">
                         <ion-icon color="danger" :icon="close"></ion-icon>
                     </ion-fab-button>
                 </ion-fab-list>
@@ -177,7 +177,7 @@
 
 <script>
 import { IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption } from '@ionic/vue'
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed, ref, onBeforeMount } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
 import MembershipsVue from '../components/MembershipsVue.vue';
@@ -199,7 +199,6 @@ export default defineComponent({
                 province: '',
                 city: ''
             },
-            profileData: this.flipData.data,
             isEditing: false,
             selectedIndex: 0,
             selectedCard: {
@@ -228,6 +227,11 @@ export default defineComponent({
         const members = membersStore()
         const admin = adminStore()
         const address = addressStore()
+        const profileData = ref({})
+
+        onBeforeMount(() => {
+            profileData.value = flipData.data
+        })
 
         return {
             navigation,
@@ -237,7 +241,8 @@ export default defineComponent({
             chevronUpCircle, trash, pencil, close, save,
             admin,
             address,
-            isLoading
+            isLoading,
+            profileData
         }
     },
     computed: {
@@ -248,7 +253,7 @@ export default defineComponent({
             return 'profile-image-inactive'
         },
         displayAddress() {
-            return this.flipData.data.address.name+', '+this.flipData.data.address.city.name+', '+this.flipData.data.address.province.name
+            return this.profileData.address.name+', '+this.profileData.address.city.name+', '+this.profileData.address.province.name
         }
     },
     methods: {
@@ -334,15 +339,21 @@ export default defineComponent({
             const x = confirm('Are you sure you want save the changes made?')
             if(x) {
                 this.isLoading = true
-                this.members.update(this.profileData).then(() => {
-                    this.isEditing = false
-                    this.isLoading = false
+                this.members.update(this.profileData).then((e) => {
+                    this.closeEdit(e)
                 })
             }
         },
         cancelEdit() {
+            this.isLoading = true
+            this.members.findMember(this.profileData.id).then((e) => {
+                this.closeEdit(e)
+            })   
+        },
+        closeEdit(obj) {
+            this.profileData = obj
+            this.isLoading = false
             this.isEditing = false
-            
         }
     }
 })

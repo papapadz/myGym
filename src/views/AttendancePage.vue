@@ -20,12 +20,12 @@
                     </ion-item>
                 </ion-item-group>
                 <div class="card-container">
-                    <ion-card @click="setFocus" v-if="isShown">
+                    <ion-card @click="inputFocus" v-if="isShown">
                             <ion-card-header>
                                 <ion-card-subtitle>Scan RFID Card</ion-card-subtitle>
                             </ion-card-header>
                             <ion-card-content>
-                                <ion-input type="text" placeholder="Click Here" v-model="cardNum" @ion-input="captureCard" @ion-blur="setFocus" ref="child"></ion-input>
+                                <ion-input setFocus type="text" placeholder="Click Here" v-model="cardNum" @ion-input="captureCard"></ion-input>
                             </ion-card-content>
                     </ion-card>
                     <ion-header collapse="condense">
@@ -117,7 +117,7 @@
                     this.fabIcon=closeIcon
                 }
                 
-                this.setFocus();
+                //this.setFocus();
             },
             closeModal() {
                 this.isShown=false
@@ -135,9 +135,6 @@
                         this.closeModal()
                     }, 500)
                 }
-            },
-            setFocus() {
-                //this.$refs.child.$el.focus();
             },
             findMember(cardNum) {
                 this.attendance.add(cardNum)
@@ -174,6 +171,11 @@
                 if(!this.isWalkin(membership))
                     return 'Expiry Date: '+format(new Date(membership.expiry_date), 'LLL d, yyyy')
                 
+            },
+            inputFocus() {
+                setTimeout(() => 
+                    document.getElementById('fidInput').setFocus()
+                ,1000)
             }
         }
     });

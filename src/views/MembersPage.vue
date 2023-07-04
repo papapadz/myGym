@@ -74,6 +74,9 @@ export default defineComponent({
       onBeforeMount(() => {
         isLoading.value = true
         members.getAllMembers().then(() => {
+          members.$patch({
+            searchResults: members.getMembers
+          })
           isLoading.value = false
         })
       })
