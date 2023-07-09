@@ -20,12 +20,12 @@
                     </ion-item>
                 </ion-item-group>
                 <div class="card-container">
-                    <ion-card @click="inputFocus" v-if="isShown">
+                    <ion-card v-if="isShown">
                             <ion-card-header>
                                 <ion-card-subtitle>Scan RFID Card</ion-card-subtitle>
                             </ion-card-header>
                             <ion-card-content>
-                                <ion-input setFocus type="text" placeholder="Click Here" v-model="cardNum" @ion-input="captureCard"></ion-input>
+                                <input class="ion-no-border" ref="inputCard" type="text" placeholder="Scan card now" v-model="cardNum" @input="captureCard" />
                             </ion-card-content>
                     </ion-card>
                     <ion-header collapse="condense">
@@ -51,7 +51,7 @@
     import { attendanceStore } from '../stores/attendance';
     import { navigationStore } from '../stores/navigation';
     import { membersStore } from '../stores/members'
-    import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading } from '@ionic/vue'
+    import { IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading } from '@ionic/vue'
     import WorkoutList from '../components/WorkoutList.vue'
     import { format, isPast } from 'date-fns'
 
@@ -59,7 +59,7 @@
         name: 'AttendancePage',
         components: {
             WorkoutList,
-            IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonInput, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading
+            IonPage, IonContent, IonFab, IonFabButton, IonHeader, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonTitle, IonItem, IonItemGroup, IonIcon, IonLabel, IonLoading
         },
         data() {
             return {
@@ -112,32 +112,40 @@
                 if(this.isShown) {
                     this.closeModal()
                 } else {
-                    this.isShown=true
-                    this.fabColor='danger',
-                    this.fabIcon=closeIcon
+                        this.isShown=true
+                        this.fabColor='danger',
+                        this.fabIcon=closeIcon
+
+                        setTimeout(() => 
+                            this.$refs.inputCard.focus()
+                        ,1)
                 }
-                
-                //this.setFocus();
             },
             closeModal() {
                 this.isShown=false
                 this.fabColor='primary',
                 this.fabIcon=peopleIcon
             },
-            captureCard(event) {
+            async captureCard(event) {
                 if(!this.isClicked) {
                     this.isClicked = true
-                    setTimeout(() => {
+                    //setTimeout(() => {
                         const input = event.target.value;
                         this.isClicked = false
                         this.cardNum = ""
-                        this.findMember(input)
+                        await this.attendance.add(input).then((e) => {
+                            console.log(e)
+                            if(e.status=='DUPLICATE') {
+                                let conf = confirm('Member has an existing attendance today, are you sure you want to add another another attendance?')
+                                if(!conf) {
+                                    this.attendance.deleteAttendance(e.object.id)
+                                }
+                            }
+                            
+                        })
                         this.closeModal()
-                    }, 500)
+                   // }, 1000)
                 }
-            },
-            findMember(cardNum) {
-                this.attendance.add(cardNum)
             },
             isWalkin(membership) {
                 
@@ -171,11 +179,6 @@
                 if(!this.isWalkin(membership))
                     return 'Expiry Date: '+format(new Date(membership.expiry_date), 'LLL d, yyyy')
                 
-            },
-            inputFocus() {
-                setTimeout(() => 
-                    document.getElementById('fidInput').setFocus()
-                ,1000)
             }
         }
     });
@@ -199,5 +202,11 @@
 
     .active {
         color: rgb(25, 155, 25)
+    }
+
+    input {
+        border-radius: 10px !important; 
+        font-size: 1em; 
+        border: 1px solid #f1f1f1 !important; --background: rgb (219,219,219) !important;
     }
   </style>

@@ -34,9 +34,18 @@ export const attendanceStore = defineStore('attendance', {
           console.error(error)
         }
       },
+      async deleteAttendance(id) {
+        try {
+          await axios.get(BASE_URL+'/attendance/delete/'+id).then((response) => {
+            this.attendance = response.data 
+          })
+        } catch(error) {
+          console.error(error)
+        }
+      },
       async add(cardNum) {
         try {
-          await axios.get(BASE_URL+'/attendance/new',{params: {card_num: cardNum}}).then(() => {
+          return await axios.get(BASE_URL+'/attendance/new',{params: {card_num: cardNum}}).then(() => {
             this.getAttendanceToday()
           })
         } catch(error) {
