@@ -126,25 +126,29 @@
                 this.fabColor='primary',
                 this.fabIcon=peopleIcon
             },
-            async captureCard(event) {
+            captureCard(event) {
                 if(!this.isClicked) {
                     this.isClicked = true
-                    //setTimeout(() => {
-                        const input = event.target.value;
-                        this.isClicked = false
-                        this.cardNum = ""
-                        await this.attendance.add(input).then((e) => {
-                            console.log(e)
-                            if(e.status=='DUPLICATE') {
-                                let conf = confirm('Member has an existing attendance today, are you sure you want to add another another attendance?')
-                                if(!conf) {
-                                    this.attendance.deleteAttendance(e.object.id)
-                                }
-                            }
-                            
-                        })
-                        this.closeModal()
-                   // }, 1000)
+                    setTimeout(() => {
+                        try {
+                            this.isLoading = true
+                            const input = event.target.value;
+                            this.isClicked = false
+                            this.cardNum = ""
+                            this.attendance.add(input).then((e) => {
+                                if(e.data.status=='DUPLICATE') {
+                                    let conf = confirm('Member has an existing attendance today, are you sure you want to add another another attendance?')
+                                    if(!conf) 
+                                        this.attendance.deleteAttendance(e.data.object.id)
+                                } else
+                                    alert('Card Number is invalid!')
+                            }).finally(() => this.attendance.getAttendanceToday().then(() => this.closeModal()))
+                        } catch(error) {
+                            alert('Card Number is invalid!')
+                        } finally {
+                            this.isLoading = false
+                        }
+                   }, 1000)
                 }
             },
             isWalkin(membership) {
@@ -169,7 +173,6 @@
                 //this.page = 2
             },
             displayDateFormat(attendance) {
-                console.log(attendance.timeout)
                 if(attendance.timeout)
                     return format(new Date(attendance.created_at), 'LLL d, yyyy hh:mm a') + ' to ' + format(new Date(attendance.timeout), 'hh:mm a')
                 

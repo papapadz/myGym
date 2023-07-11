@@ -2,36 +2,104 @@
     <ion-content>
         <ion-loading v-if="isLoading"></ion-loading>
         <Bar v-else :data="chartData" />
+        <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+            <ion-fab-button @click="isModalOpen=true">
+                <ion-icon :icon="calendar" />
+            </ion-fab-button>
+        </ion-fab>
+        <ion-modal :is-open="isModalOpen" @willDismiss="isModalOpen=false" :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75]">
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Filter By</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+            <ion-item>
+                <ion-label>Date: </ion-label>
+                <ion-input type="date" v-model="dateInput" @click="change(1)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Year: </ion-label>
+                <ion-select @click="change(2)" v-model="yearInput">
+                    <ion-select-option v-for="(yr, index) in yearList" :value="yr" :key="index">{{ yr }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-button v-if="btnText!=''" expand="block" @click="fetchData">Filter by {{ btnText }}</ion-button>
+        </ion-content>
+        </ion-modal>
     </ion-content>
 </template>
 
 <script>
-import { defineComponent, computed, onMounted, ref } from 'vue'
-import { IonContent, IonLoading } from '@ionic/vue'
+import { defineComponent, computed, onBeforeMount, ref } from 'vue'
+import { IonContent, IonLoading, IonFab, IonFabButton, IonModal, IonHeader, IonToolbar, IonItem, IonIcon, IonInput, IonTitle, IonLabel, IonSelect, IonSelectOption, IonButton } from '@ionic/vue'
 import { attendanceStore } from '../stores/attendance'
+import { calendar } from 'ionicons/icons'
 import { format } from 'date-fns'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default defineComponent({
     components: {
-        IonContent, Bar, IonLoading
+        IonContent, Bar, IonLoading, IonFab, IonFabButton, IonModal, IonHeader, IonToolbar, IonItem, IonIcon, IonInput, IonTitle, IonLabel, IonSelect, IonSelectOption, IonButton
     },
     setup() {
+        const isModalOpen = ref(false)
         const attendance = attendanceStore()
         const isLoading = ref(false)
-        onMounted(() => {
-            isLoading.value = true
-            attendance.fetchAttendanceDataByYear(format(new Date(),'yyyy')).then(() => {
-                isLoading.value = false
-            })
+        const yearList = []
+        const yearInput = ref('2023')
+        const dateInput = ref(new Date())
+        const isDateClicked = ref(false)
+        const btnText = ref('')
+
+        onBeforeMount(() => {
+            
+            let year = 2023
+            let ctr = 0
+            
+            do {
+                yearList.push(year)
+                year++
+                ctr++
+            } while(ctr<=10)
+
+            fetchData()
         })
 
         const chartData = computed(() => {
             return attendance.getChartData
         })
 
-        return { chartData, isLoading }
+        function change(val) {
+            if(val==1) {
+                btnText.value = 'Day'
+                isDateClicked.value = true
+                yearInput.value = null
+            } else {
+                btnText.value = 'Year'
+                isDateClicked.value = false
+                dateInput.value = null
+            }
+        }
+
+        async function fetchData() {
+            isModalOpen.value = false
+            isLoading.value = true
+            let filterBy = 'year'
+            let ddate = yearInput.value
+            if(isDateClicked.value) {
+                filterBy = 'day'
+                ddate = dateInput.value
+            }
+
+            await attendance.fetchAttendanceDataByYear(format(new Date(ddate), 'MM/dd/yyyy'),filterBy).then(() => {
+                isLoading.value = false
+            })
+        }
+
+        return { chartData, isLoading, calendar, isModalOpen, yearList, yearInput, dateInput, change, btnText, fetchData }
     },
 })
 </script>
