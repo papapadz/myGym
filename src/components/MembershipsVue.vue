@@ -66,7 +66,7 @@
 </template>
   
 <script>
-  import { IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonInput } from '@ionic/vue'
+  import { IonCard, IonCardContent, IonChip, IonButton, IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, IonInput } from '@ionic/vue'
   import { star, add, informationCircle, close, addCircle, removeCircle, remove } from 'ionicons/icons';
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';
   import { membershipStore } from '../stores/membeships'
@@ -78,7 +78,7 @@
   export default defineComponent({
     props: ['membershipData'],
     components: {
-      IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue, MembershipDetailsVue, IonInput
+      IonCard, IonCardContent, IonChip, IonButton, IonPage, IonContent, IonList, IonItemGroup, IonItem, IonIcon, IonFab, IonFabButton, IonLoading, IonItemDivider, IonLabel, MembershipItemVue, MembershipDetailsVue, IonInput
     },
     data() {
       return {

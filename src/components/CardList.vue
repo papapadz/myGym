@@ -19,7 +19,7 @@
 </template>
   
   <script>
-  import { IonGrid, IonRow, IonCol, IonLoading } from '@ionic/vue';
+  import { IonGrid, IonRow, IonCol, IonLoading, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonChip, IonCardContent } from '@ionic/vue';
   import { defineComponent, ref, onBeforeMount, computed } from 'vue';  
   import { formatDistanceToNow } from 'date-fns'
 import { adminStore } from '../stores/admin';
@@ -28,7 +28,7 @@ import { navigationStore } from '../stores/navigation';
   export default defineComponent({
     name: 'CardList',
     components: {
-      IonGrid, IonRow, IonCol, IonLoading
+      IonGrid, IonRow, IonCol, IonLoading, IonCard, IonCardHeader, IonCardSubtitle, IonChip, IonCardContent, IonCardTitle
     },
     setup() {
       const navigation = navigationStore()
