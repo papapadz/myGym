@@ -1,65 +1,67 @@
 <template>
   <ion-page>
-    <ion-content v-if="navPage.isAddShown">
-      <ion-item>
-          <ion-label>Select Membership</ion-label>
-        </ion-item>
-      <ion-loading v-if="isLoading" />
+    <ion-loading v-if="navigation.isLoading"></ion-loading>
+    <ion-content>
+      <ion-content v-if="navPage.isAddShown">
+        <ion-item>
+            <ion-label>Select Membership</ion-label>
+          </ion-item>
+        <ion-content>
+            <ion-content v-if="navPage.page==2">
+              <MembershipItemVue :membershipItem="selectedMembership"/>
+            </ion-content>
+            <ion-content v-else>
+              <ion-item button detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id" @click="viewMore(membershipListItem)">
+                <ion-label>
+                  <h3>{{ membershipListItem.membership_name }}</h3>
+                  <p>{{ membershipListItem.remarks }}</p>
+                  <p>{{ membershipListItem.amount }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-content>
+        </ion-content>
+      </ion-content>
+      <ion-content v-else-if="navPage.isPaymentFormShown">
+        <ion-card v-if="!navigation.isLoading">
+          <ion-card-content>
+            <h2><ion-button @click="toggle" slot="end" size="small" :color="isPayment ? 'success' : 'danger'"> {{ isPaymentLabel }}</ion-button>
+            </h2>
+            <hr/>
+            <h2><ion-icon :color="isPayment ? 'success' : 'danger'" :icon="isPayment ? add : remove"></ion-icon> Amount</h2>
+            <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
+            <h2>Remarks/Particulars</h2>
+            <ion-input class="large" placeholder="Enter note/remarks" v-model="remarks"></ion-input>
+            <ion-button color="success" @click="save">Save</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
       <ion-content v-else>
-          <ion-content v-if="navPage.page==2">
-            <MembershipItemVue :membershipItem="selectedMembership"/>
-          </ion-content>
-          <ion-content v-else>
-            <ion-item button detail="true" v-for="membershipListItem in useMembershipStore.getmembershipList" :key="membershipListItem.id" @click="viewMore(membershipListItem)">
+        <ion-list v-if="!navPage.isPaymentHistoryShown">
+          <ion-item-group>
+            <ion-item-divider>Memberships</ion-item-divider>
+            <ion-item lines="none" v-for="membershipItem in getMemberships" :key="membershipItem.id" detail="true" button="true" @click="showPaymentDetails(membershipItem)">
+              <ion-icon v-if="this.isActive(membershipItem.expiry_date)" color="primary" :icon="star" slot="start"></ion-icon>
+              <ion-icon v-else color="disabled" :icon="star" slot="start"></ion-icon>
               <ion-label>
-                <h3>{{ membershipListItem.membership_name }}</h3>
-                <p>{{ membershipListItem.remarks }}</p>
-                <p>{{ membershipListItem.amount }}</p>
+                <h3>{{ membershipItem.membership_category.membership_name }}</h3>
+                <p>{{ displayDate(membershipItem) }}</p>
+                <hr>
+                <ion-chip v-if="this.isActive(membershipItem.expiry_date)" color="success">{{ getDaysLeft(membershipItem.expiry_date) }}</ion-chip>
               </ion-label>
             </ion-item>
-          </ion-content>
+          </ion-item-group>
+      </ion-list>
+      <MembershipDetailsVue v-else :membershipObject="selectedMembership" />
       </ion-content>
+      <ion-fab slot="fixed" vertical="top" horizontal="end">
+        <ion-fab-button v-if="!navPage.isClicked" color="success" id="open-modal" expand="block" @click="open">
+          <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button v-else color="danger" id="open-modal" expand="block" @click="reset">
+          <ion-icon :icon="close"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
-    <ion-content v-else-if="navPage.isPaymentFormShown">
-      <ion-card>
-        <ion-card-content>
-          <h2><ion-button @click="toggle" slot="end" size="small" :color="isPayment ? 'success' : 'danger'"> {{ isPaymentLabel }}</ion-button>
-          </h2>
-          <hr/>
-          <h2><ion-icon :color="isPayment ? 'success' : 'danger'" :icon="isPayment ? add : remove"></ion-icon> Amount</h2>
-          <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
-          <h2>Remarks/Particulars</h2>
-          <ion-input class="large" placeholder="Enter note/remarks" v-model="remarks"></ion-input>
-          <ion-button color="success" @click="save">Save</ion-button>
-        </ion-card-content>
-      </ion-card>
-    </ion-content>
-    <ion-content v-else>
-      <ion-list v-if="!navPage.isPaymentHistoryShown">
-        <ion-item-group>
-          <ion-item-divider>Memberships</ion-item-divider>
-          <ion-item lines="none" v-for="membershipItem in getMemberships" :key="membershipItem.id" detail="true" button="true" @click="showPaymentDetails(membershipItem)">
-            <ion-icon v-if="this.isActive(membershipItem.expiry_date)" color="primary" :icon="star" slot="start"></ion-icon>
-            <ion-icon v-else color="disabled" :icon="star" slot="start"></ion-icon>
-            <ion-label>
-              <h3>{{ membershipItem.membership_category.membership_name }}</h3>
-              <p>{{ displayDate(membershipItem) }}</p>
-              <hr>
-              <ion-chip v-if="this.isActive(membershipItem.expiry_date)" color="success">{{ getDaysLeft(membershipItem.expiry_date) }}</ion-chip>
-            </ion-label>
-          </ion-item>
-        </ion-item-group>
-    </ion-list>
-    <MembershipDetailsVue v-else :membershipObject="selectedMembership" />
-    </ion-content>
-    <ion-fab slot="fixed" vertical="top" horizontal="end">
-      <ion-fab-button v-if="!navPage.isClicked" color="success" id="open-modal" expand="block" @click="open">
-        <ion-icon :icon="add"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-button v-else color="danger" id="open-modal" expand="block" @click="reset">
-        <ion-icon :icon="close"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
   </ion-page>
 </template>
   
@@ -80,35 +82,39 @@
     },
     data() {
       return {
-        memberships: this.membershipData,
-        selectedMembership: null,
+        //memberships: this.navigation.getFlipMemberships,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         amount: null,
         remarks: ''
       }
     },
     setup() {
+      
       const useMembershipStore = membershipStore()
       const navigation = navigationStore()
       const isFetchingMemberships = useMembershipStore.getIsSavingMembership
       const isSavingMembership = useMembershipStore.getIsSavingMembership
-      const isLoading = ref(false)
       const isPayment = ref(true)
       const isPaymentLabel = ref('Receive Payment')
       const navPage = computed(() => {
         return navigation.getMembershipsNavigation
       })
+      const selectedMembership = computed(() => {
+        return useMembershipStore.getSelectedMembership
+      })
 
       onBeforeMount(() => {
-        isLoading.value = true
+        navigation.setLoading(true)
         useMembershipStore.fetchMemberships().then(() => {
-          isLoading.value = false
+          navigation.setLoading(false)
         })
+      })
+      const getMemberships = computed(() => {
+        return navigation.getFlipMemberships
       })
 
       return { 
         navigation, 
-        isLoading, 
         useMembershipStore, 
         isFetchingMemberships, 
         isSavingMembership, 
@@ -121,12 +127,8 @@
         remove,
         navPage,
         isPayment,
-        isPaymentLabel };
-    },
-    computed: {
-      getMemberships() {
-        return this.memberships
-      }
+        isPaymentLabel, getMemberships, selectedMembership
+      };
     },
     methods: {
       isActive(expiry_date) {
@@ -137,6 +139,8 @@
       },
       open() {
         if(this.navPage.isPaymentHistoryShown) {
+          this.isPayment = true
+          this.isPaymentLabel = 'Receive Payment'
           this.navigation.$patch({
             membershipsNavigation: {
               isPaymentFormShown: true,
@@ -208,7 +212,9 @@
         return dateTo+" to "+dateFrom
       },
       showPaymentDetails(membership) {
-        this.selectedMembership = membership
+        this.useMembershipStore.$patch({
+          selectedMembership: membership
+        })
         this.navigation.$patch({
           membershipsNavigation: {
             isPaymentHistoryShown: true
@@ -216,7 +222,9 @@
         })
       },
       viewMore(membership) {
-        this.selectedMembership = membership
+        this.useMembershipStore.$patch({
+          selectedMembership: membership
+        })
         this.navigation.$patch({
           membershipsNavigation: {
             page: 2

@@ -49,6 +49,7 @@ export const membershipStore = defineStore('membership', {
           try {
             const response = await axios.get(BASE_URL+'/membership/find/'+membershipID)
             this.selectedMembership = response.data
+            return response.data
           } catch (error) {
             console.error(error)
           }
@@ -70,7 +71,8 @@ export const membershipStore = defineStore('membership', {
         },
         async cancel(membershipID) {
           try {
-            await axios.get(BASE_URL+'/membership/cancel/'+membershipID)
+            const response = await axios.get(BASE_URL+'/membership/cancel/'+membershipID)
+            return response.data
           } catch(error) {
             console.error(error)
           } 
@@ -105,7 +107,8 @@ export const membershipStore = defineStore('membership', {
             formData.append('id', extensionObject.membershipID)
             formData.append('value', extensionObject.value)
             formData.append('duration', extensionObject.duration)
-            await axios.post(BASE_URL+'/membership/extend',formData) 
+            const response = await axios.post(BASE_URL+'/membership/extend',formData) 
+            return response.data
           } catch(error) {
             console.error(error)
           }

@@ -14,7 +14,7 @@
                             <div v-else>
                                 <h1><b>Payment Details</b></h1>
                                 <h2><ion-badge>1</ion-badge> Start Date</h2>
-                                <ion-datetime v-model="selectedDate" :min="minDate" locale="en-PH" presentation="date"></ion-datetime>
+                                <ion-datetime v-model="selectedDate" locale="en-PH" presentation="date"></ion-datetime>
                                 <h2><ion-badge>2</ion-badge> Payment Received</h2>
                                 <ion-input type="decimal" class="large" placeholder="Enter Amount" v-model="amount"></ion-input>
                                 <h2><ion-badge>3</ion-badge> Remarks</h2>
@@ -54,9 +54,8 @@ export default defineComponent({
     data() {
         return {
             page: 1,
-            selectedDate: null,
+            selectedDate: new Date().toISOString(),
             amount: 0,
-            minDate: new Date().toISOString(),
             loading: false,
             remarks: 'Downpayment'
         }

@@ -1,6 +1,7 @@
 <template>
-    <ion-content v-if="!isLoading">
-        <ion-card>
+    <ion-content>
+        <ion-loading v-if="isLoading"></ion-loading>
+        <ion-card v-else>
             <ion-card-header>
                 <div v-if="!isExtendFormShown">
                     <ion-button size="small" color="warning" @click="back"><ion-icon  slot="start" :icon="arrowBack"></ion-icon> Back</ion-button>
@@ -53,7 +54,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, onMounted } from "vue";
 import { IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonCardHeader, IonInput, IonSelect } from "@ionic/vue"
 import { membershipStore } from "../stores/membeships";
 import { navigationStore } from "../stores/navigation";
@@ -65,14 +66,12 @@ export default defineComponent({
     components: {
         IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonCardHeader, IonInput, IonSelect
     },
-    setup() {
+    setup(prop) {
         const membership = membershipStore()
         const navigation = navigationStore()
         const balance = ref(0)
-        const membershipDetails = computed(() => {
-            return membership.selectedMembership
-        })
-
+        const membershipDetails = ref(prop.membershipObject)
+        const isLoading = ref(true)
         const isExtendFormShown = computed(() => {
             return navigation.getMembershipsNavigation.isExtendFormShown
         })
@@ -81,21 +80,21 @@ export default defineComponent({
             'unit' : 'day',
             'duration': 1
         })
-
-        const isLoading = ref(false)
-        return { membership, membershipDetails, isLoading, arrowBack, navigation, trash, timer, isExtendFormShown, extensionObject, remove, add, balance }
-    },
-    beforeMount() {
-        this.isLoading = true
-        this.membership.findMembership(this.membershipObject.id).then(() => {
-            this.isLoading = false
-            this.balance = Number(this.membership.selectedMembership.membership_category.amount)
-            for(var i in this.membership.selectedMembership.payments)
-               if(this.membership.selectedMembership.payments[i].is_payment)
-                    this.balance -= Number(this.membership.selectedMembership.payments[i].payment)
-                else
-                    this.balance += Number(this.membership.selectedMembership.payments[i].payment)
+        
+        onMounted(() => {
+            isLoading.value = true
+            membership.findMembership(prop.membershipObject.id).then(() => {
+                
+                balance.value = Number(prop.membershipObject.membership_category.amount)
+                for(var i in prop.membershipObject.payments)
+                    if(prop.membershipObject.payments[i].is_payment)
+                        balance.value -= Number(prop.membershipObject.payments[i].payment)
+                    else
+                        balance.value += Number(prop.membershipObject.payments[i].payment)
+            }).finally(() => isLoading.value = false)
         })
+
+        return { membership, membershipDetails, arrowBack, navigation, trash, timer, isExtendFormShown, extensionObject, remove, add, balance, isLoading }
     },
     methods: {
         isActive(expiry_date) {
@@ -113,6 +112,7 @@ export default defineComponent({
             return 'Membership expires in ' + daysLeft
         },
         back() {
+            this.isLoading = false
             this.navigation.$patch({
                 membershipsNavigation: {
                     isPaymentHistoryShown: false,
@@ -120,14 +120,18 @@ export default defineComponent({
                 }
             })
         },
-        cancel() {
+        async cancel() {
             const x = confirm('Are you sure you want to cancel this membership?')
 
             if(x) {
                 this.isLoading = true
-                this.membership.cancel(this.membershipDetails.id).then(() => {
-                    this.isLoading = false
-                    this.back()
+                this.navigation.$patch({
+                        flipMemberships: await this.membership.cancel(this.membershipDetails.id).then((e) => { return e }).finally(() => this.back()),
+                        flip: {
+                            data: {
+                                active_membership: null
+                            }
+                        }
                 })
             }
         },
@@ -141,11 +145,22 @@ export default defineComponent({
                     membershipID: this.membershipDetails.id,
                     value: this.extensionObject.duration,
                     duration: this.extensionObject.unit
-                }).then(() => {
-                    this.membership.findMembership(this.membershipObject.id).then(() => {
-                        this.isLoading = false
-                        this.isExtendFormShown = false
+                }).then((e) => {
+                    const index = this.navigation.getFlipMemberships.findIndex(d => d.id === e.id)
+                    this.navigation.$patch((state) => {
+                        state.flipMemberships[index] = e
+                        state.membershipsNavigation.isClicked = false
+                        state.membershipsNavigation.isExtendFormShown = false
                     })
+                    this.membership.$patch({
+                        selectedMembership: e
+                    })
+                    this.membershipDetails = e
+                    // this.membership.findMembership(this.membershipObject.id).then((e) => {
+                    //     const index = this.navigation.getFlipMemberships.findIndex(d => d.id === e.id)
+                    //     console.log(this.navigation.getFlipMemberships[index])
+                        this.isLoading = false
+                    // })
                 })
             }
         },

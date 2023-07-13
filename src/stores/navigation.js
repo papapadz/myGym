@@ -102,6 +102,9 @@ export const navigationStore = defineStore('navigation', {
       },
       addFlipMembership(membership) {
         this.flipMemberships.push(membership)
+      },
+      setLoading(bool) {
+        this.isLoading = bool
       }
     }
 })

@@ -136,14 +136,15 @@
                             this.isClicked = false
                             this.cardNum = ""
                             this.attendance.add(input).then((e) => {
+                                console.log(e)
                                 if(e.data.status=='DUPLICATE') {
                                     let conf = confirm('Member has an existing attendance today, are you sure you want to add another another attendance?')
                                     if(!conf) 
                                         this.attendance.deleteAttendance(e.data.object.id)
-                                } else
-                                    alert('Card Number is invalid!')
+                                }
                             }).finally(() => this.attendance.getAttendanceToday().then(() => this.closeModal()))
                         } catch(error) {
+                            console.error(error)
                             alert('Card Number is invalid!')
                         } finally {
                             this.isLoading = false

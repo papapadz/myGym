@@ -2,7 +2,7 @@
     <ion-content>
         <ion-loading v-if="isLoading"></ion-loading>
         <Bar v-else :data="chartData" />
-        <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+        <ion-fab horizontal="end" >
             <ion-fab-button @click="isModalOpen=true">
                 <ion-icon :icon="calendar" />
             </ion-fab-button>

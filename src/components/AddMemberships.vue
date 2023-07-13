@@ -59,14 +59,14 @@
 </template>
 
 <script>
-import { IonContent, IonLoading, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect } from '@ionic/vue'
+import { IonContent, IonLoading, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect, IonSelectOption, IonButton, IonCard, IonCardHeader } from '@ionic/vue'
 import { defineComponent, onBeforeMount, computed, ref } from 'vue'
 import { membershipStore } from '../stores/membeships'
 import { stopOutline, pencil, add } from 'ionicons/icons'
 
 export default defineComponent({
     components: {
-        IonLoading, IonContent, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect
+        IonLoading, IonContent, IonList, IonItem, IonIcon, IonInput, IonLabel, IonFab, IonFabButton, IonSelect, IonSelectOption, IonButton, IonCard, IonCardHeader
     },
     setup() {
         const membership = membershipStore()
