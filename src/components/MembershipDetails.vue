@@ -120,19 +120,26 @@ export default defineComponent({
                 }
             })
         },
-        async cancel() {
+        cancel() {
             const x = confirm('Are you sure you want to cancel this membership?')
 
             if(x) {
+                const xasdas = ref(Object())
                 this.isLoading = true
-                this.navigation.$patch({
-                        flipMemberships: await this.membership.cancel(this.membershipDetails.id).then((e) => { return e }).finally(() => this.back()),
-                        flip: {
-                            data: {
-                                active_membership: null
-                            }
-                        }
+                let asx = this.navigation.getFlipMemberships.filter(e => e.id !== this.membershipDetails.id)
+
+                this.membership.cancel(this.membershipDetails.id).then((e) => { 
+                    xasdas.value = e
+                    asx.push(xasdas.value)
+                }).finally(() => {
+                    this.navigation.$patch({
+                        flipMemberships: asx
+                    })
+                    this.back()
+                   
                 })
+
+                
             }
         },
         extend() {
