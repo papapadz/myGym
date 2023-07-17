@@ -81,7 +81,7 @@
         </ion-item>
         <ion-card-content>
           <ion-label position="floating">Scan Card Number</ion-label>
-          <ion-input class="large" v-model="members.person.card_number" type="text" placeholder="Card Number"></ion-input>
+          <ion-input class="large" v-model="members.person.card_number" type="text" placeholder="Card Number" @ion-blur="checkCardNumber"></ion-input>
           <ion-note :v-slot="error">{{ members.getInputErrors.card_number }}</ion-note>
         </ion-card-content>
       </ion-card>
@@ -242,6 +242,8 @@ export default defineComponent({
           case 3: 
             if(this.members.person.card_number==null)
               alert('Please Scan Card on the reader')
+            else if(this.members.getMembers.find(e => e.card_number === this.members.person.card_number)!==undefined)
+              alert('Card Number already exists!')
             else
               this.page++
             break
