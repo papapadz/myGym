@@ -1,12 +1,15 @@
 <template>
       <ion-page>
         <ion-content>
+            <ion-modal :is-open="isOpen" @willDismiss="isOpen=false">
+                <ion-img :src="flipData.data.img.url" />
+            </ion-modal>
             <ion-grid>
                 <ion-row>
                     <ion-col size="12">
                         <div class="profile">
                             <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
-                                <img :class="isActive" :src="flipData.data.img.url" />
+                                <img :class="isActive" :src="flipData.data.img.url" @click="isOpen=true" />
                             </div>
                         </div>
                     </ion-col>
@@ -176,7 +179,7 @@
 </template>
 
 <script>
-import { IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption } from '@ionic/vue'
+import { IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption, IonModal } from '@ionic/vue'
 import { defineComponent, computed, ref, onBeforeMount } from 'vue';
 import { navigationStore } from '../stores/navigation'
 import AttendanceList from '../components/AttendanceList.vue';
@@ -190,7 +193,7 @@ import { addressStore } from '../stores/address';
 export default defineComponent({
     components: {
         AttendanceList, MembershipsVue,
-        IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption
+        IonLoading, IonContent, IonPage, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonItemGroup, IonItemDivider, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonIcon, IonFabList, IonInput, IonSelect, IonSelectOption, IonModal
     },
     data() {
         return {
@@ -218,6 +221,7 @@ export default defineComponent({
         }
     },
     setup() {
+        const isOpen = ref(false)
         const isLoading = ref(false)
         const navigation = navigationStore()
         const flipData = navigation.getFlipPage
@@ -242,7 +246,8 @@ export default defineComponent({
             admin,
             address,
             isLoading,
-            profileData
+            profileData,
+            isOpen
         }
     },
     computed: {
