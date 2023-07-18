@@ -141,6 +141,8 @@
                                     let conf = confirm('Member has an existing attendance today, are you sure you want to add another another attendance?')
                                     if(!conf) 
                                         this.attendance.deleteAttendance(e.data.object.id)
+                                } else if(e.data.status=='ERROR') {
+                                    alert('Card Number is invalid!')
                                 }
                             }).finally(() => this.attendance.getAttendanceToday().then(() => this.closeModal()))
                         } catch(error) {

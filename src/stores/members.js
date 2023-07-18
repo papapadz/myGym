@@ -141,6 +141,24 @@ export const membersStore = defineStore('members', {
       async findMember(id) {
         const respone = await axios.get(BASE_URL+'/person/find/'+id)
         return respone.data
+      },
+      async updateImage(id, img) {
+        const formData = new FormData();
+        formData.append('memberID', id)
+        formData.append('img_file', img)
+
+        const respone = await axios.post(BASE_URL+'/person/image/update',
+          formData,
+          {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+          }
+        )
+        
+        const index = this.members.findIndex(e => e.id===id)
+        this.members[index].img.url = respone.data
+        return respone.data
       }
     }
 })

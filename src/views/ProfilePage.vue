@@ -1,15 +1,26 @@
 <template>
       <ion-page>
         <ion-content>
-            <ion-modal :is-open="isOpen" @willDismiss="isOpen=false">
-                <ion-img :src="flipData.data.img.url" />
+            <ion-modal :is-open="isOpen" @willDismiss="cancelImageChange">
+                <ion-content>
+                    <ion-img :src="displayImage" />
+                    <input type="file" ref="fileInput" style="display: none" accept="image/*" @change="onFileChange">
+                    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+                        <ion-fab-button v-if="newImageFile==null" @click="selectFile">
+                            <ion-icon :icon="pencil" />
+                        </ion-fab-button>
+                        <ion-fab-button color="success" v-else @click="saveNewImage">
+                            <ion-icon :icon="save" />
+                        </ion-fab-button>
+                    </ion-fab>
+                </ion-content>
             </ion-modal>
             <ion-grid>
                 <ion-row>
                     <ion-col size="12">
                         <div class="profile">
                             <div class="profile-banner" style="background-image: url('https://img.freepik.com/premium-vector/black-yellow-background-with-paint-vector-illustration-with-gradient-background-vector-illustration_176456-656.jpg?w=360')">
-                                <img :class="isActive" :src="flipData.data.img.url" @click="isOpen=true" />
+                                <img :class="isActive" :src="displayImage" @click="isOpen=true" />
                             </div>
                         </div>
                     </ion-col>
@@ -232,7 +243,7 @@ export default defineComponent({
         const admin = adminStore()
         const address = addressStore()
         const profileData = ref({})
-
+        const newImageFile = ref(null)
         onBeforeMount(() => {
             profileData.value = flipData.data
         })
@@ -247,7 +258,8 @@ export default defineComponent({
             address,
             isLoading,
             profileData,
-            isOpen
+            isOpen,
+            newImageFile
         }
     },
     computed: {
@@ -259,6 +271,11 @@ export default defineComponent({
         },
         displayAddress() {
             return this.profileData.address.name+', '+this.profileData.address.city.name+', '+this.profileData.address.province.name
+        },
+        displayImage() {
+            if(this.newImageFile==null)
+                return this.flipData.data.img.url
+            return URL.createObjectURL(this.newImageFile)
         }
     },
     methods: {
@@ -359,6 +376,36 @@ export default defineComponent({
             this.profileData = obj
             this.isLoading = false
             this.isEditing = false
+        },
+        selectFile() {
+            this.$refs.fileInput.click();
+        },
+        onFileChange(event) {
+            this.newImageFile = event.target.files[0]
+        },
+        cancelImageChange() {
+            this.isOpen = false
+            this.newImageFile = null
+        },
+        async saveNewImage() {
+            let aa = confirm('Are you sure you want to change the image?')
+            if(aa) {
+                this.isLoading = true
+                this.members.updateImage(this.profileData.id,this.newImageFile).then((e) => {
+                    this.navigation.$patch({
+                        data: {
+                            img: {
+                                url: e
+                            }
+                        }
+                    })
+                }).finally(() => {
+                    this.newImageFile = null
+                    this.isOpen = false
+                    this.isLoading = false
+                })
+            } else
+                this.newImageFile = null
         }
     }
 })
