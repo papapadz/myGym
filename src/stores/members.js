@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
 
 export const membersStore = defineStore('members', {
     state: () => ({ 
@@ -9,16 +8,24 @@ export const membersStore = defineStore('members', {
       searchResults: [],
       memberships: [],
       person: {
-        lastname: '',
-        firstname: '',
-        middlename: '',
-        birthdate: null,
-        gender: '',
+        active_membership: '',
+        address: {},
         address_id: null,
-        contact_num: '',
+        birthdate: null,
         card_number: null,
         category: null,
-        img: null
+        contact_num: '',
+        creaated_at: '',
+        delete_at: '',
+        firstname: '',
+        gender: '',
+        id: null,
+        img: null,
+        img_id: null,
+        lastname: '',
+        middlename: '',
+        role: '',
+        updated_at: ''
       },
       errors: {
         lastname: [],
@@ -48,9 +55,31 @@ export const membersStore = defineStore('members', {
       }
     },
     actions: {
+      resetPersonInstance() {
+        this.person = {
+          active_membership: '',
+          address: {},
+          address_id: null,
+          birthdate: null,
+          card_number: null,
+          category: null,
+          contact_num: '',
+          creaated_at: '',
+          delete_at: '',
+          firstname: '',
+          gender: '',
+          id: null,
+          img: null,
+          img_id: null,
+          lastname: '',
+          middlename: '',
+          role: '',
+          updated_at: ''
+        }
+      },
       async getAllMembers() {
         try {
-          const response = await axios.get(BASE_URL+'/person/all')
+          const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/person/all')
           this.members = response.data
           this.searchResults = response.data
         } catch(error) {
@@ -65,7 +94,7 @@ export const membersStore = defineStore('members', {
       },
       async getCategories() {
         const self = this
-        axios.get(BASE_URL+'/person/categories')
+        axios.get(`${configStore().getServerURL}/api/mobile`+'/person/categories')
           .then(function(response) {
             self.categories = response.data
         })
@@ -85,7 +114,7 @@ export const membersStore = defineStore('members', {
           formData.append('card_number', this.person.card_number)
           formData.append('img_file', this.person.img)
 
-          await axios.post(BASE_URL+'/person/new',
+          await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/new',
               formData,
               {
                 headers: {
@@ -105,7 +134,7 @@ export const membersStore = defineStore('members', {
       },
       async delete(id) {
         try {
-          await axios.get(BASE_URL+'/person/delete/'+id)
+          await axios.get(`${configStore().getServerURL}/api/mobile`+'/person/delete/'+id)
         } catch(error) {
           console.error(error)
         } finally {
@@ -132,14 +161,14 @@ export const membersStore = defineStore('members', {
         formData.append('card_number', personObj.card_number)          
         //formData.append('img_file', person.img)
         
-        const respone = await axios.post(BASE_URL+'/person/update/profile',formData)
+        const respone = await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/update/profile',formData)
         return respone.data
         } catch(error) {
           console.error(error)
         }
       },
       async findMember(id) {
-        const respone = await axios.get(BASE_URL+'/person/find/'+id)
+        const respone = await axios.get(`${configStore().getServerURL}/api/mobile`+'/person/find/'+id)
         return respone.data
       },
       async updateImage(id, img) {
@@ -147,7 +176,7 @@ export const membersStore = defineStore('members', {
         formData.append('memberID', id)
         formData.append('img_file', img)
 
-        const respone = await axios.post(BASE_URL+'/person/image/update',
+        const respone = await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/image/update',
           formData,
           {
             headers: {

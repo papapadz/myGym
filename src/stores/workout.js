@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { navigationStore } from './navigation'
-
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
 
 export const workoutStore = defineStore('workout', {
     state: () => ({ 
@@ -18,21 +17,21 @@ export const workoutStore = defineStore('workout', {
     actions: {
         async getWorkoutItemsList() {
             try {
-                const response = await axios.get(BASE_URL+'/workout/items/all')
+                const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/workout/items/all')
                 this.workoutItems = response.data
             } catch (error) {
                 console.error(error)
             }
         },
         getAttendanceWorkOutToday(attendance_id) {
-            axios.get(BASE_URL+'/workout/today',{ params: {
+            axios.get(`${configStore().getServerURL}/api/mobile`+'/workout/today',{ params: {
                 attendance_id: attendance_id
             }}).then(function(response) {
                 self.attendanceWorkouts = response.data.work_outs
             })
         },
         getAttendanceWorkoutsList(person_id) {
-            axios.get(BASE_URL+'/workout/member/all',{ params: {
+            axios.get(`${configStore().getServerURL}/api/mobile`+'/workout/member/all',{ params: {
                 person_id: person_id
             }}).then(function(response) {
                 if(!Array.is(response.data.workouts,null))
@@ -49,7 +48,7 @@ export const workoutStore = defineStore('workout', {
                 formData.append('workoutID', requestData.workoutID)
                 formData.append('note',requestData.note)
                 formData.append('userID',navigation.getUser.id)
-                const response = await axios.post(BASE_URL+'/person/workout/new',formData)
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/workout/new',formData)
                 this.newWorkout = response.data
             } catch (error) {
                 console.error(error)
@@ -64,7 +63,7 @@ export const workoutStore = defineStore('workout', {
               formData.append('intensity', workout.intensity)
               formData.append('new', workout.isNew)
   
-              const response = await axios.post(BASE_URL+'/workout/new', formData)
+              const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/workout/new', formData)
               console.log(response.data)
             } catch (error) {
               console.error(error)

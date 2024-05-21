@@ -32,9 +32,12 @@
 
 <script>
 import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonItem, IonInput, IonButton, IonCardContent, IonIcon, IonLabel, IonLoading } from '@ionic/vue'
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { mail, text } from 'ionicons/icons'
 import { adminStore } from '../stores/admin';
+import { Preferences } from '@capacitor/preferences';
+import router from '@/router'
+
 export default defineComponent({
     name: 'LoginPage',
     components: {
@@ -43,6 +46,38 @@ export default defineComponent({
     setup() {
         const admin = adminStore()
         const isLoading = ref(false)
+
+        // const autoLogin = (e,p) => {
+        //     this.admin.login({
+        //         email: e, password: p
+        //     }).then(() => {
+        //         this.isLoading = false
+        //         this.$router.push('/home')
+        //     })
+        // }
+        
+        onMounted( async () => {
+            let b = false
+            await Preferences.get({key: 'session'}).then((e) => {
+                b = e.value!=null
+                if(b) {
+                    const session = JSON.parse(e.value)
+                    let dateOne = new Date(session.created_at);
+                    let dateTwo = new Date();
+                    let msDifference = dateTwo - dateOne;
+                    const minutes = Math.floor(msDifference / 1000 / 60);
+                    console.log(minutes)
+                    if(minutes<=5) {
+                        session.created = new Date().toISOString()
+                        admin.$patch({
+                            session: session
+                        })
+                        router.push('/home')
+                    }
+                }
+            })
+        })
+
         return {
             mail, text, admin, isLoading
         }

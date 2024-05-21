@@ -49,12 +49,12 @@
         <ion-item>
           <ion-label class="large">Address</ion-label>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-label position="floating">Select Region</ion-label>
           <ion-select placeholder="Select Region" v-model="selectedAddress.region" @ionChange="selectAddress(1)">
             <ion-select-option v-for="item in address.getRegionList" :key="item.id" :value="item.region_id">{{ item.name }}</ion-select-option>
           </ion-select>
-        </ion-item>
+        </ion-item> -->
         <ion-item>
           <ion-label position="floating">Select Province</ion-label>
           <ion-select placeholder="Select Province" v-model="selectedAddress.province" @ionChange="selectAddress(2)">
@@ -150,25 +150,13 @@ export default defineComponent({
       }
     },
     mounted() {
-      this.address.getRegions()
+      this.members.resetPersonInstance()
+      this.address.getProvinces()
       this.members.getCategories()
     },
     methods: {
       cancel() {
-        this.members.$patch({
-          person: {
-            lastname: '',
-            firstname: '',
-            middlename: '',
-            birthdate: null,
-            gender: '',
-            address_id: null,
-            contact_num: '',
-            card_number: null,
-            category: null,
-            img: null
-          }
-        })
+        this.members.resetPersonInstance()
         this.navigation.$patch({
             members: {
               isNewFormShown: false
