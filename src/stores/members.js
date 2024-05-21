@@ -27,6 +27,12 @@ export const membersStore = defineStore('members', {
         role: '',
         updated_at: ''
       },
+      affiliation: {
+        department_id: 0,
+        position_id: 0,
+        date_start: null,
+        date_end: null
+      },
       errors: {
         lastname: [],
         firstname: '',
@@ -52,7 +58,8 @@ export const membersStore = defineStore('members', {
           return this.getInputErrors.lastname[0]
         else
           return ''
-      }
+      },
+      getMemberAffiliation: (state) => state.affiliation
     },
     actions: {
       resetPersonInstance() {
@@ -113,7 +120,11 @@ export const membersStore = defineStore('members', {
           formData.append('category_id', this.person.category)
           formData.append('card_number', this.person.card_number)
           formData.append('img_file', this.person.img)
-
+          formData.append('position', this.affiliation.position_id)
+          formData.append('department', this.affiliation.department_id)
+          formData.append('start_date', this.affiliation.date_start)
+          formData.append('end_date', this.affiliation.date_end)
+        
           await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/new',
               formData,
               {
@@ -158,7 +169,11 @@ export const membersStore = defineStore('members', {
         formData.append('address_id', personObj.address_id)
         formData.append('contact_num', personObj.contact_num)
         formData.append('category_id', personObj.category_id)
-        formData.append('card_number', personObj.card_number)          
+        formData.append('card_number', personObj.card_number)        
+        formData.append('position', this.affiliation.position_id)
+        formData.append('department', this.affiliation.department_id)
+        formData.append('start_date', this.affiliation.date_start)
+        formData.append('end_date', this.affiliation.date_end)  
         //formData.append('img_file', person.img)
         
         const respone = await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/update/profile',formData)

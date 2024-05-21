@@ -4,7 +4,7 @@
   <ion-menu side="start" content-id="main-content">
     <ion-header>
       <ion-toolbar color="warning">
-        <ion-title>DMAX Gym</ion-title>
+        <ion-title>{{ company.area.company.business_name }}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -66,6 +66,7 @@ import { navigationStore } from './stores/navigation';
 import { adminStore } from './stores/admin'
 import { format } from 'date-fns'
 import LoginPageVue from './views/LoginPage.vue'
+import { Preferences } from '@capacitor/preferences';
 
 export default defineComponent({
   name: 'App',
@@ -89,7 +90,7 @@ export default defineComponent({
       const navigation = navigationStore()
       const admin = adminStore()
       const timestamp = ref(format(new Date(),'EEE, LLL d, yyy h:mm:ss a'))
-
+      const company = computed(() => admin.getCompanyProfile[0] )
       const isLoggedIn = computed(() => {
         if(admin.getSession.status==1)
           return true
@@ -106,7 +107,7 @@ export default defineComponent({
         }, 1000);  
       })
       return {
-        navigation, timestamp, isLoggedIn, personCircle, loggedInUser, logOutOutline, admin
+        navigation, timestamp, isLoggedIn, personCircle, loggedInUser, logOutOutline, admin, company
       }
   },
   data() {
@@ -134,7 +135,7 @@ export default defineComponent({
         },
       })
     },
-    logout() {
+    async logout() {
       const x = confirm('Are you sure you want to log out?')
       if(x) {
         
@@ -144,6 +145,7 @@ export default defineComponent({
             data: {}
           }
         })
+        await Preferences.clear()
         //window.location.replace('/')
       }
     }

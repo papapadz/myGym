@@ -72,6 +72,10 @@ export default defineComponent({
                         admin.$patch({
                             session: session
                         })
+                        Preferences.set({
+                            key: 'session',
+                            value: JSON.stringify(session)
+                        })
                         router.push('/home')
                     }
                 }

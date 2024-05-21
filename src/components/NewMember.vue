@@ -85,7 +85,36 @@
           <ion-note :v-slot="error">{{ members.getInputErrors.card_number }}</ion-note>
         </ion-card-content>
       </ion-card>
-      <ion-card v-if="page==4" lines="none">
+      <ion-card v-if="page==4">
+        <ion-item>
+          <ion-label class="large">Position and Department</ion-label>
+        </ion-item>
+        <ion-item ref="item">
+          <ion-label position="floating">Position</ion-label>
+          <ion-select v-model="members.affiliation.position_id" placeholder="Select Position">
+            <ion-select-option v-for="pos in positionList" :key="pos.id" :value="pos.id">
+                {{ pos.title }}
+            </ion-select-option>
+        </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Department</ion-label>
+          <ion-select v-model="members.affiliation.department_id" placeholder="Select Department">
+            <ion-select-option v-for="dept in departmentList" :key="dept.id" :value="dept.id">
+                {{ dept.name }}
+            </ion-select-option>
+        </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating" placeholder="Enter start date">Date Start</ion-label>
+          <ion-input v-model="members.affiliation.date_start" type="date" placeholder="Date started"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Date End</ion-label>
+          <ion-input v-model="members.affiliation.date_end" type="date" placeholder="Date ended"></ion-input>
+        </ion-item>
+      </ion-card>
+      <ion-card v-if="page==5" lines="none">
         <ion-item>
           <ion-label class="large">Member's Picture</ion-label>
         </ion-item>
@@ -100,8 +129,8 @@
             </ion-item>
       </ion-card>
       <ion-button v-if="page>1" color="warning" @click="page--"><ion-icon :icon="arrowBack"></ion-icon> Back</ion-button>
-      <ion-button v-if="page<4" color="primary" @click="next">Next <ion-icon :icon="arrowForward"></ion-icon></ion-button>
-      <ion-button v-if="page==4" color="success" @click="confirm">Save</ion-button>
+      <ion-button v-if="page<5" color="primary" @click="next">Next <ion-icon :icon="arrowForward"></ion-icon></ion-button>
+      <ion-button v-if="page==5" color="success" @click="confirm">Save</ion-button>
       <ion-button color="danger" @click="cancel">Cancel</ion-button>
     </div>        
   </ion-content>
@@ -109,11 +138,12 @@
 
 <script>
 import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonNote, IonButton, IonIcon, IonCard, IonCardContent, IonLoading } from '@ionic/vue'
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import { people as peopleIcon, close as closeIcon, arrowBack, arrowForward } from 'ionicons/icons';
 import { addressStore } from '../stores/address'
 import { membersStore } from '../stores/members';
 import { navigationStore } from '../stores/navigation';
+import { adminStore } from '../stores/admin';
 
 export default defineComponent({
     name: 'NewMember',
@@ -121,11 +151,14 @@ export default defineComponent({
       IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonContent, IonNote, IonButton, IonIcon, IonCard, IonCardContent, IonLoading
     },
     setup() {
+      const admin = adminStore()
       const address = addressStore()
       const members = membersStore()
       const navigation = navigationStore()
       const loading = ref(false)
       
+      const departmentList = computed(() => admin.getStatData.departments)
+      const positionList = computed(() => admin.getStatData.positions)
       return {
         address,
         members,
@@ -134,7 +167,9 @@ export default defineComponent({
         navigation,
         loading,
         arrowBack,
-        arrowForward
+        arrowForward,
+        departmentList,
+        positionList,
       }
     },
     data() {
@@ -232,6 +267,16 @@ export default defineComponent({
               alert('Please Scan Card on the reader')
             else if(this.members.getMembers.find(e => e.card_number === this.members.person.card_number)!==undefined)
               alert('Card Number already exists!')
+            else
+              this.page++
+            break
+          case 4: 
+            if(this.members.affiliation.position_id=='')
+              alert('Please select a position')
+            else if(this.members.affiliation.department_id=='')
+              alert('Please select a department')
+            else if(this.members.affiliation.date_start==null)
+              alert('Please enter start date')
             else
               this.page++
             break

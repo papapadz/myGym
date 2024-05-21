@@ -10,10 +10,14 @@ export const adminStore = defineStore('admin', {
             status: 0,
             data: {
                 person: {
-                    firstname: 'Admin'
+                    affiliations: [
+                        {
+                            area: {},
+                            position: {}
+                        }
+                    ]
                 }
             },
-            created_at: ''
         },
         userList: [],
         hasError: false,
@@ -30,7 +34,12 @@ export const adminStore = defineStore('admin', {
         getHasError: (state) => state.hasError,
         getResponseObject: (state) => state.responseObject,
         getActiveMembersList: (state) => state.activeMembersList,
-        getCategories: (state) => state.categories
+        getCategories: (state) => state.categories,
+        getCompanyProfile() {
+            return this.session.data.person.affiliations.sort((a,b) => {
+                return new Date(b.start_date) - new Date(a.start_date)
+            })
+        }
     },
     actions: {
         async fetchStatData() {
@@ -125,6 +134,29 @@ export const adminStore = defineStore('admin', {
         async fetchCategories() {
             const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/admin/get/user/categories')
             this.categories = response.data
-        }
+        },
+        async saveOptions(table,data) {
+            try {
+                const formData = new FormData()
+                switch(table) {
+                    case 'position':
+                        formData.append('title',data.title)
+                    break
+                    case 'department':
+                        formData.append('name', data.name)
+                        formData.append('description', data.description)
+                        formData.append('company_id', this.session.data.person.affiliations[0].area.company_id)
+                    break
+                }
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile/${table}/new`,formData)
+                this.hasError = false
+                this.stat[table+'s'].push(data)
+                alert(response.data.message)
+            } catch (error) {
+                this.hasError = true
+                console.error(error)
+                alert(error.response.data.message)
+            }
+        },
     }
 })

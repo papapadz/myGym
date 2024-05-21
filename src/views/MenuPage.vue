@@ -21,21 +21,18 @@
             </ion-col>
           </ion-row>
           <ion-row v-if="selected.code==1">
-            <CardList />
-          </ion-row>
-          <ion-row v-else-if="selected.code==2">
             <ion-col>
               <AttendanceChartVue class="chart-container" />
             </ion-col>
           </ion-row>
-          <ion-row v-else-if="selected.code==3">
+          <ion-row v-else-if="selected.code==2">
             <ion-col>
-              <AddMembershipsVue class="chart-container" />
+              <AddDepartment class="chart-container" />
             </ion-col>
           </ion-row>
-          <ion-row v-else-if="selected.code==4">
+          <ion-row v-else-if="selected.code==3">
             <ion-col>
-              <AddWorkoutVue class="chart-container" />
+              <AddPosition class="chart-container" />
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -48,17 +45,17 @@
   import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonLoading } from '@ionic/vue';
   import { defineComponent, ref, onMounted } from 'vue';
   import { adminStore } from '../stores/admin'
-  import AddMembershipsVue from '../components/AddMemberships.vue'
-  import AddWorkoutVue from '../components/AddWorkout.vue'
   import AttendanceChartVue from '../components/AttendanceChart.vue'
-  import CardList from '../components/CardList.vue'
   import ProfilePage from './ProfilePage.vue'
   import { navigationStore } from '../stores/navigation';
+  import AddPosition from '../components/AddPosition.vue';
+  import AddDepartment from '../components/AddDepartment.vue';
 
   export default defineComponent({
     name: 'MenuPage',
     components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AddMembershipsVue, AddWorkoutVue, AttendanceChartVue, IonLoading, CardList, ProfilePage
+      AddPosition, AddDepartment, 
+        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, AttendanceChartVue, IonLoading, ProfilePage
     },
     data() {
       return {
@@ -68,9 +65,11 @@
         },
         pages: [
           //{code: 1, title: 'Active Memberships'},
-          {code: 2, title: 'Attendees Today'},
+          {code: 1, title: 'Attendees Today'},
           //{code: 3, title: 'Memberships'},
-          //{code: 4, title: 'Workouts'}
+          //{code: 4, title: 'Workouts'},
+          {code: 2, title: 'Departments'},
+          {code: 3, title: 'Positions'},
         ]
       }
     },
@@ -100,10 +99,9 @@
       getStatData(item) {
         if(this.callStatData!==null) {
           switch(item) {
-            case 1: return this.callStatData.activeMembership.length
-            case 2: return this.callStatData.members.length
-            case 3: return this.callStatData.memberships.length
-            case 4: return this.callStatData.workouts.length
+            case 1: return this.callStatData.members.length
+            case 2: return this.callStatData.departments.length
+            case 3: return this.callStatData.positions.length
           }
         }
         return null;

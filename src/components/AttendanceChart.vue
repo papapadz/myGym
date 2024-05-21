@@ -15,6 +15,15 @@
         </ion-header>
         <ion-content class="ion-padding">
             <ion-item>
+                <ion-label>Department: </ion-label>
+                <ion-select v-model="deptInput">
+                    <ion-select-option :value="0">All</ion-select-option>
+                    <ion-select-option v-for="dept in departmentList" :key="dept.id" :value="dept.id">
+                        {{ dept.name }}
+                    </ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
                 <ion-label>Date: </ion-label>
                 <ion-input type="date" v-model="dateInput" @click="change(1)"></ion-input>
             </ion-item>
@@ -34,6 +43,7 @@
 import { defineComponent, computed, onBeforeMount, ref } from 'vue'
 import { IonContent, IonLoading, IonFab, IonFabButton, IonModal, IonHeader, IonToolbar, IonItem, IonIcon, IonInput, IonTitle, IonLabel, IonSelect, IonSelectOption, IonButton } from '@ionic/vue'
 import { attendanceStore } from '../stores/attendance'
+import { adminStore } from '../stores/admin'
 import { calendar } from 'ionicons/icons'
 import { format } from 'date-fns'
 import { Bar } from 'vue-chartjs'
@@ -53,6 +63,8 @@ export default defineComponent({
         const dateInput = ref(new Date())
         const isDateClicked = ref(false)
         const btnText = ref('')
+        const deptInput = ref(0)
+        const departmentList = computed(() => adminStore().getStatData.departments)
 
         onBeforeMount(() => {
             
@@ -94,12 +106,18 @@ export default defineComponent({
                 ddate = format(new Date(dateInput.value), 'MM/dd/yyyy')
             }
 
-            await attendance.fetchAttendanceDataByYear(ddate.toString(),filterBy).then(() => {
+            let deptParamObj = null
+            if(deptInput.value>0) {
+                const deptInputIndex = departmentList.value.findIndex(e => e.id === deptInput.value)
+                deptParamObj = departmentList.value[deptInputIndex]
+            }
+                
+            await attendance.fetchAttendanceDataByYear(ddate.toString(),filterBy,deptParamObj).then(() => {
                 isLoading.value = false
             })
         }
 
-        return { chartData, isLoading, calendar, isModalOpen, yearList, yearInput, dateInput, change, btnText, fetchData }
+        return { deptInput, departmentList, chartData, isLoading, calendar, isModalOpen, yearList, yearInput, dateInput, change, btnText, fetchData }
     },
 })
 </script>

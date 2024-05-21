@@ -27,6 +27,7 @@
                           {{ memberItem.card_number }}
                         </ion-card-subtitle>
                         <ion-card-title>{{ memberItem.lastname }}, {{ memberItem.firstname }}</ion-card-title>
+                        <ion-text v-if="memberItem.affiliations.length>0">{{ memberItem.affiliations[0].position.title }} | {{ memberItem.affiliations[0].area.name }}</ion-text>
                       </ion-card-header>
                     </ion-card>
                   </ion-col>
