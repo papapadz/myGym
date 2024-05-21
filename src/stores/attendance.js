@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { format } from 'date-fns'
-
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
 
 export const attendanceStore = defineStore('attendance', {
     state: () => ({ 
@@ -21,7 +20,7 @@ export const attendanceStore = defineStore('attendance', {
     getters: {
       getAttendance: (state) => state.attendance,
       getAttendanceByUserID: () => (id) => {
-        return axios.get(BASE_URL+'/attendance/list/user',{ person_id:id }).then((response) => {
+        return axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/list/user',{ person_id:id }).then((response) => {
           return response.data
         })
       },
@@ -30,7 +29,7 @@ export const attendanceStore = defineStore('attendance', {
     actions: {
       async getAttendanceToday() {
         try {
-          const response = await axios.get(BASE_URL+'/attendance/today')
+          const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/today')
           this.attendance = response.data 
         } catch(error) {
           console.error(error)
@@ -38,7 +37,7 @@ export const attendanceStore = defineStore('attendance', {
       },
       async deleteAttendance(id) {
         try {
-          await axios.get(BASE_URL+'/attendance/delete/'+id).then((response) => {
+          await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/delete/'+id).then((response) => {
             this.attendance = response.data 
           })
         } catch(error) {
@@ -47,7 +46,7 @@ export const attendanceStore = defineStore('attendance', {
       },
       async add(cardNum) {
         try {
-          return await axios.get(BASE_URL+'/attendance/new',{params: {card_num: cardNum}})
+          return await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/new',{params: {card_num: cardNum}})
         } catch(error) {
           return {
             data: {
@@ -57,8 +56,9 @@ export const attendanceStore = defineStore('attendance', {
         }
       },
       async fetchAttendanceDataByYear(ddate,filterBy) {
+        console.log(ddate)
         try {
-          const response = await axios.get(BASE_URL+'/attendance/data', {
+          const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/data', {
             params: {
               date: ddate,
               flag: filterBy

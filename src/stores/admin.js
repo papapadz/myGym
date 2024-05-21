@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
+import { Preferences } from '@capacitor/preferences';
 
 export const adminStore = defineStore('admin', {
     state: () => ({
@@ -11,7 +12,8 @@ export const adminStore = defineStore('admin', {
                 person: {
                     firstname: 'Admin'
                 }
-            }
+            },
+            created_at: ''
         },
         userList: [],
         hasError: false,
@@ -33,7 +35,7 @@ export const adminStore = defineStore('admin', {
     actions: {
         async fetchStatData() {
             try {
-                const response = await axios.get(BASE_URL+'/admin/get/statistics')
+                const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/admin/get/statistics')
                 this.stat = response.data
             } catch(error) {
                 console.error(error)
@@ -45,15 +47,19 @@ export const adminStore = defineStore('admin', {
                 formData.append('email',credentials.email)
                 formData.append('password',credentials.password)
 
-                const response = await axios.post(BASE_URL+'/admin/login',formData)
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/admin/login',formData)
                 this.session = response.data
+                await Preferences.set({
+                    key: 'session',
+                    value: JSON.stringify(this.session)
+                })
             } catch(error) {
                 console.error(error)
             }
         },
         async fetchUsers() {
             try {
-                const response = await axios.get(BASE_URL+'/admin/get/users/'+this.session.data.id)
+                const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/admin/get/users/'+this.session.data.id)
                 this.userList = response.data
             } catch (error) {
                 console.error(error)
@@ -70,7 +76,7 @@ export const adminStore = defineStore('admin', {
                 formData.append('email',user.email)
                 formData.append('password',user.password)
 
-                const response = await axios.post(BASE_URL+'/admin/save/user',formData)
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/admin/save/user',formData)
                 this.userList.push(response.data)
                 this.hasError = false
             } catch (error) {
@@ -80,7 +86,7 @@ export const adminStore = defineStore('admin', {
         },
         async deleteUser(id) {
             try {
-                await axios.delete(BASE_URL+'/admin/delete/user/'+id)
+                await axios.delete(`${configStore().getServerURL}/api/mobile`+'/admin/delete/user/'+id)
             } catch(error) {
                 console.error(error)
             } finally {
@@ -100,7 +106,7 @@ export const adminStore = defineStore('admin', {
                 formData.append('password',password.old)
                 formData.append('newPassword',password.new)
 
-                const response = await axios.post(BASE_URL+'/admin/update/user',formData)
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/admin/update/user',formData)
                 this.responseObject = response.data
                 this.hasError = false
             } catch(error) {
@@ -110,14 +116,14 @@ export const adminStore = defineStore('admin', {
          },
          async getActiveMembers() {
             try {
-              const response = await axios.get(BASE_URL+'/person/active/all')
+              const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/person/active/all')
               this.activeMembersList = response.data
             } catch(error) {
               console.error(error)
             }
         },
         async fetchCategories() {
-            const response = await axios.get(BASE_URL+'/admin/get/user/categories')
+            const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/admin/get/user/categories')
             this.categories = response.data
         }
     }

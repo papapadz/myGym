@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const BASE_URL = 'http://localhost/myGymServer/public/api/address'
+import { configStore } from './_config'
+
 export const addressStore = defineStore('address', {
-    state: () => ({ 
+    state: () => ({
       regions: [],
       provinces: [],
       cities: [],
@@ -18,28 +19,29 @@ export const addressStore = defineStore('address', {
     actions: {
       async getRegions() {
         const self = this
-        await axios.get(BASE_URL+'/regions')
+        await axios.get(`${configStore().getServerURL}/api/address`+'/regions')
           .then(function(response) {
             self.regions = response.data
         })
       },
       async getProvinces(region_id) {
         const self = this
-        await axios.get(BASE_URL+'/provinces/'+region_id)
+        console.log(region_id)
+        await axios.get(`${configStore().getServerURL}/api/address`+'/provinces')
           .then(function(response) {
             self.provinces = response.data
         })
       },
       async getCities(province_id) {
         const self = this
-        await axios.get(BASE_URL+'/cities/'+province_id)
+        await axios.get(`${configStore().getServerURL}/api/address`+'/cities/'+province_id)
           .then(function(response) {
             self.cities = response.data
         })
       },
       async getBarangays(city_id) {
         const self = this
-        await axios.get(BASE_URL+'/barangays/'+city_id)
+        await axios.get(`${configStore().getServerURL}/api/address`+'/barangays/'+city_id)
           .then(function(response) {
             self.barangays = response.data
         })

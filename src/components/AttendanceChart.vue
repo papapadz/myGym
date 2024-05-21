@@ -88,13 +88,13 @@ export default defineComponent({
             isModalOpen.value = false
             isLoading.value = true
             let filterBy = 'year'
-            let ddate = yearInput.value
+            let ddate = '01/01/'+yearInput.value
             if(isDateClicked.value) {
                 filterBy = 'day'
-                ddate = dateInput.value
+                ddate = format(new Date(dateInput.value), 'MM/dd/yyyy')
             }
 
-            await attendance.fetchAttendanceDataByYear(format(new Date(ddate), 'MM/dd/yyyy'),filterBy).then(() => {
+            await attendance.fetchAttendanceDataByYear(ddate.toString(),filterBy).then(() => {
                 isLoading.value = false
             })
         }

@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import axios from 'axios'
 import { navigationStore } from '../stores/navigation'
-
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
 
 export const membershipStore = defineStore('membership', {
     state: () => ({
@@ -22,7 +21,7 @@ export const membershipStore = defineStore('membership', {
     actions: {
         async fetchMemberships() {
           try {
-            const response = await axios.get(BASE_URL+'/membership/categories/all')
+            const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/membership/categories/all')
             this.membershipList = response.data
           } catch (error) {
             console.error(error)
@@ -39,7 +38,7 @@ export const membershipStore = defineStore('membership', {
                 formData.append('payment', requestData.payment)
                 formData.append('remarks', requestData.remarks)
 
-                const response = await axios.post(BASE_URL+'/person/membership/new', formData)
+                const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/person/membership/new', formData)
                 navigation.addFlipMembership(response.data)
               } catch (error) {
                 console.error(error)
@@ -47,7 +46,7 @@ export const membershipStore = defineStore('membership', {
         },
         async findMembership(membershipID) {
           try {
-            const response = await axios.get(BASE_URL+'/membership/find/'+membershipID)
+            const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/membership/find/'+membershipID)
             this.selectedMembership = response.data
             return response.data
           } catch (error) {
@@ -62,7 +61,7 @@ export const membershipStore = defineStore('membership', {
             formData.append('remarks', requestData.remarks)
             formData.append('isPayment', (requestData.isPayment ? 1 : 0))
 
-            const response = await axios.post(BASE_URL+'/membership/pay',formData)
+            const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/membership/pay',formData)
 
             console.log(response.data)
           } catch (error) {
@@ -71,7 +70,7 @@ export const membershipStore = defineStore('membership', {
         },
         async cancel(membershipID) {
           try {
-            const response = await axios.get(BASE_URL+'/membership/cancel/'+membershipID)
+            const response = await axios.get(`${configStore().getServerURL}/api/mobile`+'/membership/cancel/'+membershipID)
             return response.data
           } catch(error) {
             console.error(error)
@@ -88,7 +87,7 @@ export const membershipStore = defineStore('membership', {
             formData.append('duration', membership.duration)
             formData.append('new', membership.isNew)
 
-            const response = await axios.post(BASE_URL+'/membership/category/new', formData)
+            const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/membership/category/new', formData)
             console.log(response.data)
           } catch (error) {
             console.error(error)
@@ -107,7 +106,7 @@ export const membershipStore = defineStore('membership', {
             formData.append('id', extensionObject.membershipID)
             formData.append('value', extensionObject.value)
             formData.append('duration', extensionObject.duration)
-            const response = await axios.post(BASE_URL+'/membership/extend',formData) 
+            const response = await axios.post(`${configStore().getServerURL}/api/mobile`+'/membership/extend',formData) 
             return response.data
           } catch(error) {
             console.error(error)

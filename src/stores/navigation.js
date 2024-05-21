@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+import { configStore } from './_config'
+
 export const navigationStore = defineStore('navigation', {
     state: () => ({ 
       page: "",
@@ -47,7 +48,7 @@ export const navigationStore = defineStore('navigation', {
     actions: {
       setFlippedProfile(personID) {
         const self = this
-        axios.get(BASE_URL+'/person/profile/filter', {
+        axios.get(`${configStore().getServerURL}/api/mobile`+'/person/profile/filter', {
           params: {
             personID: personID
           }
@@ -60,7 +61,7 @@ export const navigationStore = defineStore('navigation', {
       },
       setAttendance(personID) {
         const self = this
-        axios.get(BASE_URL+'/person/attendance', {
+        axios.get(`${configStore().getServerURL}/api/mobile`+'/person/attendance', {
           params: {
             personID: personID
           }
@@ -73,7 +74,7 @@ export const navigationStore = defineStore('navigation', {
         try {
           const formData = new FormData()
           formData.append('personID', personID)
-          const response = axios.get(BASE_URL+'/person/memberships',formData)
+          const response = axios.get(`${configStore().getServerURL}/api/mobile`+'/person/memberships',formData)
           this.flipMemberships = response.data
         } catch(error) {
           console.error(error)
@@ -83,7 +84,7 @@ export const navigationStore = defineStore('navigation', {
         const self = this
         this.isLoading = true
         try {
-          await axios.get(BASE_URL+'/attendance/details/'+attendanceID)
+          await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/details/'+attendanceID)
           .then(function(response) {
             self.flipAttendance = response.data
           })
@@ -95,7 +96,7 @@ export const navigationStore = defineStore('navigation', {
       },
       async timeOut(attendanceID) {
         try {
-          await axios.get(BASE_URL+'/attendance/timeout/'+attendanceID)
+          await axios.get(`${configStore().getServerURL}/api/mobile`+'/attendance/timeout/'+attendanceID)
         } catch(error) {
           console.log(error)
         }

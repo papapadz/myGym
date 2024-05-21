@@ -21,7 +21,7 @@
                 <ion-row size="auto" class="ion-justify-content-start">
                   <ion-col size-md="6" size-lg="3" size-xs="12" v-for="memberItem in memberResults" :key="memberItem.id">
                     <ion-card :class="checkStatus(memberItem)" @click="openProfile(memberItem)">
-                      <img class="card-image" :src="memberItem.img.url" alt="Profile Image" />
+                      <img class="card-image" :src="memberItem.img.url!=null ? memberItem.img.url : '#'" alt="Profile Image" />
                       <ion-card-header>
                         <ion-card-subtitle>
                           {{ memberItem.card_number }}
@@ -71,9 +71,9 @@ export default defineComponent({
         members.find(val)
       }
       
-      onBeforeMount(() => {
+      onBeforeMount( async () => {
         isLoading.value = true
-        members.getAllMembers().then(() => {
+        await members.getAllMembers().then(() => {
           members.$patch({
             searchResults: members.getMembers
           })
