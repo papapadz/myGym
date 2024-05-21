@@ -67,10 +67,10 @@
           title: 'Members'
         },
         pages: [
-          {code: 1, title: 'Active Memberships'},
+          //{code: 1, title: 'Active Memberships'},
           {code: 2, title: 'Attendees Today'},
-          {code: 3, title: 'Memberships'},
-          {code: 4, title: 'Workouts'}
+          //{code: 3, title: 'Memberships'},
+          //{code: 4, title: 'Workouts'}
         ]
       }
     },

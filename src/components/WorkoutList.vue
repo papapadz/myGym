@@ -3,25 +3,26 @@
     <ion-content>
       <ion-header :translucent="true"><ion-toolbar><ion-title></ion-title></ion-toolbar></ion-header>
       <ion-content>
-        <ion-grid :fixed="true">
+        <ion-card class="ion-padding">
+          <img class="card-image" :src="attendanceData.person.img.url" />
+          <ion-card-header>
+            <ion-card-title>{{ renderedData.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ renderedData.gender }} | {{ renderedData.age }} years old</p>
+            <p>Clocked In: {{ renderedData.timein }}</p>
+          </ion-card-content>
+          <ion-button class="ion-text-end" color="warning" @click="back">
+            <ion-icon :icon="arrowBack"></ion-icon> Go Back
+          </ion-button>
+          <ion-button v-if="!attendanceData.timeout" class="ion-text-start" color="danger" @click="out">
+            <ion-icon :icon="exit"></ion-icon> Clock Out
+          </ion-button>
+        </ion-card>
+        <!-- <ion-grid :fixed="true">
           <ion-row>
             <ion-col size="12" size-md="4">
-              <ion-card class="ion-padding">
-                <img class="card-image" :src="attendanceData.person.img.url" />
-                <ion-card-header>
-                  <ion-card-title>{{ renderedData.name }}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                  <p>{{ renderedData.gender }} | {{ renderedData.age }} years old</p>
-                  <p>Clocked In: {{ renderedData.timein }}</p>
-                </ion-card-content>
-                <ion-button class="ion-text-end" color="warning" @click="back">
-                  <ion-icon :icon="arrowBack"></ion-icon> Go Back
-                </ion-button>
-                <ion-button v-if="!attendanceData.timeout" class="ion-text-start" color="danger" @click="out">
-                  <ion-icon :icon="exit"></ion-icon> Clock Out
-                </ion-button>
-              </ion-card>
+              
             </ion-col>
             <ion-col size="12" size-md="8">
               <ion-grid :fixed="true">
@@ -73,12 +74,12 @@
               </ion-grid>
             </ion-col>
           </ion-row>
-        </ion-grid>
-        <ion-fab v-if="page==1" slot="fixed" vertical="top" horizontal="end">
+        </ion-grid> -->
+        <!-- <ion-fab v-if="page==1" slot="fixed" vertical="top" horizontal="end">
           <ion-fab-button @click="page=2">
             <ion-icon :icon="add"></ion-icon>
           </ion-fab-button>
-        </ion-fab>
+        </ion-fab> -->
       </ion-content>
     </ion-content>
   </ion-page>
@@ -90,7 +91,9 @@ import { defineComponent, onBeforeMount, ref } from 'vue';
 import { add, close, arrowBack, exit } from 'ionicons/icons'
 import { workoutStore } from '../stores/workout';
 import { navigationStore } from '../stores/navigation';
-import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonHeader, IonToolbar, IonTitle, IonSelectOption, IonLabel } from '@ionic/vue';
+import { IonCard, IonCardHeader, IonCardTitle, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonHeader, IonToolbar, IonTitle,
+  // IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonList, IonItem, IonSelect, IonTextarea, IonSelectOption, IonLabel 
+} from '@ionic/vue';
 import { format, differenceInYears } from 'date-fns'
 import { attendanceStore } from '../stores/attendance';
 
@@ -105,7 +108,8 @@ export default defineComponent({
     }
   },
   components: {
-    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonList, IonItem, IonSelect, IonTextarea, IonTitle, IonHeader, IonToolbar, IonSelectOption, IonLabel
+    IonCard, IonCardHeader, IonCardTitle, IonIcon, IonPage, IonContent, IonButton, IonCardContent, IonTitle, IonHeader, IonToolbar,
+    // IonCardSubtitle, IonGrid, IonRow, IonCol, IonFab, IonFabButton,  IonList, IonItem, IonSelect, IonTextarea,  IonSelectOption, IonLabel
   },
   setup() {
     const attendance = attendanceStore()

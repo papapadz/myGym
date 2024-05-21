@@ -7,7 +7,7 @@
           </ion-item-group>
           <ion-item-group v-for="group in groups" :key="group.year + group.month">
             <ion-item-divider>{{ group.year }} - {{ months[group.month - 1] }}</ion-item-divider>
-            <ion-item v-for="date in group.dates" :key="date.id" button detail="true" @click="viewMore(getObject(date.id))">
+            <ion-item v-for="date in group.dates" :key="date.id" button detail="false" @click="viewMore(getObject(date.id))">
               <ion-icon :icon="time"></ion-icon>
               <ion-label class="ion-padding">
                   <h2>{{ getObject(date.id).person.lastname }}, {{ getObject(date.id).person.firstname }}</h2>
@@ -107,8 +107,9 @@
         return true
       },
       viewMore(attendance) {
-        this.page = 2
-        this.workOutList = attendance.work_outs
+        console.log(attendance)
+        // this.page = 2
+        // this.workOutList = attendance.work_outs
       },
       getObject(id) {
           return this.attendanceData.filter(d => d.id == id)[0]

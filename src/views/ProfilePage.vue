@@ -100,13 +100,13 @@
                                                         </ion-label>
                                                         <ion-input v-if="!isEditing" :readonly="!isEditing" :value="displayAddress"></ion-input>
                                                     </ion-item>
-                                                    <ion-item  v-if="isEditing">
+                                                    <!-- <ion-item  v-if="isEditing">
                                                         <ion-label position="floating">Select Region</ion-label>
                                                         <ion-select placeholder="Select Region" v-model="selectedAddress.region" @ionChange="selectAddress(1)">
                                                             <ion-select-option v-for="item in address.getRegionList" :key="item.id" :value="item.region_id">{{ item.name }}</ion-select-option>
                                                         </ion-select>
                                                         <ion-icon v-if="isEditing" :icon="pencil" slot="end" color="primary"/>
-                                                    </ion-item>
+                                                    </ion-item> -->
                                                     <ion-item v-if="isEditing">
                                                         <ion-label position="floating">Select Province</ion-label>
                                                         <ion-select placeholder="Select Province" v-model="selectedAddress.province" @ionChange="selectAddress(2)">
@@ -225,9 +225,9 @@ export default defineComponent({
                 {
                     title: 'Attendance'
                 },
-                {
-                    title: 'Membership'
-                }
+                // {
+                //     title: 'Membership'
+                // }
             ],
         }
     },
@@ -312,7 +312,7 @@ export default defineComponent({
                     person: memberData
                 })
 
-                this.address.getRegions().then(() => {
+                this.address.getProvinces(1).then(() => {
                     this.isEditing = true
                 }).finally(() => {
                     
@@ -366,9 +366,9 @@ export default defineComponent({
                 })
             }
         },
-        cancelEdit() {
+        async cancelEdit() {
             this.isLoading = true
-            this.members.findMember(this.profileData.id).then((e) => {
+            await this.members.findMember(this.profileData.id).then((e) => {
                 this.closeEdit(e)
             })   
         },
@@ -411,7 +411,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 
 .profile {
   display: flex;
