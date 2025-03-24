@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const BASE_URL = 'http://localhost/myGymServer/public/api/address'
+// const BASE_URL = 'http://localhost/myGymServer/public/api/address'
+const BASE_URL = 'https://darkorange-oryx-544012.hostingersite.com/api/address'
 export const addressStore = defineStore('address', {
     state: () => ({ 
       regions: [],

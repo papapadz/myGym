@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
+const BASE_URL = 'https://darkorange-oryx-544012.hostingersite.com/api/mobile'
 export const navigationStore = defineStore('navigation', {
     state: () => ({ 
       page: "",

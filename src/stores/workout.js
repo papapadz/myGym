@@ -2,8 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { navigationStore } from './navigation'
 
-const BASE_URL = 'http://localhost/myGymServer/public/api/mobile'
-
+const BASE_URL = 'https://darkorange-oryx-544012.hostingersite.com/api/mobile'
 export const workoutStore = defineStore('workout', {
     state: () => ({ 
       workoutItems: null,
