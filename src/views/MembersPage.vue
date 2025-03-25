@@ -13,9 +13,6 @@
           <ion-content v-else>
             <ion-loading v-if="isLoading"></ion-loading>
             <ion-content v-else>
-              <ion-fab vertical="top" horizontal="end">
-                <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
-              </ion-fab>
               <ion-searchbar @ionChange="search($event.target.value.toLowerCase())"></ion-searchbar>
               <ion-grid>
                 <ion-row size="auto" class="ion-justify-content-start">
@@ -34,6 +31,9 @@
               </ion-grid>
             </ion-content>
           </ion-content>
+          <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button color="success" @click="showAddForm"><ion-icon :icon="plusIcon"></ion-icon></ion-fab-button>
+          </ion-fab>
     </ion-content>
   </ion-page>
 </template>

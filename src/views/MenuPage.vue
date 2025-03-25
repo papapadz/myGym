@@ -14,8 +14,8 @@
           <ion-row>
             <ion-col v-for="pageItem in pages" :key="pageItem.code" size-md="6" size-lg="3" size-xs="12">
               <ion-card @click="show(pageItem)" class="list-card">
-                <ion-card-content>
-                  <ion-badge color="primary"><h1>{{ getStatData(pageItem.code) }}</h1></ion-badge> <h1>{{ pageItem.title }}</h1>
+                <ion-card-content class="bg-yellow">
+                  <ion-badge class="bg-black"><h1>{{ getStatData(pageItem.code) }}</h1></ion-badge> <h1 class="text-dark">{{ pageItem.title }}</h1>
                 </ion-card-content>
               </ion-card>  
             </ion-col>
@@ -126,5 +126,17 @@
   position: relative;
   width: 100%;
   height: 70vh;
+}
+
+.bg-yellow {
+  background-color: #FFD700;
+}
+
+.bg-black {
+  background-color: #000;
+}
+
+.text-dark {
+  color: #333;
 }
 </style>

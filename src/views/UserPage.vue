@@ -80,7 +80,7 @@
                                 </ion-label>
                                 <ion-input type="password" v-model="passwordReset.new"></ion-input>
                             </ion-item>
-                                <ion-button expand="block" color="success" @click="update">Save</ion-button>
+                                <ion-button class="black-yellow-button" expand="block" color="success" @click="update">Save</ion-button>
                                 <ion-button expand="block" color="danger" @click="reset">Cancel</ion-button>
                         </ion-card>
                     </ion-col>
@@ -273,9 +273,16 @@ export default defineComponent({
         },
         getBtnColor() {
             if (this.page == 1)
-                return 'primary'
+                return 'warning'
             return 'success'
         }
     }
 })
 </script>
+
+<style scoped>
+.bg-black-button {
+    --background: #000;
+    --background-activated: #333;
+}
+</style>

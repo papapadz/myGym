@@ -3,7 +3,7 @@
 <ion-menu-toggle>
   <ion-menu side="start" content-id="main-content">
     <ion-header>
-      <ion-toolbar color="warning">
+      <ion-toolbar class="custom-yellow-toolbar">
         <ion-title>DMAX Gym</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -150,3 +150,15 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+ion-toolbar {
+  --background: #FFD700 !important; /* Force yellow background */
+  --color: black !important; /* Ensure text is black */
+}
+
+/* Alternative method */
+.custom-yellow-toolbar {
+  background-color: #FFD700 !important;
+}
+</style>
